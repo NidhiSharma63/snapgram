@@ -7,3 +7,17 @@ User api register
   "bio": "",
   "username": ""
 }
+
+User login
+{
+  "email":"",
+  "password":""
+}
+
+
+User logout
+
+{
+  userId:id,
+  token:""
+}

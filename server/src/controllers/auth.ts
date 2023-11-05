@@ -72,16 +72,14 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // generate token once user have correct credentials
-    const token = await user.generateAuthToken();
+    await user.generateAuthToken();
 
     // setting token as a cookie
     // res.cookie("Todo", token, { httpOnly: true, secure: true });
 
     // is all okay send user back data
     if (user) {
-      res.status(201).json({ user, token });
-    } else {
-      throw new Error("Server Error");
+      res.status(201).json(user);
     }
   } catch (error) {
     next(error);
@@ -91,12 +89,19 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 // logout page
 const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req?.body?.userId;
+    const { userId, token } = req.body;
+
+    if (!userId) {
+      throw new Error("UserId is Missing");
+    }
+    if (!token) {
+      throw new Error("Token is Missing");
+    }
     const getUserFromDB = await User.findOne({ _id: userId });
     if (getUserFromDB) {
       // updating token
-      // getUserFromDB.token = "";
-
+      const updatedToken = getUserFromDB.tokens.filter((item) => item !== token);
+      getUserFromDB.tokens = updatedToken;
       // saving user to database after updatig the token
       await getUserFromDB.save();
     }
