@@ -28,16 +28,33 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
  * update post
  */
 const updatePost = async (req: Request, res: Response, next: NextFunction) => {
-  const { _id, tags, caption } = req.body;
-  let findPostToUpdate = await Post.find({ _id });
-  if (!findPostToUpdate) throw new Error("Couldn't find out the post");
+  try {
+    const { _id, tags, caption } = req.body;
+    let findPostToUpdate = await Post.find({ _id });
+    if (!findPostToUpdate) throw new Error("Couldn't find out the post");
 
-  findPostToUpdate[0].caption = caption;
-  findPostToUpdate[0].tags = tags;
+    findPostToUpdate[0].caption = caption;
+    findPostToUpdate[0].tags = tags;
 
-  await findPostToUpdate[0].save();
-  res.status(200).json(findPostToUpdate);
-  console.log({ findPostToUpdate });
+    await findPostToUpdate[0].save();
+    res.status(200).json(findPostToUpdate);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export { createPost, updatePost };
+/**
+ * delete post
+ */
+const deletePost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { _id } = req.body;
+    let findPostToDelete = await Post.findOneAndDelete({ _id });
+    if (!findPostToDelete) throw new Error("Couldn't find out the post");
+    res.status(204).json(findPostToDelete);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, deletePost, updatePost };
