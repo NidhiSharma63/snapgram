@@ -21,6 +21,14 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
       throw new Error("Email is already exists");
     }
 
+    /**
+     * check if username is present
+     */
+    const isUserNamePresent = await User.find({ username });
+    if (isUserNamePresent.length > 0) {
+      throw new Error("User name is already exists");
+    }
+
     // generate hash password with round 10
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -88,7 +96,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
     const getUserFromDB = await User.findOne({ _id: userId });
     if (getUserFromDB) {
       // updating token
-      getUserFromDB.token = "";
+      // getUserFromDB.token = "";
 
       // saving user to database after updatig the token
       await getUserFromDB.save();
