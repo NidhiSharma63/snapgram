@@ -10,9 +10,9 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
     const postCreated = new Post({
       content,
       userId,
-      tags,
-      location,
-      caption,
+      tags: tags ?? [],
+      location: location ?? [],
+      caption: caption ?? [],
     });
     await postCreated.save();
     res.status(201).json(postCreated);
