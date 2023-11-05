@@ -4,11 +4,12 @@ import User from "../models/userSchema";
 
 // register
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.body);
   try {
     const { email, password, avtar, bio, userName } = req.body;
 
     // check if any field is missing or not
-    if (!email.trim() || !password.trim()) {
+    if (!email || !password || !email.trim() || !password.trim()) {
       throw new Error("Missing email or password");
     }
 
@@ -39,7 +40,8 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
     await user.save();
     res.status(200).json({ user });
   } catch (error) {
-    next(error);
+    // next(error);
+    console.log({ error });
   }
 };
 
