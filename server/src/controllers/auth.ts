@@ -74,8 +74,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     // generate token once user have correct credentials
     await user.generateAuthToken();
 
-    // setting token as a cookie
-    // res.cookie("Todo", token, { httpOnly: true, secure: true });
+    // setting token as a cookies
 
     // is all okay send user back data
     if (user) {

@@ -14,9 +14,7 @@ User login
   "password":""
 }
 
-
 User logout
-
 {
   userId:id,
   token:""
