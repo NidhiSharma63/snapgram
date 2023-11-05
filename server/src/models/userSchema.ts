@@ -7,7 +7,7 @@ dotenv.config();
 interface IUser extends Document {
   email: string;
   password: string;
-  userName: string;
+  username: string;
   avtar: string;
   token: string;
   bio: string;
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema<IUser>({
     type: String,
     required: true,
   },
-  userName: {
+  username: {
     type: String,
     required: true,
   },

@@ -4,9 +4,8 @@ import User from "../models/userSchema";
 
 // register
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.body);
   try {
-    const { email, password, avtar, bio, userName } = req.body;
+    const { email, password, avtar, bio, username } = req.body;
 
     // check if any field is missing or not
     if (!email || !password || !email.trim() || !password.trim()) {
@@ -27,7 +26,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
 
     const user = new User({
       email,
-      userName,
+      username,
       password: hashPassword,
       avtar,
       bio,

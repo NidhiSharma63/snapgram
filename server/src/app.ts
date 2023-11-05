@@ -8,6 +8,12 @@ const cors = require("cors");
 
 const server = express();
 
+// Middleware to parse incoming requests with JSON payloads
+server.use(express.json());
+
+// Middleware to parse incoming requests with urlencoded payloads
+server.use(express.urlencoded({ extended: true }));
+
 // use cors
 server.use(cors());
 server.use("/api/v1", router);
