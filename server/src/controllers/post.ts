@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import Post from "../models/postSchema";
 
+/**
+ * create post
+ */
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { content, userId, tags, caption, location } = req.body;
@@ -21,4 +24,20 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createPost };
+/**
+ * update post
+ */
+const updatePost = async (req: Request, res: Response, next: NextFunction) => {
+  const { _id, tags, caption } = req.body;
+  let findPostToUpdate = await Post.find({ _id });
+  if (!findPostToUpdate) throw new Error("Couldn't find out the post");
+
+  findPostToUpdate[0].caption = caption;
+  findPostToUpdate[0].tags = tags;
+
+  await findPostToUpdate[0].save();
+  res.status(200).json(findPostToUpdate);
+  console.log({ findPostToUpdate });
+};
+
+export { createPost, updatePost };
