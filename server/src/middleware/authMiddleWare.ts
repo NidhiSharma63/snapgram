@@ -9,13 +9,11 @@ const checkAuthorization = async (req: Request, res: Response, next: NextFunctio
       userId = req.query.userId;
     }
 
-    // console.log(userId, ":::user id:::", req.query);
-
     if (!userId || !userId?.trim()) {
-      throw new Error("UserId is missing");
+      throw new Error("UserId is Missing");
     }
     if (!token) {
-      throw new Error("Authorization token is missing");
+      throw new Error("Authorization token is Missing");
     }
 
     const getUserFromDB = await User.findOne({ _id: userId });
