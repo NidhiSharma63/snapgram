@@ -3,27 +3,19 @@ import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import mongoose, { Document, Model } from "mongoose";
 dotenv.config();
 
-interface IUserSchema {
-  email: {
-    type: string;
-    required: boolean;
-    unique: boolean;
-  };
-  password: {
-    type: string;
-    required: boolean;
-  };
-  userName: {
-    type: string;
-    required: boolean;
-  };
+// Define the IUser interface for the User model
+interface IUser extends Document {
+  email: string;
+  password: string;
+  userName: string;
   avtar: string;
-  token?: string;
-  bio?: string;
+  token: string;
+  bio: string;
+  generateAuthToken: () => Promise<string>;
 }
 
 // creating schema
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<IUser>({
   email: {
     type: String,
     required: true,
@@ -39,30 +31,8 @@ const userSchema = new mongoose.Schema({
   },
   token: String,
   avtar: String,
+  bio: String,
 });
-
-// Define the IUser interface for the User model
-interface IUser extends Document {
-  email: {
-    type: string;
-    required: boolean;
-    unique: boolean;
-  };
-  password: {
-    type: string;
-    required: boolean;
-  };
-  userName: {
-    type: string;
-    required: boolean;
-  };
-  avtar: string;
-  token?: string;
-  bio?: string;
-}
-
-// Define the UserModel type
-type UserModel = Model<IUser>;
 
 // create a token
 userSchema.methods.generateAuthToken = async function () {
@@ -81,13 +51,7 @@ userSchema.methods.generateAuthToken = async function () {
   }
 };
 
-// // Apply the uniqueValidator plugin to the userSchema
-// userSchema.plugin(uniqueValidator, {
-//   message: "{PATH} already exists.", // {PATH} will be replaced with the field name, i.e., "Email"
-// });
+// now we need to create the collection
+const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 
-// now we need to create collection
-
-const User: UserModel = mongoose.model<IUser, UserModel>("User", userSchema);
-
-module.exports = User;
+export default User;
