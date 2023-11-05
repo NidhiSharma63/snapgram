@@ -21,9 +21,9 @@ const checkAuthorization = async (req: Request, res: Response, next: NextFunctio
     }
     const getUserFromDB = await User.findOne({ _id: userId });
 
-    if (getUserFromDB?.token !== token) {
-      return res.status(401).json({ error: "Authorization token is invalid." });
-    }
+    // if (getUserFromDB?.token !== token) {
+    //   return res.status(401).json({ error: "Authorization token is invalid." });
+    // }
 
     next();
   } catch (error) {

@@ -26,7 +26,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
      */
     const isUserNamePresent = await User.find({ username });
     if (isUserNamePresent.length > 0) {
-      throw new Error("User name is already exists");
+      throw new Error("Username is already exists");
     }
 
     // generate hash password with round 10
@@ -45,10 +45,9 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
 
     // create user
     await user.save();
-    res.status(200).json({ user });
+    res.status(200).json(user);
   } catch (error) {
-    // next(error);
-    console.log({ error });
+    next(error);
   }
 };
 

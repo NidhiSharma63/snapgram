@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import express from "express";
+import errorHandle from "./middleware/errorHandle";
 import router from "./routes/routes";
 import connectDB from "./utils/connectBD";
 dotenv.config();
@@ -17,6 +18,13 @@ server.use(express.urlencoded({ extended: true }));
 // use cors
 server.use(cors());
 server.use("/api/v1", router);
+
+/**
+ * handle error
+ */
+
+server.use(errorHandle);
+
 // creating a start function that will connect to database and run the server
 const start = async () => {
   try {
