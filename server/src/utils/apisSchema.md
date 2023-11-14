@@ -28,3 +28,19 @@ Create post
  caption:string[],
  location:string[]
 }
+
+Update post
+{
+ content:string,
+ userId:string,
+ tags:string[],
+ caption:string[],
+ location:string[],
+ _id:postId
+}
+
+
+Delete post
+{
+ _id:postId
+}
