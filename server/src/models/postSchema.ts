@@ -1,6 +1,4 @@
-import * as dotenv from "dotenv";
 import mongoose, { Document, Model } from "mongoose";
-dotenv.config();
 
 // Define the IUser interface for the User model
 interface IPost extends Document {
