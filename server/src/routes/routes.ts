@@ -1,7 +1,9 @@
 import express from "express";
 import { loginUser, logout, registerUser } from "../controllers/auth";
+import { addLikes, removeLikes } from "../controllers/likes";
 import { createPost, deletePost, updatePost } from "../controllers/post";
 import checkAuthorization from "../middleware/authMiddleWare";
+
 const router = express.Router();
 
 /**
@@ -17,4 +19,11 @@ router.route("/logout").post(checkAuthorization, logout);
 router.route("/post").post(checkAuthorization, createPost);
 router.route("/post").put(checkAuthorization, updatePost);
 router.route("/post").delete(checkAuthorization, deletePost);
+
+/**
+ * likes route
+ */
+router.route("/likes/add").put(checkAuthorization, addLikes);
+router.route("/likes/remove").delete(checkAuthorization, removeLikes);
+
 export default router;
