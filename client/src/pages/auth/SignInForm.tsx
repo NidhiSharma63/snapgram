@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 function SignInForm() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
 
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
@@ -26,12 +26,12 @@ function SignInForm() {
 
   return (
     <div className="w-full h-full border border-cyan-600 flex justify-between">
-      {/* <p onClick={() => setTheme("light")}>chneg to light</p>
-      <p onClick={() => setTheme("dark")}>chnage to drak</p> */}
+      <p onClick={() => setTheme("light")}>chneg to light</p>
+      <p onClick={() => setTheme("dark")}>chnage to drak</p>
       {/* <div>Text</div> */}
 
       <div className="flex border flex-1 justify-center items-center flex-col">
-        <img src="/assets/images/logo.svg" />
+        <img src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"} />
         <p className="prose-xl bold md:h2-bold pt-3 sm:pt-8">Login to your Account</p>
         <p className="text-light-3 small-medium md:base-regular mt-2">
           Welcome back, Please enter your account details
