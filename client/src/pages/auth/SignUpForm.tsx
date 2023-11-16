@@ -5,12 +5,12 @@ import { AppConstants } from "@/constant/keys";
 import { signUpFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
 import useAuth from "@/hooks/query/useAuth";
+import { getValueFromLS, setValueToLS } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { setValueToLS } from "../../lib/utils";
 
 function SignUpForm() {
   const { setTheme, theme } = useTheme();
@@ -44,13 +44,22 @@ function SignUpForm() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/");
-      const { userId, tokens } = data._id;
+      navigate("/", { replace: true });
+      const { _id, tokens } = data;
 
-      setValueToLS(AppConstants.USER_ID_IN_LS, userId);
+      setValueToLS(AppConstants.USER_ID_IN_LS, _id);
       setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0]);
     }
   }, [isSuccess]);
+
+  /**
+   * if already token present then move user to home page
+   */
+
+  useEffect(() => {
+    const isAuthenticated = getValueFromLS(AppConstants.TOKEN_VALUE_IN_LS);
+    if (isAuthenticated) navigate("/", { replace: true });
+  }, []);
 
   return (
     <div className="w-full h-full border flex justify-between">

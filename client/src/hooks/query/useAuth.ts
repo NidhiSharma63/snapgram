@@ -16,9 +16,26 @@ function useAuth() {
         password: string;
         avatar: string | null;
       }) => customAxiosRequestForPost("/register", "post", payload),
-      onSuccess: () => {
-        console.log("success");
+
+      onError: (error: AxiosError) => {
+        if (error.response?.data.status === 400) {
+          toast({
+            title: error.response.data.error,
+          });
+        } else {
+          toast({
+            title: "Something went wrong",
+          });
+        }
       },
+    });
+  }
+
+  function useSignIn() {
+    return useMutation({
+      mutationFn: (payload: { email: string; password: string }) =>
+        customAxiosRequestForPost("/login", "post", payload),
+
       onError: (error: AxiosError) => {
         if (error.response?.data.status === 400) {
           toast({
@@ -35,6 +52,7 @@ function useAuth() {
 
   return {
     useSignUp,
+    useSignIn,
   };
 }
 

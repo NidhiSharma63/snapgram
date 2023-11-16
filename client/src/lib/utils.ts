@@ -7,9 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getValueFromLS(key: string): string | null {
   const storedValue = localStorage.getItem(key);
-
+  console.log({ storedValue });
   if (typeof storedValue === "string") {
-    return JSON.parse(storedValue);
+    return storedValue;
   }
 
   // Return a default value or null if the key doesn't exist or parsing fails

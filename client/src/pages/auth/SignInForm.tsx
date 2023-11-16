@@ -1,17 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AppConstants } from "@/constant/keys";
 import { signInFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
+import useAuth from "@/hooks/query/useAuth";
+import { getValueFromLS, setValueToLS } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 function SignInForm() {
   const { setTheme, theme } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const { useSignIn } = useAuth();
+  const { mutate, isSuccess, data, isPending } = useSignIn();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
@@ -26,10 +32,29 @@ function SignInForm() {
   };
 
   function onSubmit(values: z.infer<typeof signInFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    mutate(values);
   }
+
+  /**
+   * redirect the user to home page after successfull login
+   */
+  useEffect(() => {
+    if (isSuccess) {
+      const { tokens } = data;
+      console.log({ tokens }, tokens[0]);
+      navigate("/", { replace: true });
+      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0]);
+    }
+  }, [isSuccess]);
+
+  /**
+   * if already token present then move user to home page
+   */
+
+  useEffect(() => {
+    const isAuthenticated = getValueFromLS(AppConstants.TOKEN_VALUE_IN_LS);
+    if (isAuthenticated) navigate("/", { replace: true });
+  }, []);
 
   return (
     <div className="w-full h-full border flex justify-between">
@@ -76,7 +101,9 @@ function SignInForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit">
+              {isPending ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
+            </Button>
           </form>
         </Form>
         <p className="text-small-regualr text-ligh-2 text-center mt-8">
