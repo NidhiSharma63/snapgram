@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { signInFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
 function SignInForm() {
   const { setTheme, theme } = useTheme();
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
@@ -18,6 +20,10 @@ function SignInForm() {
       password: "",
     },
   });
+
+  const handleClick = () => {
+    setPasswordVisible((prev: boolean) => !prev);
+  };
 
   function onSubmit(values: z.infer<typeof signInFormSchema>) {
     // Do something with the form values.
@@ -46,6 +52,7 @@ function SignInForm() {
                   <FormControl>
                     <Input placeholder="Enter your email" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -53,11 +60,18 @@ function SignInForm() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="relative">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your password" {...field} />
                   </FormControl>
+                  <div className="absolute top-[35px] right-[7px] cursor-pointer" onClick={handleClick}>
+                    {passwordVisible ? (
+                      <img src="/assets/icons/open-eye.svg" alt="eye" className="w-4 relative" />
+                    ) : (
+                      <img src="/assets/icons/close-eye.svg" alt="eye" className="w-4 relative" />
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

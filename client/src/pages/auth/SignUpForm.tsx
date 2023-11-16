@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { signInFormSchema, signUpFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
 function SignUpForm() {
   const { setTheme, theme } = useTheme();
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -20,6 +22,10 @@ function SignUpForm() {
       password: "",
     },
   });
+
+  const handleClick = () => {
+    setPasswordVisible((prev: boolean) => !prev);
+  };
 
   function onSubmit(values: z.infer<typeof signInFormSchema>) {
     // Do something with the form values.
@@ -82,11 +88,23 @@ function SignUpForm() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="form-field">
+                <FormItem className="form-field relative">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" className="shad-input" placeholder="Your Password" {...field} />
+                    <Input
+                      type={passwordVisible ? "text" : "password"}
+                      className="shad-input"
+                      placeholder="Your Password"
+                      {...field}
+                    />
                   </FormControl>
+                  <div className="absolute top-[35px] right-[7px] cursor-pointer" onClick={handleClick}>
+                    {passwordVisible ? (
+                      <img src="/assets/icons/open-eye.svg" alt="eye" className="w-4 relative" />
+                    ) : (
+                      <img src="/assets/icons/close-eye.svg" alt="eye" className="w-4 relative" />
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -98,7 +116,7 @@ function SignUpForm() {
         </Form>
         <p className="text-small-regualr text-ligh-2 text-center mt-2">
           Already have Account ?
-          <Link to="/sign-up" className="text-primary-500 text-small-semibold ml-1">
+          <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">
             Sign In
           </Link>
         </p>
