@@ -1,4 +1,3 @@
-import "@/index.css";
 import { useEffect, useState } from "react";
 
 const darkModeValueInLocalStorage = localStorage.getItem("theme-for-snapgram");
