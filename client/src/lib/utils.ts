@@ -4,11 +4,11 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export function getValueFromLS(key: string): string | null {
   const storedValue = localStorage.getItem(key);
 
   if (typeof storedValue === "string") {
-    console.log("parsed value", JSON.parse(storedValue));
     return JSON.parse(storedValue);
   }
 
