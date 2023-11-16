@@ -82,3 +82,9 @@
     font-family: 'Inter', sans-serif;
   }
 }
+
+@layer utilities{
+  .form-field {
+    @apply mt-2 !important;
+  }
+}

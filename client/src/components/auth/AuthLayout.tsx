@@ -9,7 +9,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = getValueFromLS(AppConstants.GET_TOKEN_FROM_LS);
   console.log({ isAuthenticated });
   if (!isAuthenticated) {
-    return <Navigate to="/signIn" />;
+    return <Navigate to="/sign-in" />;
   }
   if (isAuthenticated) {
     return children;

@@ -4,12 +4,12 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
-    path: "/signIn",
+    path: "/sign-in",
     element: <SignInForm />,
   },
 
   {
-    path: "/signUp",
+    path: "/sign-up",
     element: (
       <>
         <SignUpForm />

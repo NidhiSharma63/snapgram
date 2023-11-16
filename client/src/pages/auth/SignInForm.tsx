@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { signInFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
@@ -58,6 +58,7 @@ function SignInForm() {
                   <FormControl>
                     <Input placeholder="Enter your password" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
