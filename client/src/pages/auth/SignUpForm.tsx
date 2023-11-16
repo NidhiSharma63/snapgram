@@ -1,17 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInFormSchema, signUpFormSchema } from "@/constant/validation";
+import { AppConstants } from "@/constant/keys";
+import { signUpFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
+import useAuth from "@/hooks/query/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { setValueToLS } from "../../lib/utils";
 
 function SignUpForm() {
   const { setTheme, theme } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const { useSignUp } = useAuth();
+  const { mutate, isPending, isSuccess, data } = useSignUp();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -20,6 +26,7 @@ function SignUpForm() {
       name: "",
       email: "",
       password: "",
+      avatar: null,
     },
   });
 
@@ -27,18 +34,26 @@ function SignUpForm() {
     setPasswordVisible((prev: boolean) => !prev);
   };
 
-  function onSubmit(values: z.infer<typeof signInFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  function onSubmit(values: z.infer<typeof signUpFormSchema>) {
+    mutate(values);
   }
+
+  /**
+   * on success navigate user to home page and set the details
+   */
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/");
+      const { userId, tokens } = data._id;
+
+      setValueToLS(AppConstants.USER_ID_IN_LS, userId);
+      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0]);
+    }
+  }, [isSuccess]);
 
   return (
     <div className="w-full h-full border flex justify-between">
-      {/* <p onClick={() => setTheme("light")}>chneg to light</p>
-      <p onClick={() => setTheme("dark")}>chnage to drak</p> */}
-      {/* <div>Text</div> */}
-
       <div className="flex border flex-1 justify-center items-center flex-col h-screen">
         <img src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"} />
         <p className="text-3xl font-bold md:h2-bold pt-3 sm:pt-2">Create New Account</p>
@@ -110,7 +125,7 @@ function SignUpForm() {
               )}
             />
             <Button type="submit" className="form-field">
-              Submit
+              {isPending ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
             </Button>
           </form>
         </Form>

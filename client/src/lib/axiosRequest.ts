@@ -2,6 +2,9 @@ import { AppConstants } from "@/constant/keys";
 import { getValueFromLS } from "@/lib/utils";
 import axios from "axios";
 
+interface IPayload {
+  [key: string]: string | boolean | null;
+}
 // Config file for changing or adding options to the axios instance
 
 export const AxiosInstanceConfig = {
@@ -14,7 +17,7 @@ export const AxiosInstanceConfig = {
 // defining axios instance
 const axiosInstance = axios.create({
   ...AxiosInstanceConfig,
-  baseURL: import.meta.env.BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL,
 });
 
 async function axiosRequest({ ...options }) {
@@ -52,8 +55,10 @@ export const customAxiosRequestForGet = async (url: string) => {
   });
   return response;
 };
+const val = import.meta.env.VITE_BASE_URL;
+console.log({ val });
 
-export const customAxiosRequestForPost = async (url: string, method = "post", payload: any) => {
+export const customAxiosRequestForPost = async (url: string, method = "post", payload: IPayload) => {
   const userId = getValueFromLS(AppConstants.GET_USER_ID_FROM_LS);
 
   let updatedPayload = { ...payload };
@@ -62,15 +67,15 @@ export const customAxiosRequestForPost = async (url: string, method = "post", pa
   }
 
   console.log({ updatedPayload });
-  //   try {
-  //     const response = await axiosRequest({
-  //       url,
-  //       method,
-  //       data: updatedPayload,
-  //     });
-  //     return response;
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw error; // Re-throw the error to propagate it to the caller
-  //   }
+  try {
+    const response = await axiosRequest({
+      url,
+      method,
+      data: updatedPayload,
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error; // Re-throw the error to propagate it to the caller
+  }
 };

@@ -20,4 +20,5 @@ export const signUpFormSchema = z.object({
     .string()
     .min(8, { message: "Password must be 8 character long" })
     .regex(passwordRegex, "Pasword must contains special characters"),
+  avatar: z.string().nullable(),
 });

@@ -15,3 +15,7 @@ export function getValueFromLS(key: string): string | null {
   // Return a default value or null if the key doesn't exist or parsing fails
   return null;
 }
+
+export function setValueToLS(key: string, value: string) {
+  localStorage.setItem(key, value);
+}

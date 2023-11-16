@@ -1,10 +1,10 @@
 import App from "@/App";
+import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/context/themeProviders";
 import "@/css/index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
-
 // Create a client
 const queryClient = new QueryClient();
 
@@ -14,6 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="snap-gram-theme">
         <App />
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
     {/* </BrowserRouter> */}

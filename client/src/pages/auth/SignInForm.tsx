@@ -63,7 +63,7 @@ function SignInForm() {
                 <FormItem className="relative">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your password" {...field} />
+                    <Input type={passwordVisible ? "text" : "password"} placeholder="Enter your password" {...field} />
                   </FormControl>
                   <div className="absolute top-[35px] right-[7px] cursor-pointer" onClick={handleClick}>
                     {passwordVisible ? (
