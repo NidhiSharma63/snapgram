@@ -1,24 +1,36 @@
 import { Button } from "@/components/ui/button";
+import { AppConstants } from "@/constant/keys";
 import { sidebarLinks } from "@/constant/links";
 import { useTheme } from "@/context/themeProviders";
-// import { useAuthContext } from "@/context/AuthContext";
-// import { sidebarLinks } from "@/lib/constant/sidebar";
-// import { useSignOutAccount } from "@/lib/react-query/queryAndMutations";
-// import { INavLink } from "@/types";
+import { useUserDetail } from "@/context/userContext";
+import useAuth from "@/hooks/query/useAuth";
+import { setValueToLS } from "@/lib/utils";
+import { useEffect } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function LeftBar() {
-  //   const { mutate: signOut, isSuccess } = useSignOutAccount();
+  const { useLogout } = useAuth();
+  const { mutate, isSuccess } = useLogout();
+  const { userDetails } = useUserDetail();
+
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-  //   const { user } = useAuthContext();
 
-  //   useEffect(() => {
-  //     if (isSuccess) {
-  //       navigate("/sign-in");
-  //     }
-  //   }, [navigate, isSuccess]);
+  const handleClick = () => {
+    if (!userDetails) return;
+    mutate({
+      userId: userDetails._id,
+      token: userDetails.tokens[0].token,
+    });
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/sign-in");
+      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(null));
+    }
+  }, [navigate, isSuccess]);
 
   return (
     <nav className="leftsidebar">
@@ -57,7 +69,7 @@ export default function LeftBar() {
           })}
         </ul>
       </div>
-      <Button variant="ghost" className="shad-button_ghost">
+      <Button variant="ghost" className="shad-button_ghost" onClick={handleClick}>
         <img src="/assets/icons/logout.svg" alt="logout" />
         <p className="small-medium lg:base-medium">Logout</p>
       </Button>

@@ -7,6 +7,8 @@ interface IPayload {
 }
 // Config file for changing or adding options to the axios instance
 
+const storedData = getValueFromLS(AppConstants.USER_DETAILS);
+
 export const AxiosInstanceConfig = {
   headers: {
     Accept: "application/json",
@@ -21,8 +23,7 @@ const axiosInstance = axios.create({
 });
 
 async function axiosRequest({ ...options }) {
-  const AUTH_TOKEN = getValueFromLS(AppConstants.GET_TOKEN_FROM_LS);
-  //   axiosInstance.defaults.headers.common.Authorization = AUTH_TOKEN;
+  const AUTH_TOKEN = storedData ? JSON.parse(storedData).tokens[0].token : null;
 
   if (AUTH_TOKEN) {
     axiosInstance.defaults.headers.Authorization = AUTH_TOKEN;
@@ -37,7 +38,7 @@ async function axiosRequest({ ...options }) {
 }
 
 export const customAxiosRequestForGet = async (url: string) => {
-  const userId = getValueFromLS(AppConstants.GET_USER_ID_FROM_LS);
+  const userId = storedData && JSON.parse(storedData)._id;
   let paramsToPass = {};
   if (!userId) {
     throw new Error("User id is not present");
@@ -59,14 +60,13 @@ const val = import.meta.env.VITE_BASE_URL;
 console.log({ val });
 
 export const customAxiosRequestForPost = async (url: string, method = "post", payload: IPayload) => {
-  const userId = getValueFromLS(AppConstants.GET_USER_ID_FROM_LS);
+  const userId = storedData && JSON.parse(storedData)._id;
 
   let updatedPayload = { ...payload };
   if (userId) {
     updatedPayload = { ...payload, userId };
   }
 
-  console.log({ updatedPayload });
   try {
     const response = await axiosRequest({
       url,

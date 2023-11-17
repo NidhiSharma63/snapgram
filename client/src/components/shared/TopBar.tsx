@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { AppConstants } from "@/constant/keys";
 import { useTheme } from "@/context/themeProviders";
+import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
+import { setValueToLS } from "@/lib/utils";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -8,13 +11,21 @@ export default function TopBar() {
   const { theme } = useTheme();
   const { useLogout } = useAuth();
   const { mutate, isSuccess } = useLogout();
+  const { userDetails } = useUserDetail();
   const navigate = useNavigate();
 
-  const handleClick = () => {};
+  const handleClick = () => {
+    if (!userDetails) return;
+    mutate({
+      userId: userDetails._id,
+      token: userDetails.tokens[0].token,
+    });
+  };
 
   useEffect(() => {
     if (isSuccess) {
       navigate("/sign-in");
+      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(null));
     }
   }, [navigate, isSuccess]);
 
