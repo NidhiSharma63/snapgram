@@ -10,6 +10,7 @@ const errorHandle = (error: Error, _req: Request, res: Response, next: NextFunct
   ) {
     return res.status(400).json({ error: error.message, status: 400 });
   } else {
+    console.log(error);
     return res.status(500).send({ error: "Internal server error", status: 500 });
   }
 };

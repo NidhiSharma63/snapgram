@@ -31,21 +31,27 @@ const userSchema = new mongoose.Schema<IUser>({
     required: true,
     unique: true,
   },
-  tokens: {
-    type: [String], // Initialize as an empty array
-    default: [],
-  },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+      uniqueBrowserId: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   avtar: String,
   bio: String,
   uniqueBrowserId: String,
 });
-
-// create a token
 userSchema.methods.generateAuthToken = async function (uniqueBrowserId: string) {
   try {
     const secretKey = process.env.SECRET_KEY || "defaultSecret";
     const genToken = jwt.sign({ id: this._id.toString() }, secretKey);
-    this.tokens = this.tokens.concat({ genToken, uniqueBrowserId });
+    this.tokens = this.tokens.concat({ token: genToken, uniqueBrowserId });
     await this.save();
     return genToken;
   } catch (error) {
@@ -56,7 +62,6 @@ userSchema.methods.generateAuthToken = async function (uniqueBrowserId: string) 
     }
   }
 };
-
 // now we need to create the collection
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 

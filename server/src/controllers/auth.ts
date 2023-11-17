@@ -29,6 +29,11 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
       throw new Error("Username is already exists");
     }
 
+    /**
+     * check if id present or not
+     */
+    if (!uniqueBrowserId) throw new Error("uniqueBrowserId is Missing");
+
     // generate hash password with round 10
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -61,6 +66,8 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     if (!user) {
       throw new Error("Invalid login detail");
     }
+
+    if (!uniqueBrowserId) throw new Error("uniqueBrowserId is Missing");
     // check if provided password by user is same as stored in data
     const getPassword = user.password;
 
@@ -74,11 +81,12 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     // generate token once user have correct credentials
     await user.generateAuthToken(uniqueBrowserId);
 
-    // setting token as a cookies
-
-    // is all okay send user back data
+    // filter out all the tokens and send the current token only
+    const updatedUserWithToken = user.tokens.filter((item) => item.uniqueBrowserId === uniqueBrowserId);
+    console.log({ updatedUserWithToken });
+    // is all okay send user data back
     if (user) {
-      res.status(201).json(user);
+      res.status(201).json(updatedUserWithToken);
     }
   } catch (error) {
     next(error);
