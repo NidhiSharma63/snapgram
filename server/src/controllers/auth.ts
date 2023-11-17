@@ -84,9 +84,10 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     // filter out all the tokens and send the current token only
     const updatedUserWithToken = user.tokens.filter((item) => item.uniqueBrowserId === uniqueBrowserId);
     console.log({ updatedUserWithToken });
+    user.tokens = updatedUserWithToken;
     // is all okay send user data back
     if (user) {
-      res.status(201).json(updatedUserWithToken);
+      res.status(201).json(user);
     }
   } catch (error) {
     next(error);
