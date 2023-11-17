@@ -4,6 +4,7 @@ import { passwordRegex } from "./regex";
 export const signInFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, { message: "Password require" }),
+  uniqueBrowserId: z.string(),
 });
 
 export const signUpFormSchema = z.object({
@@ -21,4 +22,5 @@ export const signUpFormSchema = z.object({
     .min(8, { message: "Password must be 8 character long" })
     .regex(passwordRegex, "Pasword must contains special characters"),
   avatar: z.string().nullable(),
+  uniqueBrowserId: z.string(),
 });

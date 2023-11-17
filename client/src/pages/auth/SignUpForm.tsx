@@ -10,10 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 function SignUpForm() {
-  const { setTheme, theme } = useTheme();
+  const { theme } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const { useSignUp } = useAuth();
   const { mutate, isPending, isSuccess, data } = useSignUp();
@@ -27,6 +28,7 @@ function SignUpForm() {
       email: "",
       password: "",
       avatar: null,
+      uniqueBrowserId: uuidv4(),
     },
   });
 
@@ -48,7 +50,8 @@ function SignUpForm() {
       const { _id, tokens } = data;
 
       setValueToLS(AppConstants.USER_ID_IN_LS, _id);
-      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0]);
+      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0].token);
+      setValueToLS(AppConstants.UNIQUE_BROWSER_ID, tokens[0].uniqueBrowserId);
     }
   }, [isSuccess]);
 
@@ -59,7 +62,7 @@ function SignUpForm() {
   useEffect(() => {
     const isAuthenticated = getValueFromLS(AppConstants.TOKEN_VALUE_IN_LS);
     if (isAuthenticated) navigate("/", { replace: true });
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="w-full h-full border flex justify-between">

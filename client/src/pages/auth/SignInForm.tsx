@@ -10,10 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 function SignInForm() {
-  const { setTheme, theme } = useTheme();
+  const { theme } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const { useSignIn } = useAuth();
   const { mutate, isSuccess, data, isPending } = useSignIn();
@@ -24,6 +25,7 @@ function SignInForm() {
     defaultValues: {
       email: "",
       password: "",
+      uniqueBrowserId: uuidv4(),
     },
   });
 
@@ -40,12 +42,13 @@ function SignInForm() {
    */
   useEffect(() => {
     if (isSuccess) {
-      const { tokens } = data;
-      console.log({ tokens }, tokens[0]);
+      const { tokens, _id } = data;
       navigate("/", { replace: true });
-      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0]);
+      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0].token);
+      setValueToLS(AppConstants.UNIQUE_BROWSER_ID, tokens[0].uniqueBrowserId);
+      setValueToLS(AppConstants.USER_ID_IN_LS, _id);
     }
-  }, [isSuccess]);
+  }, [isSuccess, navigate]);
 
   /**
    * if already token present then move user to home page
@@ -54,14 +57,10 @@ function SignInForm() {
   useEffect(() => {
     const isAuthenticated = getValueFromLS(AppConstants.TOKEN_VALUE_IN_LS);
     if (isAuthenticated) navigate("/", { replace: true });
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="w-full h-full border flex justify-between">
-      {/* <p onClick={() => setTheme("light")}>chneg to light</p>
-      <p onClick={() => setTheme("dark")}>chnage to drak</p> */}
-      {/* <div>Text</div> */}
-
       <div className="flex border flex-1 justify-center items-center flex-col h-screen">
         <img src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"} />
         <p className="text-3xl font-bold md:h2-bold pt-3 sm:pt-8">Login to your Account</p>
