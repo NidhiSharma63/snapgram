@@ -9,6 +9,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
   const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
   const location = useLocation();
 
+  console.log(storedValue, "stored value");
   if (storedValue) {
     const parsedValue = JSON.parse(storedValue);
     const isAuthenticated = parsedValue && parsedValue.tokens && parsedValue.tokens[0].token;
@@ -17,7 +18,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
       return children;
     }
   } else {
-    <Navigate to="/sign-in" replace state={{ from: location }} />;
+    return <Navigate to="/sign-in" replace state={{ from: location }} />;
   }
 };
 
