@@ -2,21 +2,23 @@ import { AppConstants } from "@/constant/keys";
 import { getValueFromLS } from "@/lib/utils";
 import { createContext, useContext, useState } from "react";
 
-type userProviderProps = {
+interface userProviderProps {
   children: React.ReactNode;
-};
+}
 
-type UserDetailsProviderState = {
-  userDetails: {
-    email: string;
-    password: string;
-    _id: string;
-    username: string;
-    __v: number;
-    tokens: { token: string; uniqueBrowserId: string; _id: string }[];
-  } | null;
-  setUserDetail: React.Dispatch<React.SetStateAction<undefined>>;
-};
+interface UserDetails {
+  email: string;
+  password: string;
+  _id: string;
+  username: string;
+  __v: number;
+  tokens: { token: string; uniqueBrowserId: string; _id: string }[];
+}
+
+interface UserDetailsProviderState {
+  userDetails: UserDetails | null;
+  setUserDetail: React.Dispatch<React.SetStateAction<UserDetails | null>>;
+}
 
 const initialState: UserDetailsProviderState = {
   userDetails: null,
@@ -25,9 +27,11 @@ const initialState: UserDetailsProviderState = {
 
 const UserDetailsProviderContext = createContext<UserDetailsProviderState>(initialState);
 
+const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
 export function UserDetailsProvider({ children }: userProviderProps) {
-  const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
-  const [userDetails, setUserDetail] = useState((storedUserData && JSON.parse(storedUserData)) || null);
+  const [userDetails, setUserDetail] = useState<null | UserDetails>(
+    (storedUserData && JSON.parse(storedUserData)) || null
+  );
 
   return (
     <UserDetailsProviderContext.Provider

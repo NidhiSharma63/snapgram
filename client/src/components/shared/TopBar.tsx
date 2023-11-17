@@ -8,11 +8,11 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function TopBar() {
-  console.log("first");
   const { theme } = useTheme();
   const { useLogout } = useAuth();
   const { mutate, isSuccess } = useLogout();
-  const { userDetails } = useUserDetail();
+  const { userDetails, setUserDetail } = useUserDetail();
+  console.log(userDetails);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -21,6 +21,7 @@ export default function TopBar() {
       userId: userDetails._id,
       token: userDetails.tokens[0].token,
     });
+    setUserDetail(null);
   };
 
   useEffect(() => {

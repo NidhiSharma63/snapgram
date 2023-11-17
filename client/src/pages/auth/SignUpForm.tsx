@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { AppConstants } from "@/constant/keys";
 import { signUpFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
+import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import { getValueFromLS, setValueToLS } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +16,7 @@ import { z } from "zod";
 
 function SignUpForm() {
   const { theme } = useTheme();
+  const { setUserDetail } = useUserDetail();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const { useSignUp } = useAuth();
   const { mutate, isPending, isSuccess, data } = useSignUp();
@@ -48,6 +50,7 @@ function SignUpForm() {
     if (isSuccess) {
       navigate("/", { replace: true });
       setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data));
+      setUserDetail(data);
     }
   }, [isSuccess]);
 

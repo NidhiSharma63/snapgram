@@ -7,8 +7,6 @@ interface IPayload {
 }
 // Config file for changing or adding options to the axios instance
 
-const storedData = getValueFromLS(AppConstants.USER_DETAILS);
-
 export const AxiosInstanceConfig = {
   headers: {
     Accept: "application/json",
@@ -21,11 +19,11 @@ const axiosInstance = axios.create({
   ...AxiosInstanceConfig,
   baseURL: import.meta.env.VITE_BASE_URL,
 });
-console.log(storedData, "stored data");
 
 async function axiosRequest({ ...options }) {
-  console.log(storedData !== "null");
-  const AUTH_TOKEN = storedData !== "null" ? JSON.parse(storedData).tokens[0].token : null;
+  const storedData = getValueFromLS(AppConstants.USER_DETAILS);
+
+  const AUTH_TOKEN = storedData ? JSON.parse(storedData).tokens[0].token : null;
   if (AUTH_TOKEN) {
     axiosInstance.defaults.headers.Authorization = AUTH_TOKEN;
   }
@@ -39,6 +37,7 @@ async function axiosRequest({ ...options }) {
 }
 
 export const customAxiosRequestForGet = async (url: string) => {
+  const storedData = getValueFromLS(AppConstants.USER_DETAILS);
   const userId = storedData && JSON.parse(storedData)._id;
   let paramsToPass = {};
   if (!userId) {
@@ -61,6 +60,7 @@ const val = import.meta.env.VITE_BASE_URL;
 console.log({ val });
 
 export const customAxiosRequestForPost = async (url: string, method = "post", payload: IPayload) => {
+  const storedData = getValueFromLS(AppConstants.USER_DETAILS);
   const userId = storedData && JSON.parse(storedData)?._id;
 
   let updatedPayload = { ...payload };
