@@ -18,6 +18,8 @@ function useAuth() {
       }) => customAxiosRequestForPost("/register", "post", payload),
 
       onError: (error: AxiosError) => {
+        console.log(error);
+
         if (error.response?.data.status === 400) {
           toast({
             title: error.response.data.error,
@@ -40,6 +42,8 @@ function useAuth() {
         customAxiosRequestForPost("/login", "post", payload),
 
       onError: (error: AxiosError) => {
+        console.log(error);
+
         if (error.response?.data.status === 400) {
           toast({
             title: error.response.data.error,
@@ -61,6 +65,7 @@ function useAuth() {
     return useMutation({
       mutationFn: (payload: { userId: string; token: string }) => customAxiosRequestForPost("/logout", "post", payload),
       onError: (error: AxiosError) => {
+        console.log(error);
         if (error.response?.data.status === 400) {
           toast({
             title: error.response.data.error,

@@ -25,9 +25,8 @@ const initialState: UserDetailsProviderState = {
 
 const UserDetailsProviderContext = createContext<UserDetailsProviderState>(initialState);
 
-const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
-
 export function UserDetailsProvider({ children }: userProviderProps) {
+  const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
   const [userDetails, setUserDetail] = useState((storedUserData && JSON.parse(storedUserData)) || null);
 
   return (

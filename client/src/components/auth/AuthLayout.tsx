@@ -8,14 +8,16 @@ import { Navigate, useLocation } from "react-router-dom";
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
   const location = useLocation();
+  console.log("children", "mn");
 
-  console.log(storedValue, "stored value");
   if (storedValue) {
     const parsedValue = JSON.parse(storedValue);
     const isAuthenticated = parsedValue && parsedValue.tokens && parsedValue.tokens[0].token;
-
     if (isAuthenticated) {
+      console.log("children");
       return children;
+    } else {
+      return <Navigate to="/sign-in" replace state={{ from: location }} />;
     }
   } else {
     return <Navigate to="/sign-in" replace state={{ from: location }} />;

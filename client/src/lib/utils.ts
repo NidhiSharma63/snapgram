@@ -7,7 +7,6 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getValueFromLS(key: string): string | null {
   const storedValue = localStorage.getItem(key);
-  console.log({ storedValue });
   if (typeof storedValue === "string") {
     return storedValue;
   }
@@ -16,6 +15,11 @@ export function getValueFromLS(key: string): string | null {
   return null;
 }
 
-export function setValueToLS(key: string, value: string) {
-  localStorage.setItem(key, value);
+export function setValueToLS(key: string, value: string | null) {
+  if (value !== null) {
+    localStorage.setItem(key, value);
+  } else {
+    // Optionally handle the case where value is null, e.g., removing the item from localStorage
+    localStorage.removeItem(key);
+  }
 }

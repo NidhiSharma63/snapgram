@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function TopBar() {
+  console.log("first");
   const { theme } = useTheme();
   const { useLogout } = useAuth();
   const { mutate, isSuccess } = useLogout();
@@ -25,7 +26,7 @@ export default function TopBar() {
   useEffect(() => {
     if (isSuccess) {
       navigate("/sign-in");
-      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(null));
+      setValueToLS(AppConstants.USER_DETAILS, null);
     }
   }, [navigate, isSuccess]);
 

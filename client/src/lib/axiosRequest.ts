@@ -21,10 +21,11 @@ const axiosInstance = axios.create({
   ...AxiosInstanceConfig,
   baseURL: import.meta.env.VITE_BASE_URL,
 });
+console.log(storedData, "stored data");
 
 async function axiosRequest({ ...options }) {
-  const AUTH_TOKEN = storedData ? JSON.parse(storedData).tokens[0].token : null;
-
+  console.log(storedData !== "null");
+  const AUTH_TOKEN = storedData !== "null" ? JSON.parse(storedData).tokens[0].token : null;
   if (AUTH_TOKEN) {
     axiosInstance.defaults.headers.Authorization = AUTH_TOKEN;
   }
@@ -60,7 +61,7 @@ const val = import.meta.env.VITE_BASE_URL;
 console.log({ val });
 
 export const customAxiosRequestForPost = async (url: string, method = "post", payload: IPayload) => {
-  const userId = storedData && JSON.parse(storedData)._id;
+  const userId = storedData && JSON.parse(storedData)?._id;
 
   let updatedPayload = { ...payload };
   if (userId) {
