@@ -84,6 +84,12 @@
 }
 
 @layer utilities{
+
+   /* UTILITIES */
+   .invert-white {
+    @apply invert brightness-0 transition;
+  }
+  
   .base-medium {
     @apply text-[16px] font-medium leading-[140%];
   }

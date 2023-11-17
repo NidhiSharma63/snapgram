@@ -11,8 +11,8 @@ export default function LeftBar() {
   //   const { mutate: signOut, isSuccess } = useSignOutAccount();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  //   const { user } = useAuthContext();
   const { pathname } = useLocation();
+  //   const { user } = useAuthContext();
 
   //   useEffect(() => {
   //     if (isSuccess) {
@@ -41,6 +41,7 @@ export default function LeftBar() {
         <ul className="flex flex-col gap-6">
           {sidebarLinks.map((link) => {
             const isActive = pathname === link.route;
+            console.log(pathname, isActive);
             return (
               <li key={link.label} className={`leftsidebar-link group ${isActive && "bg-primary-500"}`}>
                 <NavLink to={link.route} className="flex gap-4 items-center p-4">
