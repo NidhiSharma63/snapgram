@@ -31,6 +31,9 @@ function useAuth() {
     });
   }
 
+  /**
+   * use sign in (login)
+   */
   function useSignIn() {
     return useMutation({
       mutationFn: (payload: { email: string; password: string }) =>
@@ -50,9 +53,31 @@ function useAuth() {
     });
   }
 
+  /**
+   * use logout
+   */
+
+  function useLogout() {
+    return useMutation({
+      mutationFn: (payload: { userId: string; token: string }) => customAxiosRequestForPost("/logout", "post", payload),
+      onError: (error: AxiosError) => {
+        if (error.response?.data.status === 400) {
+          toast({
+            title: error.response.data.error,
+          });
+        } else {
+          toast({
+            title: "Something went wrong",
+          });
+        }
+      },
+    });
+  }
+
   return {
     useSignUp,
     useSignIn,
+    useLogout,
   };
 }
 

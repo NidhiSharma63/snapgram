@@ -47,21 +47,22 @@ function SignUpForm() {
   useEffect(() => {
     if (isSuccess) {
       navigate("/", { replace: true });
-      const { _id, tokens } = data;
-
-      setValueToLS(AppConstants.USER_ID_IN_LS, _id);
-      setValueToLS(AppConstants.TOKEN_VALUE_IN_LS, tokens[0].token);
-      setValueToLS(AppConstants.UNIQUE_BROWSER_ID, tokens[0].uniqueBrowserId);
+      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data));
     }
   }, [isSuccess]);
 
   /**
    * if already token present then move user to home page
    */
-
   useEffect(() => {
-    const isAuthenticated = getValueFromLS(AppConstants.TOKEN_VALUE_IN_LS);
-    if (isAuthenticated) navigate("/", { replace: true });
+    const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
+    if (storedValue) {
+      const parsedValue = JSON.parse(storedValue);
+      const isAuthenticated = parsedValue && parsedValue.tokens && parsedValue.tokens[0].token;
+      if (isAuthenticated) {
+        navigate("/", { replace: true });
+      }
+    }
   }, [navigate]);
 
   return (
