@@ -84,7 +84,27 @@
 }
 
 @layer utilities{
+  .base-medium {
+    @apply text-[16px] font-medium leading-[140%];
+  }
+
   .form-field {
     @apply mt-2 !important;
   }
+
+  /* Topbar */
+  .topbar {
+    @apply sticky top-0 z-50 md:hidden  dark:bg-dark-2 w-full bg-off-white;
+  }
+
+    /* Left sidebar */
+  .leftsidebar {
+    @apply hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px] dark:bg-dark-2 bg-off-white;
+  }
+
+  .leftsidebar-link {
+    @apply rounded-lg base-medium hover:bg-primary-500 transition;
+  }
+
+
 }
