@@ -20,7 +20,7 @@ const checkAuthorization = async (req: Request, res: Response, next: NextFunctio
     if (getUserFromDB === null) {
       throw new Error("User not found");
     }
-    const validToken = getUserFromDB.tokens.filter((item) => item !== token);
+    const validToken = getUserFromDB.tokens.filter((item) => item.token !== token);
     if (!validToken) {
       throw new Error("Authorization token is invalid");
     }

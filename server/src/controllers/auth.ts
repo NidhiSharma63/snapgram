@@ -5,7 +5,7 @@ import User from "../models/userSchema";
 // register
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password, avtar, bio, username } = req.body;
+    const { email, password, avtar, bio, username, uniqueBrowserId } = req.body;
 
     // check if any field is missing or not
     if (!email || !password || !email.trim() || !password.trim()) {
@@ -41,7 +41,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
     });
 
     // before saving the user create the token
-    await user.generateAuthToken();
+    await user.generateAuthToken(uniqueBrowserId);
 
     // create user
     await user.save();
@@ -54,7 +54,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
 // login user
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, uniqueBrowserId } = req.body;
 
     // check if user already register or not because only register user can log in
     const user = await User.findOne({ email });
@@ -72,7 +72,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // generate token once user have correct credentials
-    await user.generateAuthToken();
+    await user.generateAuthToken(uniqueBrowserId);
 
     // setting token as a cookies
 
@@ -99,7 +99,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
     const getUserFromDB = await User.findOne({ _id: userId });
     if (getUserFromDB) {
       // updating token
-      const updatedToken = getUserFromDB.tokens.filter((item) => item !== token);
+      const updatedToken = getUserFromDB.tokens.filter((item) => item.token !== token);
       getUserFromDB.tokens = updatedToken;
       // saving user to database after updatig the token
       await getUserFromDB.save();

@@ -9,9 +9,10 @@ interface IUser extends Document {
   password: string;
   username: string;
   avtar: string;
-  tokens: string[];
+  tokens: { token: string; uniqueBrowserId: string }[];
   bio: string;
-  generateAuthToken: () => Promise<string>;
+  generateAuthToken: (uniqueBrowserId: string) => Promise<string>;
+  uniqueBrowserId: string;
 }
 
 // creating schema
@@ -36,14 +37,15 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   avtar: String,
   bio: String,
+  uniqueBrowserId: String,
 });
 
 // create a token
-userSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateAuthToken = async function (uniqueBrowserId: string) {
   try {
     const secretKey = process.env.SECRET_KEY || "defaultSecret";
     const genToken = jwt.sign({ id: this._id.toString() }, secretKey);
-    this.tokens = this.tokens.concat(genToken);
+    this.tokens = this.tokens.concat({ genToken, uniqueBrowserId });
     await this.save();
     return genToken;
   } catch (error) {
