@@ -11,7 +11,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 export default function LeftBar() {
   const { useLogout } = useAuth();
   const { mutate, isSuccess } = useLogout();
-  const { userDetails } = useUserDetail();
+  const { userDetails, setUserDetail } = useUserDetail();
 
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -23,12 +23,13 @@ export default function LeftBar() {
       userId: userDetails._id,
       token: userDetails.tokens[0].token,
     });
+    setUserDetail(null);
   };
 
   useEffect(() => {
     if (isSuccess) {
       navigate("/sign-in");
-      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(null));
+      setValueToLS(AppConstants.USER_DETAILS, null);
     }
   }, [navigate, isSuccess]);
 
