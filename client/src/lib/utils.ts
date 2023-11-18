@@ -53,7 +53,6 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
   const diffInHours: number = diffInMinutes / 60;
   const diffInDays: number = diffInHours / 24;
 
-  console.log(Math.floor(diffInMinutes), timestamp);
   switch (true) {
     case Math.floor(diffInDays) >= 30:
       return formatDateString(timestamp);
