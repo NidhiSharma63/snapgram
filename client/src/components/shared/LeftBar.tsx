@@ -45,7 +45,11 @@ export default function LeftBar() {
           />
         </Link>
         <Link to={`/profile/${userDetails && userDetails._id}`} className="flex gap-3 items-center">
-          <img alt="profile" src={"/assets/icons/profile-placeholder.svg"} className="h-8 w-8 rounded-full" />
+          <img
+            alt="profile"
+            src={(userDetails && userDetails?.avatar) || "/assets/icons/profile-placeholder.svg"}
+            className="h-8 w-8 rounded-full"
+          />
           <div className="flex flex-col">
             <p className="body-bold">Nidhi</p>
             <p className="small-regular text-light-3">@nidhisharma</p>
