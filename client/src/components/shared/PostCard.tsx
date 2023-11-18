@@ -2,13 +2,14 @@
 // import { useAuthContext } from "@/context/AuthContext";
 // import { multiFormatDateString } from "@/lib/utils";
 // import { Models } from "appwrite";
+import { IPost } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { multiFormatDateString } from "@/lib/utils";
 import { Link } from "react-router-dom";
 // type PostCardProps = {
 //   post: Models.Document;
 // };
-export default function PostCard({ post }) {
+export default function PostCard({ post }: { post: IPost }) {
   //   const { user } = useAuthContext();
   const { userDetails } = useUserDetail();
   console.log(post);
@@ -38,15 +39,14 @@ export default function PostCard({ post }) {
           <img src="/assets/icons/edit.svg" width={20} height={20} alt="edit" />
         </Link>
       </div>
-      <Link to={`/posts/${post.$id}`}>
+      <Link to={`/posts/${post._id}`}>
         <div className="small-medium lg:base-meduim py-5">
           <p>{post.caption}</p>
           <ul className="flex gap-1 mt-2">
-            {post?.tags?.map((tag: string) => {
-              if (!tag) return;
+            {post.tags?.[0].split(",").map((tag: string) => {
               return (
                 <li key={tag} className="text-light-3">
-                  #{tag}
+                  #{tag.trim()}
                 </li>
               );
             })}
