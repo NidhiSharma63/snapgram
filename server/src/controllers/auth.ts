@@ -138,7 +138,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
  */
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId, avatar, username, bio } = req.body;
+  const { userId, file, username, bio } = req.body;
   try {
     let getUser = await User.findOne({ _id: userId });
     /**
@@ -152,7 +152,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     /** update user */
     if (getUser) {
       getUser.username = username;
-      getUser.avatar = avatar;
+      getUser.avatar = file;
       getUser.bio = bio;
     }
     await getUser?.save();
