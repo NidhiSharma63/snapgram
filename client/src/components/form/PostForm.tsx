@@ -51,7 +51,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
   async function onSubmit(values: z.infer<typeof postFormSchema>) {
     values;
     if (post && action === "Update") {
-      const updatedPost = await updatePost({ ...values, file: post.file });
+      const updatedPost = await updatePost({ ...values, file: post.file, _id: post._id });
 
       if (!updatedPost) {
         toast({ title: "Please try again" });
