@@ -29,7 +29,11 @@ export interface IUser {
   bio: string;
   email: string;
   password: string;
-  tokens: {}[];
+  tokens: {
+    token: string;
+    _id: string;
+    uniqueBrowserId: string;
+  }[];
   username: string;
   __v: number;
   _id: string;
