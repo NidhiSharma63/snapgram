@@ -41,7 +41,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
       email,
       username,
       password: hashPassword,
-      avtar,
+      avatar: "",
       bio,
     });
 

@@ -8,7 +8,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   username: string;
-  avtar: string;
+  avatar: string;
   tokens: { token: string; uniqueBrowserId: string }[];
   bio: string;
   generateAuthToken: (uniqueBrowserId: string) => Promise<string>;
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema<IUser>({
       },
     },
   ],
-  avtar: String,
+  avatar: String,
   bio: String,
   uniqueBrowserId: String,
 });
