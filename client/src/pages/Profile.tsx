@@ -24,7 +24,7 @@ const Profile = () => {
   const { id } = useParams();
   console.log({ id });
   const { useGetUserById } = useAuth();
-  const { data } = useGetUserById(id || "");
+  const { data } = useGetUserById(id?.replace(":", "") || "");
   const { userDetails } = useUserDetail();
   console.log(data);
   //   const { user } = useAuthContext();

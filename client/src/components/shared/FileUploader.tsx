@@ -31,6 +31,7 @@ export default function FileUploader({
       "image/*": [".png", ".jpg", ".jpeg", ".svg"],
     },
   });
+  console.log({ mediaUrl });
   return (
     <div
       {...getRootProps()}
@@ -39,7 +40,7 @@ export default function FileUploader({
       {fileUrl ? (
         <>
           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
-            <img src={fileUrl} alt="image" className="file_uploader-img" />
+            <img src={fileUrl || mediaUrl} alt="image" className="file_uploader-img" />
           </div>
           <p className="file_uploader-label">Click or drag photo to replace</p>
         </>

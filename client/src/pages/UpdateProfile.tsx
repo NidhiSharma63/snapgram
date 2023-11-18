@@ -11,7 +11,7 @@ import { storage } from "@/firebase/config";
 import useAuth from "@/hooks/query/useAuth";
 import { setValueToLS } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 } from "uuid";
@@ -35,19 +35,22 @@ function UpdateProfile() {
     },
   });
   async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
-    const { file } = values;
-    const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
-    const snapshot = await uploadBytes(imageRef, file[0]);
-    const url = await getDownloadURL(snapshot.ref);
-    const updatedPayload = { ...values, file: url };
-    const updatedUser = await mutateAsync({ ...updatedPayload });
-    console.log({ updatedUser });
-    if (!updatedUser) {
-      toast({ title: "Please try again" });
-    } else {
+    try {
+      const { file } = values;
+      const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
+      const snapshot = await uploadBytes(imageRef, file[0]);
+      const url = await getDownloadURL(snapshot.ref);
+      const updatedPayload = { ...values, file: url };
+      const updatedUser = await mutateAsync({ ...updatedPayload });
+      //   const storageRef = ref(storage, post.avatar.startsWith("/") ? post.file.slice(1) : post.file);
+      const storageRefToDelete = ref(storage, post.avatar);
+      await deleteObject(storageRefToDelete);
       navigate(`/profile/:${post._id}`);
       setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(updatedUser));
       setUserDetail(updatedUser);
+    } catch (error) {
+      console.log(error);
+      toast({ title: "Please try again" });
     }
     // const newPost = await createPost({ ...updatedPayload });
   }
@@ -77,7 +80,7 @@ function UpdateProfile() {
                   <FormControl>
                     <FileUploader
                       fieldChange={field.onChange}
-                      mediaUrl={post ? post?.file : ""}
+                      mediaUrl={post ? post?.avatar : ""}
                       isComponentUserInProfilePage={true}
                     />
                   </FormControl>
@@ -116,9 +119,11 @@ function UpdateProfile() {
                 Cancel
               </Button>
               {isPending ? (
-                <Loader />
+                <Button className="shad-button_primary whitespace-nowrap">
+                  <Loader />
+                </Button>
               ) : (
-                <Button type="submit" className="shad-button_primary whitespace-nowrap">
+                <Button type="submit" className="shad-button_primary whitespace-nowrap" disabled={isPending}>
                   Update
                 </Button>
               )}
