@@ -134,6 +134,18 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 /**
+ * get all user
+ */
+
+const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let getAllUser = await User.find();
+    res.status(200).json(getAllUser);
+  } catch (error) {
+    next(error);
+  }
+};
+/**
  * update user
  */
 
@@ -161,4 +173,5 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export { getUser, loginUser, logout, registerUser, updateUser };
+
+export { getAllUser, getUser, loginUser, logout, registerUser, updateUser };
