@@ -88,6 +88,19 @@ function usePost() {
     });
   }
 
+  // function useGetPostsInfinite() {
+  //   return useInfiniteQuery({
+  //     queryKey: [QueryKeys.GET_INFINITE_POSTS],
+  //     // @ts-ignore
+  //     queryFn: getInfinitePosts,
+  //     getNextPageParam: (lastPage: { documents: any }) => {
+  //       if (lastPage && lastPage.documents.length === 0) return null;
+  //       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+  //       return lastId;
+  //     },
+  //   });
+  // }
+
   return {
     useCreatePost,
     useGetPostById,

@@ -1,5 +1,16 @@
 import AuthLayout from "@/components/auth/AuthLayout";
-import { CreatePost, EditPost, Home, Layout, NotFound, Profile, SignInForm, SignUpForm, UpdateProfile } from "@/pages";
+import {
+  CreatePost,
+  EditPost,
+  Explore,
+  Home,
+  Layout,
+  NotFound,
+  Profile,
+  SignInForm,
+  SignUpForm,
+  UpdateProfile,
+} from "@/pages";
 
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -45,6 +56,10 @@ const router = createBrowserRouter([
       {
         path: "/update-profile/:id",
         element: <UpdateProfile />,
+      },
+      {
+        path: "/explore",
+        element: <Explore />,
       },
     ],
   },
