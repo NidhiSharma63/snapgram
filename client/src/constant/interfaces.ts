@@ -23,3 +23,14 @@ export interface IPost {
   _id: string;
   userAvatar: string;
 }
+
+export interface IUser {
+  avatar: string;
+  bio: string;
+  email: string;
+  password: string;
+  tokens: {}[];
+  username: string;
+  __v: number;
+  _id: string;
+}

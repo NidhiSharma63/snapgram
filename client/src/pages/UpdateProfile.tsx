@@ -43,8 +43,10 @@ function UpdateProfile() {
       const updatedPayload = { ...values, file: url };
       const updatedUser = await mutateAsync({ ...updatedPayload });
       //   const storageRef = ref(storage, post.avatar.startsWith("/") ? post.file.slice(1) : post.file);
-      const storageRefToDelete = ref(storage, post.avatar);
-      await deleteObject(storageRefToDelete);
+      if (post.avatar) {
+        const storageRefToDelete = ref(storage, post.avatar);
+        await deleteObject(storageRefToDelete);
+      }
       navigate(`/profile/:${post._id}`);
       setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(updatedUser));
       setUserDetail(updatedUser);

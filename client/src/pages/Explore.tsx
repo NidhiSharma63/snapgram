@@ -1,32 +1,30 @@
 import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
+import SearchResult from "@/components/shared/SearchResult";
 import { Input } from "@/components/ui/input";
+import { IPost } from "@/constant/interfaces";
+import useAuth from "@/hooks/query/useAuth";
 import usePost from "@/hooks/query/usePost";
+import { useEffect, useState } from "react";
 import { v4 } from "uuid";
-// import GridPostList from "@/components/ui/shared/GridPostList";
-// import SearchResult from "@/components/ui/shared/SearchResult";
-// import useDebounce from "@/hooks/useDebounce";
-// import { useGetPosts, useSearchPost } from "@/lib/react-query/queryAndMutations";
 
 function Explore() {
   //   const { ref, inView } = useInView();
-  //   const [search, setSearch] = useState("");
-  //   const debounceValue = useDebounce(search, 500);
-  //   const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
-  //   const { data: searchedPost, isFetching: isSearchFetching } = useSearchPost(debounceValue);
-  //   const shouldShowSearchResults = search !== "";
-  //   const shouldShowPosts = !shouldShowSearchResults && posts?.pages.every((item) => item.documents.length === 0);
-  // console.log({ posts });
-
-  //   useEffect(() => {
-  //     if (inView && !search) {
-  //       fetchNextPage();
-  //     }
-  //   }, [inView, search]);
+  const [search, setSearch] = useState("");
   const { useGetAllPost } = usePost();
+  const { useGetAllUser } = useAuth();
   const { data: posts } = useGetAllPost();
-  console.log(posts);
-  if (!posts)
+  const [searchedPost, setSearchedPost] = useState<IPost[]>([]);
+  const { data: usersData } = useGetAllUser();
+
+  useEffect(() => {
+    const getAllSearchedPost = posts?.filter((item: IPost) => {
+      return item.caption[0].includes(search.trim());
+    });
+    setSearchedPost(getAllSearchedPost);
+  }, [search, posts]);
+
+  if (!posts || !usersData)
     return (
       <div className="flex-center w-full h-full">
         <Loader />
@@ -37,30 +35,24 @@ function Explore() {
     <div className="explore-container">
       <div className="explore-inner_conatiner">
         <h2 className="h3-bold md:h2-bold w-full">Search Posts</h2>
-        <div className="flex gap-1 px-4 w-full rounded-lg bg-dark-4">
+        <div className="flex gap-1 px-4 w-full rounded-lg bg-off-white  dark:bg-dark-4">
           <img src="/assets/icons/search.svg" height={24} width={24} alt="explore" />
           <Input
             type="text"
             placeholder="Search"
             className="explore-search"
-            // value={search}
-            // onChange={(e) => setSearch(e.target.value)}
-          ></Input>
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}></Input>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-9 w-full max-w-5xl mt-12">
-        {/* {shouldShowSearchResults ? (
-          <SearchResult isSearchFetching={isSearchFetching} searchedPosts={searchedPost} />
+        {search ? (
+          <SearchResult searchedPosts={searchedPost} usersData={usersData} />
         ) : (
-            )} */}
-        {<GridPostList key={v4()} posts={posts} />}
+          <GridPostList key={v4()} posts={posts} usersData={usersData} />
+        )}
       </div>
-      {/* {hasNextPage && !search && (
-        <div ref={ref} className="mt-10">
-          <Loader />
-        </div>
-      )} */}
     </div>
   );
 }

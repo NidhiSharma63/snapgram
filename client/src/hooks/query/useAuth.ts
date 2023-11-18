@@ -93,6 +93,17 @@ function useAuth() {
   }
 
   /**
+   * use get all user
+   */
+
+  function useGetAllUser() {
+    return useQuery({
+      queryKey: [QueryKeys.USERS],
+      queryFn: () => customAxiosRequestForGet("/users", null),
+    });
+  }
+
+  /**
    * update user
    */
 
@@ -123,6 +134,7 @@ function useAuth() {
     useLogout,
     useGetUserById,
     useUpdateUser,
+    useGetAllUser,
   };
 }
 
