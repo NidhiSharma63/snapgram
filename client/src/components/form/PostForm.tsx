@@ -26,9 +26,9 @@ interface IPostFormProps {
 
 export default function PostForm({ post, action }: IPostFormProps) {
   //   const { mutateAsync: createPost, isPending: isUploadingPost } = useCreatePost();
-  //   const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
 
-  const { useCreatePost } = usePost();
+  const { useCreatePost, useUpdatePost } = usePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
   const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
   const navigate = useNavigate();
   const { userDetails } = useUserDetail();
@@ -50,19 +50,14 @@ export default function PostForm({ post, action }: IPostFormProps) {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof postFormSchema>) {
     values;
-    // if (post && action === "Update") {
-    //   //   const updatedPost = await updatePost({
-    //   //     ...values,
-    //   //     postId: post.$id,
-    //   //     imageUrl: post?.imageUrl,
-    //   //     imageId: post?.imageId,
-    //   //   });
+    if (post && action === "Update") {
+      const updatedPost = await updatePost({ ...values, file: post.file });
 
-    //   if (!updatedPost) {
-    //     toast({ title: "Please try again" });
-    //   }
-    //   return navigate(`/posts/${post.$id}`);
-    // }
+      if (!updatedPost) {
+        toast({ title: "Please try again" });
+      }
+      return navigate(`/posts/${post._id}`);
+    }
     const { file } = values;
     const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
     const snapshot = await uploadBytes(imageRef, file[0]);
@@ -133,15 +128,15 @@ export default function PostForm({ post, action }: IPostFormProps) {
         />
         <div className="flex gap-4 items-center justify-end">
           {action === "Update" ? (
-            <Button type="button" className="shad-btn-delete" disabled={isCreatingPost}>
+            <Button type="button" className="shad-btn-delete" disabled={isCreatingPost || isLoadingUpdate}>
               Delete
             </Button>
           ) : (
-            <Button type="button" className="shad-button_dark_4" disabled={isCreatingPost}>
+            <Button type="button" className="shad-button_dark_4" disabled={isCreatingPost || isLoadingUpdate}>
               Cancel
             </Button>
           )}
-          {isCreatingPost ? (
+          {isCreatingPost || isLoadingUpdate ? (
             <Button className="shad-button_primary whitespace-nowrap">
               <Loader />
             </Button>

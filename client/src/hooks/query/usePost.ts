@@ -29,6 +29,27 @@ function usePost() {
     });
   }
 
+  /** update post */
+
+  function useUpdatePost() {
+    return useMutation({
+      mutationFn: (payload: ICreatePost) => customAxiosRequestForPost("/post", "put", payload),
+
+      onError: (error: AxiosError) => {
+        console.log(error);
+
+        if (error.response?.data.status === 400) {
+          toast({
+            title: error.response.data.error,
+          });
+        } else {
+          toast({
+            title: "Something went wrong",
+          });
+        }
+      },
+    });
+  }
   function useGetAllPost() {
     return useQuery({
       queryKey: [QueryKeys.GET_ALL_POSTS],
@@ -47,6 +68,7 @@ function usePost() {
     useCreatePost,
     useGetPostById,
     useGetAllPost,
+    useUpdatePost,
   };
 }
 

@@ -8,6 +8,10 @@ export interface ICreatePost {
   createdAt: Date;
 }
 
+// export interface IUpdatePost extends Omit<ICreatePost, "file"> {
+//   file: File[];
+// }
+
 export interface IPost {
   caption: string[];
   createdAt: Date;
