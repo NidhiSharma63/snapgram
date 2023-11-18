@@ -6,12 +6,12 @@ import Post from "../models/postSchema";
  */
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { content, userId, tags, caption, location } = req.body;
+    const { file, userId, tags, caption, location } = req.body;
 
-    if (!content) throw new Error("Content is Missiing");
+    if (!file) throw new Error("Media is Missiing");
 
     const postCreated = new Post({
-      content,
+      file,
       userId,
       tags: tags ?? [],
       location: location ?? [],

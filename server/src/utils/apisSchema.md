@@ -22,7 +22,7 @@ User logout
 
 Create post
 {
- content:string,
+ file:File,
  userId:string,
  tags:string[],
  caption:string[],
