@@ -22,6 +22,7 @@ const StatBlock = ({ value, label }: StabBlockProps) => (
 
 const Profile = () => {
   const { id } = useParams();
+  console.log({ id });
   const { useGetUserById } = useAuth();
   const { data } = useGetUserById(id || "");
   const { userDetails } = useUserDetail();

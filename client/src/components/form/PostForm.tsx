@@ -71,7 +71,6 @@ export default function PostForm({ post, action }: IPostFormProps) {
       toast({ title: "Please try again" });
     }
     navigate("/");
-    console.log({ values });
   }
 
   const handleDeletePost = async () => {

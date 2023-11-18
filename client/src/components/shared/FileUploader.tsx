@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCallback, useState } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
@@ -6,9 +5,14 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 type fileUploaderProps = {
   fieldChange: (FILES: File[]) => void;
   mediaUrl: string;
+  isComponentUserInProfilePage: boolean;
 };
 
-export default function FileUploader({ fieldChange, mediaUrl }: fileUploaderProps) {
+export default function FileUploader({
+  fieldChange,
+  mediaUrl,
+  isComponentUserInProfilePage = false,
+}: fileUploaderProps) {
   const [fileUrl, setFileUrl] = useState(mediaUrl);
   // const [file, setFile] = useState<File[]>([]);
 
@@ -42,9 +46,11 @@ export default function FileUploader({ fieldChange, mediaUrl }: fileUploaderProp
       ) : (
         <div className="file_uploader-box">
           <img src="/assets/icons/file-upload.svg" width={96} height={77} alt="file upload" />
-          <h3 className="base-medium dark:text-light-2 mb-2 mt-6">Drag photo here</h3>
+          <h3 className="base-medium dark:text-light-2 mb-2 mt-6">
+            {isComponentUserInProfilePage ? "Upload Profile photo" : "Drag photo here"}
+          </h3>
           <p className="text-light-4 small-regular mb-6">SVG, PNG, JPG</p>
-          <Button className="shad-button_dark_4">Select from Compouter</Button>
+          <div className="bg-[#0F172A] text-white px-3 py-3 rounded">Select from Compouter</div>
         </div>
       )}
     </div>

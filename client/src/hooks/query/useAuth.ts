@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
+import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -90,11 +91,38 @@ function useAuth() {
       queryFn: () => customAxiosRequestForGet("/user", id),
     });
   }
+
+  /**
+   * update user
+   */
+
+  function useUpdateUser() {
+    return useMutation({
+      mutationFn: (payload: { bio: string; username: string; file: string }) =>
+        customAxiosRequestForPost("/user", "put", payload),
+      onError: (error: AxiosError) => {
+        console.log(error);
+        if (error.response?.data.status === 400) {
+          toast({
+            title: error.response.data.error,
+          });
+        } else {
+          toast({
+            title: "Something went wrong",
+          });
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.USER_BY_ID] });
+      },
+    });
+  }
   return {
     useSignUp,
     useSignIn,
     useLogout,
     useGetUserById,
+    useUpdateUser,
   };
 }
 

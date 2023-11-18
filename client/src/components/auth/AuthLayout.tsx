@@ -8,7 +8,6 @@ import { Navigate, useLocation } from "react-router-dom";
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
   const location = useLocation();
-  console.log("children", "mn");
 
   if (storedValue) {
     const parsedValue = JSON.parse(storedValue);

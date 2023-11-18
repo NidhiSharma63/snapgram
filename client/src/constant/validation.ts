@@ -31,3 +31,9 @@ export const postFormSchema = z.object({
   userAvatar: z.string().nullable(),
   createdAt: z.date(),
 });
+
+export const updateProfileSchema = z.object({
+  bio: z.string(),
+  username: z.string(),
+  file: z.custom<File[]>(),
+});

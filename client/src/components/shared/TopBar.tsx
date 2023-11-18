@@ -12,7 +12,6 @@ export default function TopBar() {
   const { useLogout } = useAuth();
   const { mutate, isSuccess } = useLogout();
   const { userDetails, setUserDetail } = useUserDetail();
-  console.log(userDetails);
   const navigate = useNavigate();
 
   const handleClick = () => {
