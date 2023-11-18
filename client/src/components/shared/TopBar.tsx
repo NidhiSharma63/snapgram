@@ -45,8 +45,12 @@ export default function TopBar() {
           <Button variant="ghost" className="shad-button_ghost" onClick={handleClick}>
             <img src="/assets/icons/logout.svg" alt="logout" />
           </Button>
-          <Link to={`/profile/`} className="flex-center gap-3">
-            <img alt="profile" src={"/assets/icons/profile-placeholder.svg"} className="h-8 w-8 rounded-full" />
+          <Link to={`/profile/${userDetails && userDetails._id}`} className="flex-center gap-3">
+            <img
+              alt="profile"
+              src={(userDetails && userDetails?.avatar) || "/assets/icons/profile-placeholder.svg"}
+              className="h-8 w-8 rounded-full"
+            />
           </Link>
         </div>
       </div>
