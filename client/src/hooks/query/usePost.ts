@@ -50,6 +50,30 @@ function usePost() {
       },
     });
   }
+
+  /**
+   * delete post
+   */
+  function useDeletePost() {
+    return useMutation({
+      mutationFn: (payload: { _id: string }) => customAxiosRequestForPost("/post", "delete", payload),
+
+      onError: (error: AxiosError) => {
+        console.log(error);
+
+        if (error.response?.data.status === 400) {
+          toast({
+            title: error.response.data.error,
+          });
+        } else {
+          toast({
+            title: "Something went wrong",
+          });
+        }
+      },
+    });
+  }
+
   function useGetAllPost() {
     return useQuery({
       queryKey: [QueryKeys.GET_ALL_POSTS],
@@ -69,6 +93,7 @@ function usePost() {
     useGetPostById,
     useGetAllPost,
     useUpdatePost,
+    useDeletePost,
   };
 }
 

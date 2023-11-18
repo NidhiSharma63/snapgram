@@ -13,7 +13,7 @@ import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import usePost from "@/hooks/query/usePost";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
@@ -27,9 +27,11 @@ interface IPostFormProps {
 export default function PostForm({ post, action }: IPostFormProps) {
   //   const { mutateAsync: createPost, isPending: isUploadingPost } = useCreatePost();
 
-  const { useCreatePost, useUpdatePost } = usePost();
+  const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
   const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
+  const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
+
   const navigate = useNavigate();
   const { userDetails } = useUserDetail();
   const { toast } = useToast();
@@ -71,6 +73,21 @@ export default function PostForm({ post, action }: IPostFormProps) {
     navigate("/");
     console.log({ values });
   }
+
+  const handleDeletePost = async () => {
+    if (post) {
+      const storageRef = ref(storage, post.file);
+      try {
+        await deleteObject(storageRef);
+        await deletePost({ _id: post._id });
+
+        navigate("/");
+      } catch (error) {
+        toast({ title: "Please try again" });
+      }
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-9 w-full max-w-5xl">
@@ -128,15 +145,22 @@ export default function PostForm({ post, action }: IPostFormProps) {
         />
         <div className="flex gap-4 items-center justify-end">
           {action === "Update" ? (
-            <Button type="button" className="shad-btn-delete" disabled={isCreatingPost || isLoadingUpdate}>
+            <Button
+              type="button"
+              className="shad-btn-delete"
+              disabled={isCreatingPost || isLoadingUpdate || isDeletingPost}
+              onClick={handleDeletePost}>
               Delete
             </Button>
           ) : (
-            <Button type="button" className="shad-button_dark_4" disabled={isCreatingPost || isLoadingUpdate}>
+            <Button
+              type="button"
+              className="shad-button_dark_4"
+              disabled={isCreatingPost || isLoadingUpdate || isDeletingPost}>
               Cancel
             </Button>
           )}
-          {isCreatingPost || isLoadingUpdate ? (
+          {isCreatingPost || isLoadingUpdate || isDeletingPost ? (
             <Button className="shad-button_primary whitespace-nowrap">
               <Loader />
             </Button>
