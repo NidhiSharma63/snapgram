@@ -76,7 +76,7 @@ const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
 
 const getOnePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.body;
+    const { id } = req.query;
     let getOnePost = await Post.findOne({ _id: id });
     res.status(200).json(getOnePost);
   } catch (error) {
