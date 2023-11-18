@@ -24,3 +24,10 @@ export const signUpFormSchema = z.object({
   avatar: z.string().nullable(),
   uniqueBrowserId: z.string(),
 });
+
+export const postFormSchema = z.object({
+  caption: z.string().min(5, { message: "Caption is too short" }).max(2100, { message: "Caption is too long" }),
+  tags: z.string(),
+  file: z.custom<File[]>(),
+  location: z.string().min(0).max(100),
+});

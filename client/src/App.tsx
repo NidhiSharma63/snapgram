@@ -1,5 +1,6 @@
 import AuthLayout from "@/components/auth/AuthLayout";
 import { Layout, NotFound, SignInForm, SignUpForm } from "@/pages";
+import CreatePost from "@/pages/CreatePost";
 import Home from "@/pages/Home";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "/create-post",
+        element: <CreatePost />,
       },
     ],
   },
