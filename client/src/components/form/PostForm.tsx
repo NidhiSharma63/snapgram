@@ -10,6 +10,7 @@ import { postFormSchema } from "@/constant/validation";
 // import { postFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { Models } from "appwrite";
+import FileUploader from "@/components/shared/FileUploader";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -80,7 +81,9 @@ export default function PostForm({ post, action }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">Add Photos</FormLabel>
-              <FormControl>{/* <FileUploader fieldChange={field.onChange} mediaUrl={post?.imageUrl} /> */}</FormControl>
+              <FormControl>
+                <FileUploader fieldChange={field.onChange} mediaUrl={post?.imageUrl} />
+              </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
           )}
