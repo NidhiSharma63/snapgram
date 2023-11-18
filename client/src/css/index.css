@@ -90,6 +90,14 @@
     @apply invert brightness-0 transition;
   }
   
+  .flex-between {
+    @apply flex justify-between items-center;
+  }
+
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
+
   .base-medium {
     @apply text-[16px] font-medium leading-[140%];
   }
@@ -112,5 +120,9 @@
     @apply rounded-lg base-medium hover:bg-primary-500 transition;
   }
 
+   /* Bottom bar */
+   .bottom-bar {
+    @apply z-50 flex-between w-full sticky bottom-0 rounded-t-[20px] dark:bg-dark-2 bg-off-white px-5 py-4 md:hidden;
+  }
 
 }
