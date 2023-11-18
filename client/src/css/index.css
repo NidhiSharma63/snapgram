@@ -89,6 +89,9 @@
    .invert-white {
     @apply invert brightness-0 transition;
   }
+  .small-medium {
+    @apply text-[14px] font-medium leading-[140%];
+  }
   
   .flex-between {
     @apply flex justify-between items-center;
