@@ -33,7 +33,7 @@ const updatePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { _id, tags, caption, location } = req.body;
     let findPostToUpdate = await Post.find({ _id });
-    if (!findPostToUpdate) throw new Error("Couldn't find out the post");
+    if (!findPostToUpdate) throw new Error("Couldn't found the post");
 
     findPostToUpdate[0].caption = caption;
     findPostToUpdate[0].tags = tags;
@@ -53,7 +53,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { _id } = req.body;
     let findPostToDelete = await Post.findOneAndDelete({ _id });
-    if (!findPostToDelete) throw new Error("Couldn't find out the post");
+    if (!findPostToDelete) throw new Error("Couldn't found the post");
     res.status(204).json(findPostToDelete);
   } catch (error) {
     next(error);

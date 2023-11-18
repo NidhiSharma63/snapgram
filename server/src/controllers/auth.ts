@@ -117,4 +117,44 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export { loginUser, logout, registerUser };
+
+/**
+ * get user by id
+ */
+
+const getUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.query;
+  try {
+    let getUser = await User.findOne({ _id: id });
+    res.status(200).json(getUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * update user
+ */
+
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { _id, avatar, username } = req.body;
+  try {
+    let getUser = await User.findOne({ _id });
+    /**
+     * check if username is present
+     */
+    const isUserNamePresent = await User.find({ username });
+    if (isUserNamePresent.length > 0) {
+      throw new Error("Username is already exists");
+    }
+    /** update user */
+    if (getUser) {
+      getUser.username = username;
+      getUser.avatar = avatar;
+    }
+    res.status(200).json(getUser);
+  } catch (error) {
+    next(error);
+  }
+};
+export { getUser, loginUser, logout, registerUser, updateUser };
