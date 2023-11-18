@@ -8,10 +8,6 @@ export const signInFormSchema = z.object({
 });
 
 export const signUpFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Name must be 2 character long" })
-    .max(10, { message: "Name should not be 10 character long" }),
   username: z
     .string()
     .min(2, { message: "Username must be 2 character long" })
@@ -23,6 +19,7 @@ export const signUpFormSchema = z.object({
     .regex(passwordRegex, "Pasword must contains special characters"),
   avatar: z.string().nullable(),
   uniqueBrowserId: z.string(),
+  bio: z.string(),
 });
 
 export const postFormSchema = z.object({

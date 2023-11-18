@@ -12,7 +12,7 @@ function useAuth() {
     return useMutation({
       mutationFn: (payload: {
         username: string;
-        name: string;
+        bio: string;
         email: string;
         password: string;
         avatar: string | null;

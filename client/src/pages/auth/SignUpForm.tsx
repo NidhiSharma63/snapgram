@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { AppConstants } from "@/constant/keys";
 import { signUpFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
@@ -26,11 +27,11 @@ function SignUpForm() {
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       username: "",
-      name: "",
       email: "",
       password: "",
       avatar: null,
       uniqueBrowserId: uuidv4(),
+      bio: "",
     },
   });
 
@@ -78,12 +79,12 @@ function SignUpForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="name"
+              name="username"
               render={({ field }) => (
                 <FormItem className="form-field">
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input className="shad-input" placeholder="Name" {...field} />
+                    <Input className="shad-input" placeholder="userName" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -91,12 +92,12 @@ function SignUpForm() {
             />
             <FormField
               control={form.control}
-              name="username"
+              name="bio"
               render={({ field }) => (
                 <FormItem className="form-field">
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Input className="shad-input" placeholder="userName" {...field} />
+                    <Textarea className="resize-none" placeholder="Bio..." {...field}></Textarea>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
