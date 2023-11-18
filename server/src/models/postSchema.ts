@@ -22,7 +22,6 @@ const postSchema = new mongoose.Schema<IPost>({
   location: [String],
   createdAt: {
     type: Date,
-    default: Date.now,
   },
 });
 
