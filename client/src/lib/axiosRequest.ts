@@ -3,7 +3,7 @@ import { getValueFromLS } from "@/lib/utils";
 import axios from "axios";
 
 interface IPayload {
-  [key: string]: string | boolean | null;
+  [key: string]: string | boolean | null | File[];
 }
 // Config file for changing or adding options to the axios instance
 
@@ -56,8 +56,6 @@ export const customAxiosRequestForGet = async (url: string) => {
   });
   return response;
 };
-const val = import.meta.env.VITE_BASE_URL;
-console.log({ val });
 
 export const customAxiosRequestForPost = async (url: string, method = "post", payload: IPayload) => {
   const storedData = getValueFromLS(AppConstants.USER_DETAILS);

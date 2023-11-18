@@ -30,4 +30,5 @@ export const postFormSchema = z.object({
   tags: z.string(),
   file: z.custom<File[]>(),
   location: z.string().min(0).max(100),
+  userId: z.string().nullable(),
 });
