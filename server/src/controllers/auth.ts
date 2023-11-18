@@ -5,7 +5,7 @@ import User from "../models/userSchema";
 // register
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password, avtar, bio, username, uniqueBrowserId } = req.body;
+    const { email, password, avatar, bio, username, uniqueBrowserId } = req.body;
 
     // check if any field is missing or not
     if (!email || !password || !email.trim() || !password.trim()) {
@@ -124,6 +124,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
+  // console.log({ id });
   try {
     let getUser = await User.findOne({ _id: id });
     res.status(200).json(getUser);
@@ -137,21 +138,24 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
  */
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { _id, avatar, username } = req.body;
+  const { userId, avatar, username, bio } = req.body;
   try {
-    let getUser = await User.findOne({ _id });
+    let getUser = await User.findOne({ _id: userId });
     /**
      * check if username is present
      */
     const isUserNamePresent = await User.find({ username });
-    if (isUserNamePresent.length > 0) {
+
+    if (isUserNamePresent.length > 0 && isUserNamePresent[0]._id.toString() !== userId) {
       throw new Error("Username is already exists");
     }
     /** update user */
     if (getUser) {
       getUser.username = username;
       getUser.avatar = avatar;
+      getUser.bio = bio;
     }
+    await getUser?.save();
     res.status(200).json(getUser);
   } catch (error) {
     next(error);
