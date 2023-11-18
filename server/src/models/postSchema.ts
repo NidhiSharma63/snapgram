@@ -2,7 +2,7 @@ import mongoose, { Document, Model } from "mongoose";
 
 // Define the IUser interface for the User model
 interface IPost extends Document {
-  file: File[];
+  file: string;
   userId: string;
   tags: string[];
   caption: string[];
@@ -11,11 +11,7 @@ interface IPost extends Document {
 
 // creating schema
 const postSchema = new mongoose.Schema<IPost>({
-  file: [
-    {
-      path: String,
-    },
-  ],
+  file: String,
   userId: {
     type: String,
     required: true,
