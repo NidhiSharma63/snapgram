@@ -4,4 +4,5 @@ export interface ICreatePost {
   location: string;
   tags: string;
   userId: string | null;
+  userAvatar: string | null;
 }

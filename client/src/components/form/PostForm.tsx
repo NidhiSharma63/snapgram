@@ -40,6 +40,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
       location: "",
       tags: "",
       userId: userDetails && userDetails._id,
+      userAvatar: userDetails && userDetails.avatar,
     },
   });
 
