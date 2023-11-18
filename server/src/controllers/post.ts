@@ -6,7 +6,7 @@ import Post from "../models/postSchema";
  */
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { file, userId, tags, caption, location, createdAt } = req.body;
+    const { file, userId, tags, caption, location, createdAt, userAvatar } = req.body;
 
     if (!file) throw new Error("Media is Missiing");
 
@@ -17,6 +17,7 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
       location: location ?? [],
       caption: caption ?? [],
       createdAt,
+      userAvatar,
     });
     await postCreated.save();
     res.status(201).json(postCreated);
