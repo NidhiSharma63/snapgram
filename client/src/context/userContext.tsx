@@ -13,6 +13,7 @@ interface UserDetails {
   username: string;
   __v: number;
   tokens: { token: string; uniqueBrowserId: string; _id: string }[];
+  avatar: string;
 }
 
 interface UserDetailsProviderState {

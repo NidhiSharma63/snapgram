@@ -2,6 +2,7 @@
 // import { useAuthContext } from "@/context/AuthContext";
 // import { multiFormatDateString } from "@/lib/utils";
 // import { Models } from "appwrite";
+import { multiFormatDateString } from "@/lib/utils";
 import { Link } from "react-router-dom";
 // type PostCardProps = {
 //   post: Models.Document;
@@ -18,18 +19,14 @@ export default function PostCard({ post }) {
             <img
               className="rounded-full w-12 lg:h-12"
               alt="creator"
-              src={post?.creator?.imageUrl || "/assets/icons/profile-placeholder.svg"}
+              src={post?.avatar || "/assets/icons/profile-placeholder.svg"}
             />
           </Link>
           <div className="flex flex-col">
             <p className="base-medium lg:body-bold dark:text-light-1">Nidhi</p>
             <div className="flex-center gap-2 text-light-3">
-              <p className="subtle-semibold lg:small-reguler">
-                {
-                  // multiFormatDateString(post.$createdAt)
-                }
-              </p>
-              -<p className="subtle-semibold lg:small-reguler">{post.location}</p>
+              <p className="subtle-semibold lg:small-reguler">{multiFormatDateString(post.createdAt)}</p>-
+              <p className="subtle-semibold lg:small-reguler">{post.location}</p>
             </div>
           </div>
         </div>

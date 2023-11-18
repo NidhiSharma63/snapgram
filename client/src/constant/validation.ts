@@ -32,4 +32,5 @@ export const postFormSchema = z.object({
   location: z.string().min(0).max(100),
   userId: z.string().nullable(),
   userAvatar: z.string().nullable(),
+  createdAt: z.date(),
 });

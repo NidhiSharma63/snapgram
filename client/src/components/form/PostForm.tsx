@@ -41,6 +41,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
       tags: "",
       userId: userDetails && userDetails._id,
       userAvatar: userDetails && userDetails.avatar,
+      createdAt: new Date(),
     },
   });
 
@@ -133,15 +134,15 @@ export default function PostForm({ post, action }: IPostFormProps) {
           {/* Cancel
           </Button> */}
 
-          {/* {isLoadingUpdate || isUploadingPost ? (
+          {isCreatingPost  ? (
             <Button className="shad-button_primary whitespace-nowrap">
               <Loader />
             </Button>
-          ) : ( */}
+          ) : (
           <Button type="submit" className="shad-button_primary whitespace-nowrap">
             {action === "Update" ? "Update" : "Upload"}
           </Button>
-          {/* )} */}
+          )}
         </div>
       </form>
     </Form>

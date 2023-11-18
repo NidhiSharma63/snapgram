@@ -16,7 +16,7 @@ function Home() {
           ) : (
             <ul className="flex flex-col flex-1 gap-9 w-full">
               {posts?.map((post) => {
-                console.log({ post });
+                // console.log({ post });
                 return <PostCard key={post._id} post={post} />;
               })}
             </ul>

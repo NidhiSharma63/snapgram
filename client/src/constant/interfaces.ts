@@ -5,4 +5,5 @@ export interface ICreatePost {
   tags: string;
   userId: string | null;
   userAvatar: string | null;
+  createdAt: string;
 }
