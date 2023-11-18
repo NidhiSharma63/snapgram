@@ -48,6 +48,10 @@ export const customAxiosRequestForGet = async (url: string, id: string | null) =
     paramsToPass = { userId };
   }
 
+  if (id) {
+    paramsToPass = { ...paramsToPass, id };
+  }
+
   // console.log(paramsToPass, ":::params to pass");
   const response = await axiosRequest({
     url,

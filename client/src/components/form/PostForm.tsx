@@ -5,8 +5,10 @@ import { postFormSchema } from "@/constant/validation";
 // import { useAuthContext } from "@/context/AuthContext";
 // import { useCreatePost, useUpdatePost } from "@/lib/react-query/queryAndMutations";
 import FileUploader from "@/components/shared/FileUploader";
+import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { IPost } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import usePost from "@/hooks/query/usePost";
@@ -18,7 +20,7 @@ import { v4 } from "uuid";
 import * as z from "zod";
 
 interface IPostFormProps {
-  post?: [];
+  post?: IPost;
   action: "Create" | "Update";
 }
 
@@ -35,13 +37,13 @@ export default function PostForm({ post, action }: IPostFormProps) {
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
     defaultValues: {
-      caption: "",
+      caption: post ? post.caption[0] : "",
       file: [],
-      location: "",
-      tags: "",
+      location: post ? post.location[0] : "",
+      tags: post ? post.tags.join(",") : "",
       userId: userDetails && userDetails._id,
       userAvatar: userDetails && userDetails.avatar,
-      createdAt: new Date(),
+      createdAt: post ? new Date(post.createdAt) : new Date(),
     },
   });
 
@@ -97,7 +99,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
             <FormItem>
               <FormLabel className="shad-form_label">Add Photos</FormLabel>
               <FormControl>
-                <FileUploader fieldChange={field.onChange} mediaUrl={post?.file} />
+                <FileUploader fieldChange={field.onChange} mediaUrl={post ? post?.file : ""} />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -130,18 +132,23 @@ export default function PostForm({ post, action }: IPostFormProps) {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-          {/* <Button type="button" className="shad-button_dark_4" disabled={isLoadingUpdate || isUploadingPost}> */}
-          {/* Cancel
-          </Button> */}
-
-          {isCreatingPost  ? (
+          {action === "Update" ? (
+            <Button type="button" className="shad-btn-delete" disabled={isCreatingPost}>
+              Delete
+            </Button>
+          ) : (
+            <Button type="button" className="shad-button_dark_4" disabled={isCreatingPost}>
+              Cancel
+            </Button>
+          )}
+          {isCreatingPost ? (
             <Button className="shad-button_primary whitespace-nowrap">
               <Loader />
             </Button>
           ) : (
-          <Button type="submit" className="shad-button_primary whitespace-nowrap">
-            {action === "Update" ? "Update" : "Upload"}
-          </Button>
+            <Button type="submit" className="shad-button_primary whitespace-nowrap">
+              {action === "Update" ? "Update" : "Upload"}
+            </Button>
           )}
         </div>
       </form>

@@ -5,5 +5,16 @@ export interface ICreatePost {
   tags: string;
   userId: string | null;
   userAvatar: string | null;
-  createdAt: string;
+  createdAt: Date;
+}
+
+export interface IPost {
+  caption: string[];
+  createdAt: Date;
+  file: string;
+  location: string[];
+  tags: string[];
+  userId: string;
+  __v: number;
+  _id: string;
 }

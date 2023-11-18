@@ -36,8 +36,16 @@ function usePost() {
     });
   }
 
+  function useGetPostById(id: string) {
+    return useQuery({
+      queryKey: [QueryKeys.GET_POST_BY_ID],
+      queryFn: () => customAxiosRequestForGet("/post", id),
+    });
+  }
+
   return {
     useCreatePost,
+    useGetPostById,
     useGetAllPost,
   };
 }
