@@ -30,12 +30,13 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
  */
 const updatePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { _id, tags, caption } = req.body;
+    const { _id, tags, caption, location } = req.body;
     let findPostToUpdate = await Post.find({ _id });
     if (!findPostToUpdate) throw new Error("Couldn't find out the post");
 
     findPostToUpdate[0].caption = caption;
     findPostToUpdate[0].tags = tags;
+    findPostToUpdate[0].location = location;
 
     await findPostToUpdate[0].save();
     res.status(200).json(findPostToUpdate);
