@@ -36,7 +36,7 @@ async function axiosRequest({ ...options }) {
   }
 }
 
-export const customAxiosRequestForGet = async (url: string) => {
+export const customAxiosRequestForGet = async (url: string, id: string | null) => {
   const storedData = getValueFromLS(AppConstants.USER_DETAILS);
   const userId = storedData && JSON.parse(storedData)._id;
   let paramsToPass = {};

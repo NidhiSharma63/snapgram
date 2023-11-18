@@ -8,10 +8,13 @@ import FileUploader from "@/components/shared/FileUploader";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserDetail } from "@/context/userContext";
+import { storage } from "@/firebase/config";
 import usePost from "@/hooks/query/usePost";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
 import * as z from "zod";
 
 interface IPostFormProps {
@@ -56,7 +59,13 @@ export default function PostForm({ post, action }: IPostFormProps) {
     //   }
     //   return navigate(`/posts/${post.$id}`);
     // }
-    const newPost = await createPost({ ...values });
+    const { file } = values;
+    const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
+    const snapshot = await uploadBytes(imageRef, file[0]);
+    const url = await getDownloadURL(snapshot.ref);
+    const updatedPayload = { ...values, file: url };
+    const newPost = await createPost({ ...updatedPayload });
+
     if (!newPost) {
       toast({ title: "Please try again" });
     }
@@ -86,7 +95,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
             <FormItem>
               <FormLabel className="shad-form_label">Add Photos</FormLabel>
               <FormControl>
-                <FileUploader fieldChange={field.onChange} mediaUrl={post?.imageUrl} />
+                <FileUploader fieldChange={field.onChange} mediaUrl={post?.file} />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>

@@ -1,7 +1,8 @@
 import { useToast } from "@/components/ui/use-toast";
 import { ICreatePost } from "@/constant/interfaces";
-import { customAxiosRequestForPost } from "@/lib/axiosRequest";
-import { useMutation } from "@tanstack/react-query";
+import { QueryKeys } from "@/constant/keys";
+import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 function usePost() {
@@ -28,8 +29,16 @@ function usePost() {
     });
   }
 
+  function useGetAllPost() {
+    return useQuery({
+      queryKey: [QueryKeys.GET_ALL_POSTS],
+      queryFn: () => customAxiosRequestForGet("/posts", null),
+    });
+  }
+
   return {
     useCreatePost,
+    useGetAllPost,
   };
 }
 

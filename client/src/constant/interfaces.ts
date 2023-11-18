@@ -1,6 +1,6 @@
 export interface ICreatePost {
   caption: string;
-  file: File[];
+  file: string;
   location: string;
   tags: string;
   userId: string | null;
