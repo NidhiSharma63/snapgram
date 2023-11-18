@@ -139,8 +139,9 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let getAllUser = await User.find();
-    res.status(200).json(getAllUser);
+    let getAllUsers = await User.find();
+    console.log(getAllUsers[0].tokens);
+    res.status(200).json(getAllUsers);
   } catch (error) {
     next(error);
   }
