@@ -8,9 +8,9 @@ export interface ICreatePost {
   createdAt: Date;
 }
 
-// export interface IUpdatePost extends Omit<ICreatePost, "file"> {
-//   file: File[];
-// }
+export interface IUpdatePost extends ICreatePost {
+  _id: string;
+}
 
 export interface IPost {
   caption: string[];
@@ -21,4 +21,5 @@ export interface IPost {
   userId: string;
   __v: number;
   _id: string;
+  userAvatar: string;
 }

@@ -22,13 +22,13 @@ export default function PostCard({ post }: { post: IPost }) {
             <img
               className="rounded-full w-12 lg:h-12"
               alt="creator"
-              src={post?.avatar || "/assets/icons/profile-placeholder.svg"}
+              src={post?.userAvatar || "/assets/icons/profile-placeholder.svg"}
             />
           </Link>
           <div className="flex flex-col">
             <p className="base-medium lg:body-bold dark:text-light-1">Nidhi</p>
             <div className="flex-center gap-2 text-light-3">
-              <p className="subtle-semibold lg:small-reguler">{multiFormatDateString(post.createdAt)}</p>-
+              <p className="subtle-semibold lg:small-reguler">{multiFormatDateString(post.createdAt.toString())}</p>-
               <p className="subtle-semibold lg:small-reguler">{post.location}</p>
             </div>
           </div>

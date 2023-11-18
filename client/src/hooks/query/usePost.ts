@@ -1,5 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
-import { ICreatePost } from "@/constant/interfaces";
+import { ICreatePost, IUpdatePost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -33,7 +33,7 @@ function usePost() {
 
   function useUpdatePost() {
     return useMutation({
-      mutationFn: (payload: ICreatePost) => customAxiosRequestForPost("/post", "put", payload),
+      mutationFn: (payload: IUpdatePost) => customAxiosRequestForPost("/post", "put", payload),
 
       onError: (error: AxiosError) => {
         console.log(error);
