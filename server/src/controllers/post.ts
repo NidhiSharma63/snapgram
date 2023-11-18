@@ -57,4 +57,15 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createPost, deletePost, updatePost };
+/**
+ * get All post
+ */
+const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let getAllPost = await Post.find();
+    res.status(200).json(getAllPost);
+  } catch (error) {
+    next(error);
+  }
+};
+export { createPost, deletePost, getAllPost, updatePost };
