@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
-import { customAxiosRequestForPost } from "@/lib/axiosRequest";
-import { useMutation } from "@tanstack/react-query";
+import { QueryKeys } from "@/constant/keys";
+import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 function useAuth() {
@@ -79,10 +80,21 @@ function useAuth() {
     });
   }
 
+  /**
+   * use get user by id
+   */
+
+  function useGetUserById(id: string) {
+    return useQuery({
+      queryKey: [QueryKeys.USER_BY_ID],
+      queryFn: () => customAxiosRequestForGet("/user", id),
+    });
+  }
   return {
     useSignUp,
     useSignIn,
     useLogout,
+    useGetUserById,
   };
 }
 

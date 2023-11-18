@@ -3,5 +3,6 @@ export { default as CreatePost } from "@/pages/CreatePost";
 export { default as EditPost } from "@/pages/EditPost";
 export { default as Home } from "@/pages/Home";
 export { default as NotFound } from "@/pages/NotFound";
+export { default as Profile } from "@/pages/Profile";
 export { default as SignInForm } from "@/pages/auth/SignInForm";
 export { default as SignUpForm } from "@/pages/auth/SignUpForm";

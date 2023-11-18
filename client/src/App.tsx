@@ -1,5 +1,5 @@
 import AuthLayout from "@/components/auth/AuthLayout";
-import { CreatePost, EditPost, Home, Layout, NotFound, SignInForm, SignUpForm } from "@/pages";
+import { CreatePost, EditPost, Home, Layout, NotFound, Profile, SignInForm, SignUpForm } from "@/pages";
 
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -36,6 +36,11 @@ const router = createBrowserRouter([
       {
         path: "/update-post/:id",
         element: <EditPost />,
+      },
+
+      {
+        path: "/profile/:id",
+        element: <Profile />,
       },
     ],
   },
