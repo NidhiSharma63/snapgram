@@ -1,5 +1,6 @@
 import AuthLayout from "@/components/auth/AuthLayout";
 import { Layout, NotFound, SignInForm, SignUpForm } from "@/pages";
+import Home from "@/pages/Home";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -23,18 +24,12 @@ const router = createBrowserRouter([
         <Layout />
       </AuthLayout>
     ),
-    // children: [
-    //   {
-    //     path: "Dashboard",
-    //     element: <ProjectPage />,
-    //     children: [
-    //       {
-    //         path: "activeProject/board/:active_project",
-    //         element: <Board />,
-    //       },
-    //     ],
-    //   },
-    // ],
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+    ],
   },
   {
     path: "*",
