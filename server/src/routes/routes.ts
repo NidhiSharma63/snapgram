@@ -2,6 +2,7 @@ import express from "express";
 import { getAllUser, getUser, loginUser, logout, registerUser, updateUser } from "../controllers/auth";
 import { addLikes, removeLikes } from "../controllers/likes";
 import { createPost, deletePost, getAllPost, getOnePost, updatePost } from "../controllers/post";
+import { addSaves, getAllSavePost, removeSaves } from "../controllers/save";
 import checkAuthorization from "../middleware/authMiddleWare";
 
 const router = express.Router();
@@ -31,4 +32,10 @@ router.route("/post").get(checkAuthorization, getOnePost);
 router.route("/likes/add").put(checkAuthorization, addLikes);
 router.route("/likes/remove").delete(checkAuthorization, removeLikes);
 
+/**
+ * save routes
+ */
+router.route("/save/add").put(checkAuthorization, addSaves);
+router.route("/save/remove").delete(checkAuthorization, removeSaves);
+router.route("/saves").delete(checkAuthorization, getAllSavePost);
 export default router;

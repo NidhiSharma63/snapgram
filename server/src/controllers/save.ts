@@ -1,0 +1,67 @@
+import { NextFunction, Request, Response } from "express";
+import Like from "../models/likesSchema";
+import Save from "../models/saveSchema";
+
+/**
+ * Add likes
+ */
+const addSaves = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId, postId } = req.body;
+
+    if (!postId) throw new Error("Post id is Missiing");
+    if (!userId) throw new Error("User id is Missiing");
+
+    let isAlreadyPresentPost = await Save.findOne({ userId });
+    if (isAlreadyPresentPost) {
+      isAlreadyPresentPost.postId.push(postId);
+      res.status(201).json(isAlreadyPresentPost);
+    } else {
+      let createNewLikesObj = new Like({
+        postId,
+        userId,
+      });
+      await createNewLikesObj.save();
+      res.status(201).json(createNewLikesObj);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * remove saves
+ */
+
+const removeSaves = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId, postId } = req.body;
+
+    if (!postId) throw new Error("Post id is Missiing");
+    if (!userId) throw new Error("User id is Missiing");
+
+    const updateLikesInPost = await Save.findOneAndUpdate({ userId }, { $pull: { postId: userId } }, { new: true });
+    res.status(201).json(updateLikesInPost);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * get all save
+ */
+
+const getAllSavePost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) throw new Error("User id is Missiing");
+
+    const allSavePost = await Save.find({ userId });
+    res.status(201).json(allSavePost);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { addSaves, getAllSavePost, removeSaves };
