@@ -53,7 +53,7 @@ const removeSaves = async (req: Request, res: Response, next: NextFunction) => {
 
 const getAllSavePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.query;
 
     if (!userId) throw new Error("User id is Missiing");
 

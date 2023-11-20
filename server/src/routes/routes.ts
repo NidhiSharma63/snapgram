@@ -37,5 +37,5 @@ router.route("/likes/remove").delete(checkAuthorization, removeLikes);
  */
 router.route("/save/add").put(checkAuthorization, addSaves);
 router.route("/save/remove").delete(checkAuthorization, removeSaves);
-router.route("/saves").delete(checkAuthorization, getAllSavePost);
+router.route("/saves").get(checkAuthorization, getAllSavePost);
 export default router;
