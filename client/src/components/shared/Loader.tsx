@@ -9,6 +9,8 @@ export default function Loader() {
   return (
     <div className="flex-center w-full">
       <ColorRing
+        width={24}
+        height={24}
         colors={
           theme === "dark"
             ? ["#fff", "#fff", "#fff", "#fff", "#fff"]

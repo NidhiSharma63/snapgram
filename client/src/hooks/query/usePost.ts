@@ -27,6 +27,10 @@ function usePost() {
           });
         }
       },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
+      },
     });
   }
 
@@ -51,6 +55,7 @@ function usePost() {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
       },
     });
   }
@@ -77,6 +82,7 @@ function usePost() {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
       },
     });
   }
