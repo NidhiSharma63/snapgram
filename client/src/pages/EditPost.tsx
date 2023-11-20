@@ -8,7 +8,6 @@ export default function EditPost() {
   const { id } = useParams();
   const { useGetPostById } = usePost();
   const { data: post, isPending } = useGetPostById(id || "");
-  console.log(post);
   if (isPending) return <Loader />;
 
   return (

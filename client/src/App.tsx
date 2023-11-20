@@ -6,6 +6,7 @@ import {
   Home,
   Layout,
   NotFound,
+  Post,
   Profile,
   SignInForm,
   SignUpForm,
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
       {
         path: "/explore",
         element: <Explore />,
+      },
+      {
+        path: "/posts/:id",
+        element: <Post />,
       },
     ],
   },
