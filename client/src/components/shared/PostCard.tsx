@@ -1,7 +1,4 @@
-// import PostStats from "@/components/ui/shared/PostStats";
-// import { useAuthContext } from "@/context/AuthContext";
-// import { multiFormatDateString } from "@/lib/utils";
-// import { Models } from "appwrite";
+import PostStats from "@/components/shared/PostStats";
 import { IPost, IUser } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { multiFormatDateString } from "@/lib/utils";
@@ -52,7 +49,8 @@ export default function PostCard({ post, user }: { post: IPost; user: IUser }) {
         </div>
         <img className="post-card_img" alt="post image" src={post.file || "/assets/icons/profile-placholder.svg"} />
       </Link>
-      {/* <PostStats post={post} userId={user.id} /> */}
+
+      <PostStats postId={post?._id} />
     </div>
   );
 }
