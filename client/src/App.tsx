@@ -1,5 +1,6 @@
 import AuthLayout from "@/components/auth/AuthLayout";
 import {
+  AllUser,
   CreatePost,
   EditPost,
   Explore,
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "/posts/:id",
         element: <Post />,
+      },
+      {
+        path: "/all-users",
+        element: <AllUser />,
       },
     ],
   },

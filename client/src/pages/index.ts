@@ -1,4 +1,5 @@
 export { default as Layout } from "@/components/shared/Layout";
+export { default as AllUser } from "@/pages/AllUser";
 export { default as CreatePost } from "@/pages/CreatePost";
 export { default as EditPost } from "@/pages/EditPost";
 export { default as Explore } from "@/pages/Explore";
