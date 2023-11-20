@@ -2,15 +2,14 @@
 // import { useAuthContext } from "@/context/AuthContext";
 // import { multiFormatDateString } from "@/lib/utils";
 // import { Models } from "appwrite";
-import { IPost } from "@/constant/interfaces";
+import { IPost, IUser } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { multiFormatDateString } from "@/lib/utils";
 import { Link } from "react-router-dom";
 // type PostCardProps = {
 //   post: Models.Document;
 // };
-export default function PostCard({ post }: { post: IPost }) {
-  //   const { user } = useAuthContext();
+export default function PostCard({ post, user }: { post: IPost; user: IUser }) {
   const { userDetails } = useUserDetail();
 
   return (
@@ -25,7 +24,7 @@ export default function PostCard({ post }: { post: IPost }) {
             />
           </Link>
           <div className="flex flex-col">
-            <p className="base-medium lg:body-bold dark:text-light-1">Nidhi</p>
+            <p className="base-medium lg:body-bold dark:text-light-1">{user?.username}</p>
             <div className="flex-center gap-2 text-light-3">
               <p className="subtle-semibold lg:small-reguler">{multiFormatDateString(post.createdAt.toString())}</p>-
               <p className="subtle-semibold lg:small-reguler">{post.location}</p>
