@@ -9,6 +9,7 @@ import {
   NotFound,
   Post,
   Profile,
+  SavePost,
   SignInForm,
   SignUpForm,
   UpdateProfile,
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "/all-users",
         element: <AllUser />,
+      },
+      {
+        path: "/saved",
+        element: <SavePost />,
       },
     ],
   },

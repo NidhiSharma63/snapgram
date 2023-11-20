@@ -2,6 +2,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ICreatePost, IUpdatePost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
+import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -48,6 +49,9 @@ function usePost() {
           });
         }
       },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+      },
     });
   }
 
@@ -71,6 +75,9 @@ function usePost() {
           });
         }
       },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+      },
     });
   }
 
@@ -88,18 +95,12 @@ function usePost() {
     });
   }
 
-  // function useGetPostsInfinite() {
-  //   return useInfiniteQuery({
-  //     queryKey: [QueryKeys.GET_INFINITE_POSTS],
-  //     // @ts-ignore
-  //     queryFn: getInfinitePosts,
-  //     getNextPageParam: (lastPage: { documents: any }) => {
-  //       if (lastPage && lastPage.documents.length === 0) return null;
-  //       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
-  //       return lastId;
-  //     },
-  //   });
-  // }
+  function useGetPostByIds(id: string) {
+    return useQuery({
+      queryKey: [QueryKeys.GET_POST_BY_ID],
+      queryFn: () => customAxiosRequestForGet("/post", id),
+    });
+  }
 
   return {
     useCreatePost,
@@ -107,6 +108,7 @@ function usePost() {
     useGetAllPost,
     useUpdatePost,
     useDeletePost,
+    useGetPostByIds,
   };
 }
 

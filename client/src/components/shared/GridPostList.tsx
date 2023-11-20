@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 interface IGridPostListProps {
   posts: IPost[];
-  usersData: IUser[];
+  usersData?: IUser[];
   showUser?: boolean;
   showStats?: boolean;
 }
