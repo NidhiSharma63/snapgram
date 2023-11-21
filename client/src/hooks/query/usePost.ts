@@ -7,6 +7,11 @@ import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 function usePost() {
+  const queriesToInavlidate = () => {
+    queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+    queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
+    queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_ALL_POSTS] });
+  };
   const { toast } = useToast();
   //create post
 
@@ -28,8 +33,7 @@ function usePost() {
         }
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
+        queriesToInavlidate();
       },
     });
   }
@@ -54,8 +58,7 @@ function usePost() {
         }
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
+        queriesToInavlidate();
       },
     });
   }
@@ -81,8 +84,7 @@ function usePost() {
         }
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
+        queriesToInavlidate();
       },
     });
   }
@@ -98,6 +100,13 @@ function usePost() {
     return useQuery({
       queryKey: [QueryKeys.GET_POST_BY_ID, id],
       queryFn: () => customAxiosRequestForGet("/post", id),
+    });
+  }
+
+  function useGetUserAllPost() {
+    return useQuery({
+      queryKey: [QueryKeys.GET_USER_ALL_POSTS],
+      queryFn: () => customAxiosRequestForGet("/user/posts", null),
     });
   }
 
@@ -139,6 +148,7 @@ function usePost() {
     useUpdatePost,
     useDeletePost,
     useGetPostByIds,
+    useGetUserAllPost,
   };
 }
 

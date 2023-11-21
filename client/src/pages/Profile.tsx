@@ -2,10 +2,12 @@
 // import Loader from "@/components/ui/shared/Loa/der";
 // import { useAuthContext } from "@/context/AuthContext";
 // import { useGetUserById } from "@/lib/react-query/queryAndMutations";
+import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
 import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
-import { Link, Outlet, useLocation, useParams } from "react-router-dom";
+import usePost from "@/hooks/query/usePost";
+import { Link, Outlet, useParams } from "react-router-dom";
 // import LikedPosts from "./LikedPosts";
 
 interface StabBlockProps {
@@ -22,14 +24,13 @@ const StatBlock = ({ value, label }: StabBlockProps) => (
 
 const Profile = () => {
   const { id } = useParams();
-  console.log({ id });
   const { useGetUserById } = useAuth();
   const { data } = useGetUserById(id?.replace(":", "") || "");
   const { userDetails } = useUserDetail();
-  console.log(data);
+  const { useGetUserAllPost } = usePost();
+  const { data: allPostOfUser, isPending: isUserPostLoading } = useGetUserAllPost();
   //   const { user } = useAuthContext();
-  const { pathname } = useLocation();
-
+  console.log({ allPostOfUser });
   //   const { data: currentUser } = useGetUserById(id || "");
 
   if (!data)
@@ -99,9 +100,15 @@ const Profile = () => {
           </Link>
         </div>
       )} */}
+      {isUserPostLoading ? (
+        <Loader />
+      ) : allPostOfUser.length === 0 && userDetails && userDetails._id !== data?._id ? (
+        data?.username + " haven't posted anything"
+      ) : (
+        <GridPostList posts={allPostOfUser} showUser={false} />
+      )}
 
       {/* <Routes>
-        <Route index element={<GridPostList posts={currentUser.posts} showUser={false} />} />
         {currentUser.$id === user.id && <Route path="/liked-posts" element={<LikedPosts />} />}
       </Routes> */}
       <Outlet />

@@ -9,4 +9,5 @@ export enum QueryKeys {
   USERS = "users",
   GET_INFINITE_POSTS = "get_infinite_posts",
   GET_USER_SAVE_POST = "get_user_save_post",
+  GET_USER_ALL_POSTS = "get_user_all_post",
 }
