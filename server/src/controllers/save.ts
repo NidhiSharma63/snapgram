@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Save from "../models/saveSchema";
 
 /**
- * Add likes
+ * Add saves
  */
 const addSaves = async (req: Request, res: Response, next: NextFunction) => {
   try {

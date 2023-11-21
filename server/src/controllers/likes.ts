@@ -4,21 +4,22 @@ import Like from "../models/likesSchema";
 /**
  * Add likes
  */
-const addLikes = async (req: Request, res: Response, next: NextFunction) => {
+const addLike = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, postId } = req.body;
 
     if (!postId) throw new Error("Post id is Missiing");
     if (!userId) throw new Error("User id is Missiing");
 
-    let isAlreadyPresentPost = await Like.findOne({ postId });
+    let isAlreadyPresentPost = await Like.findOne({ userId });
     if (isAlreadyPresentPost) {
-      isAlreadyPresentPost.likes.push(userId);
+      isAlreadyPresentPost.postId.push(postId);
+      await isAlreadyPresentPost.save();
       res.status(201).json(isAlreadyPresentPost);
     } else {
       let createNewLikesObj = new Like({
         postId,
-        likes: userId,
+        userId,
       });
       await createNewLikesObj.save();
       res.status(201).json(createNewLikesObj);
@@ -27,23 +28,42 @@ const addLikes = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-
 /**
  * remove likes
  */
 
-const removeLikes = async (req: Request, res: Response, next: NextFunction) => {
+const removeLike = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId, postId } = req.body;
+    const { userId, postId: postIdToRemove } = req.body;
 
-    if (!postId) throw new Error("Post id is Missiing");
+    if (!postIdToRemove) throw new Error("Post id is Missiing");
     if (!userId) throw new Error("User id is Missiing");
 
-    const updateLikesInPost = await Like.findOneAndUpdate({ postId }, { $pull: { likes: userId } }, { new: true });
+    const updateLikesInPost = await Like.findOneAndUpdate(
+      { userId },
+      { $pull: { postId: postIdToRemove } },
+      { new: true }
+    );
     res.status(201).json(updateLikesInPost);
   } catch (error) {
     next(error);
   }
 };
 
-export { addLikes, removeLikes };
+/**
+ * get All like post
+ */
+
+const getAllLikePost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) throw new Error("User id is Missiing");
+
+    const allLikePost = await Like.find({ userId });
+    res.status(201).json(allLikePost);
+  } catch (error) {
+    next(error);
+  }
+};
+export { addLike, getAllLikePost, removeLike };
