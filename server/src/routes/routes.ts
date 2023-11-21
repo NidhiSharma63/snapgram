@@ -30,8 +30,8 @@ router.route("/user/posts").get(checkAuthorization, getUsersAllPost);
 /**
  * likes route
  */
-router.route("/likes/add").put(checkAuthorization, addLike);
-router.route("/likes/remove").delete(checkAuthorization, removeLike);
+router.route("/like/add").put(checkAuthorization, addLike);
+router.route("/like/remove").delete(checkAuthorization, removeLike);
 router.route("/likes").delete(checkAuthorization, getAllLikePost);
 
 /**
