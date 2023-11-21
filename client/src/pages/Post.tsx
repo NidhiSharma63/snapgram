@@ -47,12 +47,10 @@ const PostDetails = () => {
         toast({ title: "Please try again" });
       }
     }
-    navigate(-1);
   };
 
   if (isLoading || isUserLoading) return <Loader />;
 
-  console.log(user);
   return (
     <div className="post_details-container">
       <div className="hidden md:flex max-w-5xl w-full">
@@ -92,13 +90,20 @@ const PostDetails = () => {
                   <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
                 </Link>
 
-                <Button
-                  //   onClick={handleDeletePost}
-                  variant="ghost"
-                  className={`ghost_details-delete_btn ${userDetails && userDetails._id !== post?.userId && "hidden"}`}>
-                  <img src={"/assets/icons/delete.svg"} alt="delete" width={24} height={24} />
-                </Button>
-                <Loader />
+                {isDeletingPost ? (
+                  <Button className="bg-transparent">
+                    <Loader />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleDeletePost}
+                    variant="ghost"
+                    className={`ghost_details-delete_btn ${
+                      userDetails && userDetails._id !== post?.userId && "hidden"
+                    }`}>
+                    <img src={"/assets/icons/delete.svg"} alt="delete" width={24} height={24} />
+                  </Button>
+                )}
               </div>
             </div>
 

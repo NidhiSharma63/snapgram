@@ -96,7 +96,7 @@ function usePost() {
 
   function useGetPostById(id: string) {
     return useQuery({
-      queryKey: [QueryKeys.GET_POST_BY_ID],
+      queryKey: [QueryKeys.GET_POST_BY_ID, id],
       queryFn: () => customAxiosRequestForGet("/post", id),
     });
   }
