@@ -29,9 +29,6 @@ const Profile = () => {
   const { userDetails } = useUserDetail();
   const { useGetUserAllPost } = usePost();
   const { data: allPostOfUser, isPending: isUserPostLoading } = useGetUserAllPost();
-  //   const { user } = useAuthContext();
-  console.log({ allPostOfUser });
-  //   const { data: currentUser } = useGetUserById(id || "");
 
   if (!data)
     return (
@@ -75,31 +72,10 @@ const Profile = () => {
                 <p className="flex whitespace-nowrap small-medium dark:text-white text-black">Edit Profile</p>
               </Link>
             </div>
-            {/* <div className={`${user.id === id && "hidden"}`}>
-              <Button type="button" className="shad-button_primary px-8">
-                Follow
-              </Button>
-            </div> */}
           </div>
         </div>
       </div>
 
-      {/* {currentUser.$id === user.id && (
-        <div className="flex max-w-5xl w-full">
-          <Link
-            to={`/profile/${id}`}
-            className={`profile-tab rounded-l-lg ${pathname === `/profile/${id}` && "!bg-dark-3"}`}>
-            <img src={"/assets/icons/posts.svg"} alt="posts" width={20} height={20} />
-            Posts
-          </Link>
-          <Link
-            to={`/profile/${id}/liked-posts`}
-            className={`profile-tab rounded-r-lg ${pathname === `/profile/${id}/liked-posts` && "!bg-dark-3"}`}>
-            <img src={"/assets/icons/like.svg"} alt="like" width={20} height={20} />
-            Liked Posts
-          </Link>
-        </div>
-      )} */}
       {isUserPostLoading ? (
         <Loader />
       ) : allPostOfUser.length === 0 && userDetails && userDetails._id !== data?._id ? (
@@ -108,9 +84,6 @@ const Profile = () => {
         <GridPostList posts={allPostOfUser} showUser={false} />
       )}
 
-      {/* <Routes>
-        {currentUser.$id === user.id && <Route path="/liked-posts" element={<LikedPosts />} />}
-      </Routes> */}
       <Outlet />
     </div>
   );

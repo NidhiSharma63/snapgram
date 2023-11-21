@@ -13,7 +13,6 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
     const parsedValue = JSON.parse(storedValue);
     const isAuthenticated = parsedValue && parsedValue.tokens && parsedValue.tokens[0].token;
     if (isAuthenticated) {
-      console.log("children");
       return children;
     } else {
       return <Navigate to="/sign-in" replace state={{ from: location }} />;

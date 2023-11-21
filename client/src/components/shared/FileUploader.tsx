@@ -31,7 +31,6 @@ export default function FileUploader({
       "image/*": [".png", ".jpg", ".jpeg", ".svg"],
     },
   });
-  console.log({ mediaUrl });
   return (
     <div
       {...getRootProps()}
