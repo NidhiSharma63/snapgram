@@ -125,7 +125,6 @@ function usePost() {
     // was deleted by user:(second layer)
     const filteredData = allPosts?.filter((item: IPost | null) => item !== null);
 
-    console.log({ isFetching, filteredData });
     return {
       data: filteredData,
       isLoading,

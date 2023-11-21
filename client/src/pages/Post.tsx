@@ -1,6 +1,3 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-
-// import { GridPostList } from "@/components/shared";
 import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -8,39 +5,35 @@ import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useAuth from "@/hooks/query/useAuth";
 import usePost from "@/hooks/query/usePost";
+import useSavePost from "@/hooks/query/useSavePost";
 import { multiFormatDateString } from "@/lib/utils";
 import { deleteObject, ref } from "firebase/storage";
-// import Loader from "@/components/ui/shared/Loader";
-// import PostStats from "@/components/ui/shared/PostStats";
-
-// import { useAuthContext } from "@/context/AuthContext";
-// import { useDeletePost, useGetPostById } from "@/lib/react-query/queryAndMutations";
-// import { multiFormatDateString } from "@/lib/utils";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const PostDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  //   const { user } = useAuthContext();
   const { userDetails } = useUserDetail();
   const { useGetPostById, useDeletePost } = usePost();
   const { useGetUserById } = useAuth();
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
   const { data: post, isPending: isLoading } = useGetPostById(id || "");
   const { data: user, isPending: isUserLoading } = useGetUserById(post?.userId || "");
+  const { useRemoveSave, useGetAllSavePost } = useSavePost();
+  const { mutateAsync: removePostFromSave, isPending: isRemovingPostFromSaveCollection } = useRemoveSave();
+  const { data: savePosts } = useGetAllSavePost();
   const { toast } = useToast();
 
-  // console.log(user.id === post?.creator.id, "user id : ", user.id, "post id", post?.creator.id);
-  // const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(post?.creator.$id);
-  //   const { mutate: deletePost } = useDeletePost();
-
-  // const relatedPosts = userPosts?.documents.filter((userPost) => userPost.$id !== id);
-
   const handleDeletePost = async () => {
-    if (post) {
+    if (post && userDetails) {
       const storageRef = ref(storage, post.file);
       try {
         await deleteObject(storageRef);
+        if (savePosts?.[0]?.postId.includes(post._id)) {
+          await removePostFromSave({ postId: post._id, userId: userDetails?._id });
+        }
         await deletePost({ _id: post._id });
+        /** also remove the post from save collection of active user if it is present */
 
         navigate("/");
       } catch (error) {
@@ -90,7 +83,7 @@ const PostDetails = () => {
                   <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
                 </Link>
 
-                {isDeletingPost ? (
+                {isDeletingPost || isRemovingPostFromSaveCollection ? (
                   <Button className="bg-transparent">
                     <Loader />
                   </Button>

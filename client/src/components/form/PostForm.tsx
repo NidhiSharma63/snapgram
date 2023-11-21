@@ -12,6 +12,7 @@ import { IPost } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import usePost from "@/hooks/query/usePost";
+import useSavePost from "@/hooks/query/useSavePost";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useForm } from "react-hook-form";
@@ -31,6 +32,9 @@ export default function PostForm({ post, action }: IPostFormProps) {
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
   const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
+  const { useRemoveSave, useGetAllSavePost } = useSavePost();
+  const { mutateAsync: removePostFromSave, isPending: isRemovingPostFromSaveCollection } = useRemoveSave();
+  const { data: savePosts } = useGetAllSavePost();
 
   const navigate = useNavigate();
   const { userDetails } = useUserDetail();
@@ -79,7 +83,10 @@ export default function PostForm({ post, action }: IPostFormProps) {
       try {
         await deleteObject(storageRef);
         await deletePost({ _id: post._id });
-
+        if (savePosts?.[0]?.postId.includes(post._id)) {
+          console.log("i should run bcoz save post includes post id");
+          await removePostFromSave({ postId: post._id, userId: userDetails?._id });
+        }
         navigate("/");
       } catch (error) {
         toast({ title: "Please try again" });
@@ -147,7 +154,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
             <Button
               type="button"
               className="shad-btn-delete"
-              disabled={isCreatingPost || isLoadingUpdate || isDeletingPost}
+              disabled={isCreatingPost || isLoadingUpdate || isDeletingPost || isRemovingPostFromSaveCollection}
               onClick={handleDeletePost}>
               Delete
             </Button>
@@ -159,7 +166,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
               Cancel
             </Button>
           )}
-          {isCreatingPost || isLoadingUpdate || isDeletingPost ? (
+          {isCreatingPost || isLoadingUpdate || isDeletingPost || isRemovingPostFromSaveCollection ? (
             <Button className="shad-button_primary whitespace-nowrap">
               <Loader />
             </Button>
