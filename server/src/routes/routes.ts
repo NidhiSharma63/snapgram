@@ -1,7 +1,7 @@
 import express from "express";
 import { getAllUser, getUser, loginUser, logout, registerUser, updateUser } from "../controllers/auth";
 import { addLikes, removeLikes } from "../controllers/likes";
-import { createPost, deletePost, getAllPost, getOnePost, updatePost } from "../controllers/post";
+import { createPost, deletePost, getAllPost, getOnePost, getUsersAllPost, updatePost } from "../controllers/post";
 import { addSaves, getAllSavePost, removeSaves } from "../controllers/save";
 import checkAuthorization from "../middleware/authMiddleWare";
 
@@ -25,6 +25,7 @@ router.route("/post").put(checkAuthorization, updatePost);
 router.route("/post").delete(checkAuthorization, deletePost);
 router.route("/posts").get(checkAuthorization, getAllPost);
 router.route("/post").get(checkAuthorization, getOnePost);
+router.route("/user/posts").get(checkAuthorization, getUsersAllPost);
 
 /**
  * likes route

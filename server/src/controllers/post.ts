@@ -85,4 +85,14 @@ const getOnePost = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export { createPost, deletePost, getAllPost, getOnePost, updatePost };
+
+const getUsersAllPost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.query;
+    let getUsersAllPost = await Post.find({ userId });
+    res.status(200).json(getUsersAllPost);
+  } catch (error) {
+    next(error);
+  }
+};
+export { createPost, deletePost, getAllPost, getOnePost, getUsersAllPost, updatePost };

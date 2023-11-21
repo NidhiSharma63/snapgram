@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import Like from "../models/likesSchema";
 import Save from "../models/saveSchema";
 
 /**
@@ -15,9 +14,10 @@ const addSaves = async (req: Request, res: Response, next: NextFunction) => {
     let isAlreadyPresentPost = await Save.findOne({ userId });
     if (isAlreadyPresentPost) {
       isAlreadyPresentPost.postId.push(postId);
+      await isAlreadyPresentPost.save();
       res.status(201).json(isAlreadyPresentPost);
     } else {
-      let createNewLikesObj = new Like({
+      let createNewLikesObj = new Save({
         postId,
         userId,
       });
@@ -35,12 +35,16 @@ const addSaves = async (req: Request, res: Response, next: NextFunction) => {
 
 const removeSaves = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId, postId } = req.body;
+    const { userId, postId: postIdToRemove } = req.body;
 
-    if (!postId) throw new Error("Post id is Missiing");
+    if (!postIdToRemove) throw new Error("Post id is Missiing");
     if (!userId) throw new Error("User id is Missiing");
 
-    const updateLikesInPost = await Save.findOneAndUpdate({ userId }, { $pull: { postId: userId } }, { new: true });
+    const updateLikesInPost = await Save.findOneAndUpdate(
+      { userId },
+      { $pull: { postId: postIdToRemove } },
+      { new: true }
+    );
     res.status(201).json(updateLikesInPost);
   } catch (error) {
     next(error);
