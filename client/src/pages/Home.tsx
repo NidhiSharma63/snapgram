@@ -23,6 +23,7 @@ function Home() {
                 const findCurrentUser = usersData?.find((item: IUser) => item._id === post.userId);
                 return <PostCard key={post._id} post={post} user={findCurrentUser} />;
               })}
+              {posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
             </ul>
           )}
         </div>
