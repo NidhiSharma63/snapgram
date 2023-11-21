@@ -1,5 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
-import { ICreatePost, IUpdatePost } from "@/constant/interfaces";
+import { ICreatePost, IPost, IUpdatePost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
@@ -112,11 +112,24 @@ function usePost() {
           })
         : [],
     });
-    // const data = queryRe
+
+    let isLoading;
+    let isFetching;
+    const allPosts = queryResult?.map((item) => {
+      isLoading = item.isLoading;
+      isFetching = item.isFetching;
+      return item?.data;
+    });
+
+    // Filter out null values if any post id is saved in saved collection but post
+    // was deleted by user:(second layer)
+    const filteredData = allPosts?.filter((item: IPost | null) => item !== null);
+
+    console.log({ isFetching, filteredData });
     return {
-      data: [queryResult[0]?.data],
-      isLoading: queryResult[0]?.isLoading,
-      isFetching: queryResult[0]?.isFetching,
+      data: filteredData,
+      isLoading,
+      isFetching,
     };
   }
 

@@ -9,9 +9,7 @@ function SavePost() {
   const { useGetPostByIds } = usePost();
   const { data: posts, isFetching, isLoading } = useGetPostByIds(savePosts?.[0]?.postId);
 
-  console.log(posts);
-  if (isLoading || isFetching || userSavedPostLoading) return <Loader />;
-  // console.log(savePosts, "saved post", postsData, "postsdata");
+  if (isLoading || isFetching || userSavedPostLoading || !posts) return <Loader />;
   return (
     <div className="saved-container">
       <div className="flex gap-2 w-full max-w-5xl">
