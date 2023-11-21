@@ -286,6 +286,12 @@
 
  /* User card */
  .user-card {
-  @apply flex-center flex-col gap-4 border dark:border-dark-4 bg-off-white dark:bg-transparent rounded-[20px] px-5 py-8;
-}
+   @apply flex-center flex-col gap-4 border dark:border-dark-4 bg-off-white dark:bg-transparent rounded-[20px] px-5 py-8;
+  }
+
+  /* Saved */
+  .saved-container {
+    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:p-14 custom-scrollbar;
+  }
+
 }

@@ -3,7 +3,7 @@ import { ICreatePost, IUpdatePost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 function usePost() {
@@ -101,11 +101,23 @@ function usePost() {
     });
   }
 
-  function useGetPostByIds(id: string) {
-    return useQuery({
-      queryKey: [QueryKeys.GET_POST_BY_ID],
-      queryFn: () => customAxiosRequestForGet("/post", id),
+  function useGetPostByIds(ids: string[]) {
+    const queryResult = useQueries({
+      queries: ids
+        ? ids?.map((id) => {
+            return {
+              queryKey: ["post", id],
+              queryFn: () => customAxiosRequestForGet("/post", id),
+            };
+          })
+        : [],
     });
+    // const data = queryRe
+    return {
+      data: [queryResult[0]?.data],
+      isLoading: queryResult[0]?.isLoading,
+      isFetching: queryResult[0]?.isFetching,
+    };
   }
 
   return {
