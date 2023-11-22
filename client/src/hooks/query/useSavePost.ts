@@ -6,16 +6,13 @@ import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-interface IAddOrRemovePost {
-  userId: string;
-  postId: string;
-}
 export default function useSavePost() {
   const { toast } = useToast();
 
   function useAddSave() {
     return useMutation({
-      mutationFn: (payload: IAddOrRemovePost) => customAxiosRequestForPost("/save/add", "put", payload),
+      mutationFn: (payload: { userId: string; postId: string }) =>
+        customAxiosRequestForPost("/save/add", "put", payload),
 
       onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
@@ -42,7 +39,8 @@ export default function useSavePost() {
 
   function useRemoveSave() {
     return useMutation({
-      mutationFn: (payload: IAddOrRemovePost) => customAxiosRequestForPost("/save/remove", "delete", payload),
+      mutationFn: (payload: { userId: string; postId: string }) =>
+        customAxiosRequestForPost("/save/remove", "delete", payload),
 
       onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);

@@ -1,5 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
-import { ErrorResponse, ICreatePost, IPost, IUpdatePost } from "@/constant/interfaces";
+import { ErrorResponse, IPost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
@@ -17,7 +17,15 @@ function usePost() {
 
   function useCreatePost() {
     return useMutation({
-      mutationFn: (payload: ICreatePost) => customAxiosRequestForPost("/post", "post", payload),
+      mutationFn: (payload: {
+        caption: string;
+        file: string;
+        location: string;
+        tags: string;
+        userId: string | null;
+        userAvatar: string | null;
+        createdAt: Date;
+      }) => customAxiosRequestForPost("/post", "post", payload),
 
       onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
@@ -42,7 +50,16 @@ function usePost() {
 
   function useUpdatePost() {
     return useMutation({
-      mutationFn: (payload: IUpdatePost) => customAxiosRequestForPost("/post", "put", payload),
+      mutationFn: (payload: {
+        caption: string;
+        file: string;
+        location: string;
+        tags: string;
+        userId: string | null;
+        userAvatar: string | null;
+        createdAt: Date;
+        _id: string;
+      }) => customAxiosRequestForPost("/post", "put", payload),
 
       onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);

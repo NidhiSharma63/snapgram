@@ -3,7 +3,7 @@ import { getValueFromLS } from "@/lib/utils";
 import axios from "axios";
 
 interface IPayload {
-  [key: string]: string | boolean | null | File[];
+  [key: string]: string | boolean | null | File[] | Date;
 }
 // Config file for changing or adding options to the axios instance
 

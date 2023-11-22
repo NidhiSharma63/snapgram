@@ -6,16 +6,13 @@ import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-interface IAddOrRemoveLike {
-  userId: string;
-  postId: string;
-}
 export default function useLikePost() {
   const { toast } = useToast();
 
   function useAddLike() {
     return useMutation({
-      mutationFn: (payload: IAddOrRemoveLike) => customAxiosRequestForPost("/like/add", "put", payload),
+      mutationFn: (payload: { userId: string; postId: string }) =>
+        customAxiosRequestForPost("/like/add", "put", payload),
 
       onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
@@ -43,7 +40,8 @@ export default function useLikePost() {
 
   function useRemoveLike() {
     return useMutation({
-      mutationFn: (payload: IAddOrRemoveLike) => customAxiosRequestForPost("/like/remove", "delete", payload),
+      mutationFn: (payload: { userId: string; postId: string }) =>
+        customAxiosRequestForPost("/like/remove", "delete", payload),
 
       onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
