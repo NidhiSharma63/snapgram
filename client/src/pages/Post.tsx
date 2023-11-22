@@ -1,5 +1,6 @@
 import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
+import PostStats from "@/components/shared/PostStats";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { IPost } from "@/constant/interfaces";
@@ -138,7 +139,9 @@ const PostDetails = () => {
               </ul>
             </div>
 
-            <div className="w-full">{/* <PostStats post={post} userId={user.id} /> */}</div>
+            <div className="w-full">
+              <PostStats postId={post?._id} likes={post?.likes} />
+            </div>
           </div>
         </div>
       )}
