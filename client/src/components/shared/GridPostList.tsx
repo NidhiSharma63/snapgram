@@ -14,11 +14,11 @@ export default function GridPostList({ posts, showUser = true, usersData }: IGri
   return (
     <ul className="grid-container">
       {posts?.map((post: IPost) => {
-        const findCurrentUser = usersData?.find((item) => item._id === post.userId);
+        const findCurrentUser = usersData?.find((item) => item?._id === post?.userId);
         return (
-          <li key={post._id} className="relative min-w-80 h-80">
-            <Link to={`/posts/${post._id}`} className="grid-post_link">
-              <img src={post.file} alt="post" className="w-full h-full object-cover" />
+          <li key={post?._id} className="relative min-w-80 h-80">
+            <Link to={`/posts/${post?._id}`} className="grid-post_link">
+              <img src={post?.file} alt="post" className="w-full h-full object-cover" />
             </Link>
             <div className="grid-post_user">
               {showUser && (

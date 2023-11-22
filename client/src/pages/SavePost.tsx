@@ -10,7 +10,7 @@ function SavePost() {
   const { useGetPostByIds } = usePost();
   const { data: posts, isFetching, isLoading } = useGetPostByIds(savePosts?.[0]?.postId);
   const { useGetAllUser } = useAuth();
-  const { data: usersData } = useGetAllUser();
+  const { data: usersData, isFetching: isLoadinUser } = useGetAllUser();
   if (isLoading || isFetching || userSavedPostLoading || !posts) return <Loader />;
   return (
     <div className="saved-container">
@@ -19,7 +19,7 @@ function SavePost() {
         <h2 className="h3-bold md:h2-bold text-left w-full">Saved Posts</h2>
       </div>
 
-      {!posts ? (
+      {!posts || isLoadinUser ? (
         <Loader />
       ) : (
         <ul className="w-full flex justify-center max-w-5xl gap-9">
