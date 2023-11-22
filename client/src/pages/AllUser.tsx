@@ -24,7 +24,7 @@ const AllUsers = () => {
         ) : (
           <ul className="user-grid">
             {creators?.map((creator: IUser) => (
-              <li key={creator?._id} className="flex-1 min-w-[200px] w-full">
+              <li key={creator?._id} className="flex-1 w-fit ">
                 <UserCard user={creator} />
               </li>
             ))}
