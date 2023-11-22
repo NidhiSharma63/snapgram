@@ -1,5 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
-import { ICreatePost, IPost, IUpdatePost } from "@/constant/interfaces";
+import { ErrorResponse, ICreatePost, IPost, IUpdatePost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
@@ -19,7 +19,7 @@ function usePost() {
     return useMutation({
       mutationFn: (payload: ICreatePost) => customAxiosRequestForPost("/post", "post", payload),
 
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
 
         if (error.response?.data.status === 400) {
@@ -44,7 +44,7 @@ function usePost() {
     return useMutation({
       mutationFn: (payload: IUpdatePost) => customAxiosRequestForPost("/post", "put", payload),
 
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
 
         if (error.response?.data.status === 400) {
@@ -70,7 +70,7 @@ function usePost() {
     return useMutation({
       mutationFn: (payload: { _id: string }) => customAxiosRequestForPost("/post", "delete", payload),
 
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
 
         if (error.response?.data.status === 400) {

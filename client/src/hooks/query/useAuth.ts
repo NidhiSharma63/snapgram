@@ -1,4 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
+import { ErrorResponse } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
@@ -19,10 +20,10 @@ function useAuth() {
         avatar: string | null;
       }) => customAxiosRequestForPost("/register", "post", payload),
 
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
 
-        if (error.response?.data.status === 400) {
+        if (error?.response?.data.status === 400) {
           toast({
             title: error.response.data.error,
           });
@@ -43,7 +44,7 @@ function useAuth() {
       mutationFn: (payload: { email: string; password: string }) =>
         customAxiosRequestForPost("/login", "post", payload),
 
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
 
         if (error.response?.data.status === 400) {
@@ -66,7 +67,7 @@ function useAuth() {
   function useLogout() {
     return useMutation({
       mutationFn: (payload: { userId: string; token: string }) => customAxiosRequestForPost("/logout", "post", payload),
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
         if (error.response?.data.status === 400) {
           toast({
@@ -111,7 +112,7 @@ function useAuth() {
     return useMutation({
       mutationFn: (payload: { bio: string; username: string; file: string }) =>
         customAxiosRequestForPost("/user", "put", payload),
-      onError: (error: AxiosError) => {
+      onError: (error: AxiosError<ErrorResponse>) => {
         console.log(error);
         if (error.response?.data.status === 400) {
           toast({
