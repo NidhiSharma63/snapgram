@@ -5,7 +5,7 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 type fileUploaderProps = {
   fieldChange: (FILES: File[]) => void;
   mediaUrl: string;
-  isComponentUserInProfilePage: boolean;
+  isComponentUserInProfilePage?: boolean;
 };
 
 export default function FileUploader({
