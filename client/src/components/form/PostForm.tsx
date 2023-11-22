@@ -89,8 +89,8 @@ export default function PostForm({ post, action }: IPostFormProps) {
     if (post && userDetails) {
       const storageRef = ref(storage, post.file);
       try {
-        await deleteObject(storageRef);
         await deletePost({ _id: post._id });
+        await deleteObject(storageRef);
         if (savePosts?.[0]?.postId.includes(post._id)) {
           await removePostFromSave({ postId: post._id, userId: userDetails?._id });
         }
@@ -164,7 +164,13 @@ export default function PostForm({ post, action }: IPostFormProps) {
             <Button
               type="button"
               className="shad-btn-delete"
-              disabled={isCreatingPost || isLoadingUpdate || isDeletingPost || isRemovingPostFromSaveCollection}
+              disabled={
+                isCreatingPost ||
+                isLoadingUpdate ||
+                isDeletingPost ||
+                isRemovingPostFromSaveCollection ||
+                isRemovingPostFromLikeCollection
+              }
               onClick={handleDeletePost}>
               Delete
             </Button>

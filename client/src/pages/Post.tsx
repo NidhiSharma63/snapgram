@@ -49,7 +49,6 @@ const PostDetails = () => {
     if (post && userDetails) {
       const storageRef = ref(storage, post.file);
       try {
-        await deleteObject(storageRef);
         if (savePosts?.[0]?.postId.includes(post._id)) {
           await removePostFromSave({ postId: post._id, userId: userDetails?._id });
         }
@@ -57,6 +56,7 @@ const PostDetails = () => {
           await removePostFromLike({ postId: post._id, userId: userDetails?._id });
         }
         await deletePost({ _id: post._id });
+        await deleteObject(storageRef);
         /** also remove the post from save collection of active user if it is present */
 
         navigate("/");
