@@ -15,6 +15,7 @@ export default function GridPostList({ posts, showUser = true, usersData }: IGri
     <ul className="grid-container">
       {posts?.map((post: IPost) => {
         const findCurrentUser = usersData?.find((item) => item._id === post.userId);
+        console.log({ findCurrentUser });
         return (
           <li key={post._id} className="relative min-w-80 h-80">
             <Link to={`/posts/${post._id}`} className="grid-post_link">
@@ -23,7 +24,7 @@ export default function GridPostList({ posts, showUser = true, usersData }: IGri
             <div className="grid-post_user">
               {showUser && (
                 <div className="flex items-center justify-start gap-2 flex-1">
-                  <img src={findCurrentUser?.avatar} alt="creator" className="h-8 w-8 rounded-full" />
+                  <img src={findCurrentUser?.avatar} alt="creatojkghkjr" className="h-8 w-8 rounded-full" />
                   <p className="line-clamp-1 text-white">{findCurrentUser?.username}</p>
                 </div>
               )}

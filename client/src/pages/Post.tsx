@@ -21,10 +21,11 @@ const PostDetails = () => {
   const [relatedPost, setRelatedPost] = useState<IPost[]>([]);
   const { userDetails } = useUserDetail();
   const { useGetPostById, useDeletePost, useGetAllPost } = usePost();
-  const { useGetUserById } = useAuth();
+  const { useGetUserById, useGetAllUser } = useAuth();
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
   const { data: post, isPending: isLoading } = useGetPostById(id || "");
   const { data: user, isPending: isUserLoading } = useGetUserById(post?.userId || "");
+  const { data: allUser, isFetching: isLoadingAllUser } = useGetAllUser();
 
   // save post
   const { useRemoveSave, useGetAllSavePost } = useSavePost();
@@ -109,10 +110,8 @@ const PostDetails = () => {
                 </Link>
 
                 {isDeletingPost || isRemovingPostFromSaveCollection || isRemovingPostFromLikeCollection ? (
-                  // <Button className="bg-transparent">
                   <Loader />
                 ) : (
-                  // </Button>
                   <Button
                     onClick={handleDeletePost}
                     variant="ghost"
@@ -153,7 +152,11 @@ const PostDetails = () => {
         {relatedPost?.length > 0 ? (
           <>
             <h3 className="body-bold md:h3-bold w-full my-10">More Related Posts</h3>
-            {isLoadingAllPost ? <Loader /> : <GridPostList posts={relatedPost} />}
+            {isLoadingAllPost || isLoadingAllUser ? (
+              <Loader />
+            ) : (
+              <GridPostList posts={relatedPost} usersData={allUser} />
+            )}
           </>
         ) : (
           <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
