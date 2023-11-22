@@ -152,7 +152,7 @@ const PostDetails = () => {
         {relatedPost?.length > 0 ? (
           <>
             <h3 className="body-bold md:h3-bold w-full my-10">More Related Posts</h3>
-            isLoadingAllPost ? <Loader /> : <GridPostList posts={relatedPost} />
+            {isLoadingAllPost ? <Loader /> : <GridPostList posts={relatedPost} />}
           </>
         ) : (
           <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
