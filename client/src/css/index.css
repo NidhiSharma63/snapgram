@@ -10,6 +10,8 @@
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
+    
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
  
@@ -39,7 +41,7 @@
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 0 0% 0%;
     --foreground: 210 40% 98%;
  
     --card: 222.2 84% 4.9%;
@@ -85,6 +87,7 @@
 
 @layer utilities{
 
+ 
    /* UTILITIES */
    .invert-white {
     @apply invert brightness-0 transition;

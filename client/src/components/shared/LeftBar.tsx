@@ -14,7 +14,7 @@ export default function LeftBar() {
   const { userDetails, setUserDetail } = useUserDetail();
 
   const navigate = useNavigate();
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { pathname } = useLocation();
 
   const handleClick = () => {
@@ -24,6 +24,14 @@ export default function LeftBar() {
       token: userDetails.tokens[0].token,
     });
     setUserDetail(null);
+  };
+
+  const setThemeToDark = () => {
+    setTheme("dark");
+  };
+
+  const setThemeToLight = () => {
+    setTheme("light");
   };
 
   useEffect(() => {
@@ -73,10 +81,17 @@ export default function LeftBar() {
           })}
         </ul>
       </div>
-      <Button variant="ghost" className="shad-button_ghost" onClick={handleClick}>
-        <img src="/assets/icons/logout.svg" alt="logout" />
-        <p className="small-medium lg:base-medium">Logout</p>
-      </Button>
+      <div className="flex justify-center mt-2 items-center">
+        {theme === "dark" ? (
+          <img src="/assets/images/moonIcon.png" className="w-6 cursor-pointer" onClick={setThemeToLight} />
+        ) : (
+          <img src="/assets/icons/sun.svg" className="w-6 cursor-pointer" onClick={setThemeToDark} />
+        )}
+        <Button variant="ghost" className="shad-button_ghost" onClick={handleClick}>
+          <img src="/assets/icons/logout.svg" alt="logout" />
+          <p className="small-medium lg:base-medium">Logout</p>
+        </Button>
+      </div>
     </nav>
   );
 }
