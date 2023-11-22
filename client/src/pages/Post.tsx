@@ -1,6 +1,8 @@
+import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { IPost } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useAuth from "@/hooks/query/useAuth";
@@ -9,13 +11,15 @@ import usePost from "@/hooks/query/usePost";
 import useSavePost from "@/hooks/query/useSavePost";
 import { multiFormatDateString } from "@/lib/utils";
 import { deleteObject, ref } from "firebase/storage";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 const PostDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [relatedPost, setRelatedPost] = useState<IPost[]>([]);
   const { userDetails } = useUserDetail();
-  const { useGetPostById, useDeletePost } = usePost();
+  const { useGetPostById, useDeletePost, useGetAllPost } = usePost();
   const { useGetUserById } = useAuth();
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
   const { data: post, isPending: isLoading } = useGetPostById(id || "");
@@ -30,7 +34,15 @@ const PostDetails = () => {
   const { mutateAsync: removePostFromLike, isPending: isRemovingPostFromLikeCollection } = useRemoveLike();
   const { data: likePosts } = useGetAllLike();
 
+  // get all post
+  const { data: allPosts, isPending: isLoadingAllPost } = useGetAllPost();
   const { toast } = useToast();
+
+  useEffect(() => {
+    setRelatedPost(() => {
+      return allPosts?.filter((item: IPost) => item._id !== id);
+    });
+  }, [allPosts, id]);
 
   const handleDeletePost = async () => {
     if (post && userDetails) {
@@ -134,8 +146,14 @@ const PostDetails = () => {
       <div className="w-full max-w-5xl">
         <hr className="border w-full border-dark-4/80" />
 
-        <h3 className="body-bold md:h3-bold w-full my-10">More Related Posts</h3>
-        {/* {isUserPostLoading || !relatedPosts ? <Loader /> : <GridPostList posts={relatedPosts} />} */}
+        {relatedPost?.length > 0 ? (
+          <>
+            <h3 className="body-bold md:h3-bold w-full my-10">More Related Posts</h3>
+            isLoadingAllPost ? <Loader /> : <GridPostList posts={relatedPost} />
+          </>
+        ) : (
+          <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
+        )}
       </div>
     </div>
   );
