@@ -74,7 +74,9 @@ function SignUpForm() {
       <div className="flex border flex-1 justify-center items-center flex-col h-screen">
         <img src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"} />
         <p className="text-3xl font-bold md:h2-bold pt-3 sm:pt-2">Create New Account</p>
-        <p className=" text-light-3 font-medium mt-2 mb-2 ">To use snapgram, Please enter your account details</p>
+        <p className=" text-light-3 font-medium mt-2 mb-2 text-center">
+          To use snapgram, Please enter your account details
+        </p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

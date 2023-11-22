@@ -23,7 +23,7 @@ export default function GridPostList({ posts, showUser = true, usersData }: IGri
             <div className="grid-post_user">
               {showUser && (
                 <div className="flex items-center justify-start gap-2 flex-1">
-                  <img src={post.userAvatar} alt="creator" className="h-8 w-8 rounded-full" />
+                  <img src={findCurrentUser?.avatar} alt="creator" className="h-8 w-8 rounded-full" />
                   <p className="line-clamp-1 text-white">{findCurrentUser?.username}</p>
                 </div>
               )}
