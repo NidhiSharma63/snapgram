@@ -25,8 +25,6 @@ const PostDetails = () => {
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
   const { data: post, isPending: isLoading } = useGetPostById(id || "");
   const { data: user, isPending: isUserLoading } = useGetUserById(post?.userId || "");
-  const { data: usersData } = useGetAllUser();
-  console.log({ usersData }, post?.userId);
 
   // save post
   const { useRemoveSave, useGetAllSavePost } = useSavePost();
@@ -47,8 +45,6 @@ const PostDetails = () => {
       return allPosts?.filter((item: IPost) => item._id !== id);
     });
   }, [allPosts, id]);
-
-  console.log({ user });
 
   const handleDeletePost = async () => {
     if (post && userDetails) {
