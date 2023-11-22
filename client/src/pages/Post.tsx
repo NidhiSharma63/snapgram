@@ -21,7 +21,7 @@ const PostDetails = () => {
   const [relatedPost, setRelatedPost] = useState<IPost[]>([]);
   const { userDetails } = useUserDetail();
   const { useGetPostById, useDeletePost, useGetAllPost } = usePost();
-  const { useGetUserById, useGetAllUser } = useAuth();
+  const { useGetUserById } = useAuth();
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
   const { data: post, isPending: isLoading } = useGetPostById(id || "");
   const { data: user, isPending: isUserLoading } = useGetUserById(post?.userId || "");
