@@ -1,3 +1,4 @@
+import PostStats from "@/components/shared/PostStats";
 import { IPost, IUser } from "@/constant/interfaces";
 import { Link } from "react-router-dom";
 
@@ -5,9 +6,8 @@ interface IGridPostListProps {
   posts: IPost[];
   usersData?: IUser[];
   showUser?: boolean;
-  showStats?: boolean;
 }
-export default function GridPostList({ posts, showUser = true, showStats = true, usersData }: IGridPostListProps) {
+export default function GridPostList({ posts, showUser = true, usersData }: IGridPostListProps) {
   //   const { useGetAllUser } = useAuth();
   //   const { data: usersData } = useGetAllUser();
 
@@ -27,7 +27,9 @@ export default function GridPostList({ posts, showUser = true, showStats = true,
                   <p className="line-clamp-1 text-white">{findCurrentUser?.username}</p>
                 </div>
               )}
+
               {/* {showStats && <PostStats post={post} userId={user.id} />} */}
+              <PostStats postId={post?._id} likes={post?.likes} />
             </div>
           </li>
         );

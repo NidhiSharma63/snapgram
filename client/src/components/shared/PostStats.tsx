@@ -75,7 +75,7 @@ function PostStats({ postId, likes }: { postId: string; likes: string[] }) {
           />
         )}
 
-        <p className="small-medium lg:base-medium">{likes?.length}</p>
+        <p className="small-medium lg:base-medium text-white">{likes?.length}</p>
       </div>
 
       <div className="flex gap-2">
