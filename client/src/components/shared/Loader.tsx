@@ -1,9 +1,6 @@
 import { useTheme } from "@/context/themeProviders";
 import { ColorRing } from "react-loader-spinner";
 
-const colorForBlackTheme = ["#fff", "#fff", "#fff", "#fff", "#fff"];
-const colorForLightTheme = ["#020817", "#020817", "#020817", "#020817", "#020817"];
-
 export default function Loader() {
   const { theme } = useTheme();
   return (
