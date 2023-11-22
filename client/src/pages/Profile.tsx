@@ -1,14 +1,13 @@
 // import GridPostList from "@/components/ui/shared/GridPostList";
 // import Loader from "@/components/ui/shared/Loa/der";
-// import { useAuthContext } from "@/context/AuthContext";
-// import { useGetUserById } from "@/lib/react-query/queryAndMutations";
 import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
+import useLikePost from "@/hooks/query/useLikePost";
 import usePost from "@/hooks/query/usePost";
 import { Link, Outlet, useParams } from "react-router-dom";
-// import LikedPosts from "./LikedPosts";
 
 interface StabBlockProps {
   value: string | number;
@@ -27,8 +26,11 @@ const Profile = () => {
   const { useGetUserById } = useAuth();
   const { data } = useGetUserById(id?.replace(":", "") || "");
   const { userDetails } = useUserDetail();
-  const { useGetUserAllPost } = usePost();
+  const { useGetUserAllPost, useGetPostByIds } = usePost();
   const { data: allPostOfUser, isPending: isUserPostLoading } = useGetUserAllPost();
+  const { useGetAllLike } = useLikePost();
+  const { data: allLikePostIds } = useGetAllLike();
+  const { data: likePosts, isFetching: isFecthingLikePost } = useGetPostByIds(allLikePostIds?.[0]?.postId);
 
   if (!data)
     return (
@@ -76,12 +78,30 @@ const Profile = () => {
         </div>
       </div>
 
-      {isUserPostLoading ? (
+      {isUserPostLoading || isFecthingLikePost ? (
         <Loader />
-      ) : allPostOfUser.length === 0 && userDetails && userDetails._id !== data?._id ? (
-        data?.username + " haven't posted anything"
       ) : (
-        <GridPostList posts={allPostOfUser} showUser={false} />
+        <>
+          {userDetails?._id === data?._id ? (
+            <Tabs defaultValue="Posts" className="w-full  flex justify-center flex-col">
+              <TabsList className="dark:bg-black bg-off-white">
+                <TabsTrigger value="Posts">Posts</TabsTrigger>
+                <TabsTrigger value="Likes">Likes</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="Posts">
+                <GridPostList posts={allPostOfUser} showUser={false} />
+              </TabsContent>
+              <TabsContent value="Likes">
+                <GridPostList posts={likePosts} showUser={false} />
+              </TabsContent>
+            </Tabs>
+          ) : allPostOfUser.length === 0 && userDetails && userDetails._id !== data?._id ? (
+            data?.username + " haven't posted anything"
+          ) : (
+            <GridPostList posts={allPostOfUser} showUser={false} />
+          )}
+        </>
       )}
 
       <Outlet />
