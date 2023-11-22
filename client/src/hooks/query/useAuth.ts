@@ -88,7 +88,7 @@ function useAuth() {
 
   function useGetUserById(id: string) {
     return useQuery({
-      queryKey: [QueryKeys.USER_BY_ID],
+      queryKey: [QueryKeys.USER_BY_ID, id],
       queryFn: () => customAxiosRequestForGet("/user", id),
     });
   }
