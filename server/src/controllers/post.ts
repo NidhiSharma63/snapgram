@@ -66,7 +66,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
  */
 const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let getAllPost = await Post.find();
+    let getAllPost = await Post.find().sort({ createdAt: -1 });
     res.status(200).json(getAllPost);
   } catch (error) {
     next(error);
