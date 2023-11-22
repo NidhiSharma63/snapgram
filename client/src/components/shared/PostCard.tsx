@@ -17,7 +17,7 @@ export default function PostCard({ post, user }: { post: IPost; user: IUser }) {
             <img
               className="rounded-full w-12 lg:h-12"
               alt="creator"
-              src={post?.userAvatar || "/assets/icons/profile-placeholder.svg"}
+              src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
             />
           </Link>
           <div className="flex flex-col">
