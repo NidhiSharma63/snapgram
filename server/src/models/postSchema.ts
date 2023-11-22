@@ -9,6 +9,7 @@ interface IPost extends Document {
   location: string[];
   createdAt: Date;
   userAvatar: string;
+  likes: string[];
 }
 
 // creating schema
@@ -25,6 +26,7 @@ const postSchema = new mongoose.Schema<IPost>({
     type: Date,
   },
   userAvatar: String,
+  likes: [String],
 });
 
 // now we need to create the collection

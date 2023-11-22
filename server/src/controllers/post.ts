@@ -18,6 +18,7 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
       caption: caption ?? [],
       createdAt,
       userAvatar,
+      likes: [],
     });
     await postCreated.save();
     res.status(201).json(postCreated);

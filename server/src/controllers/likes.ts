@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Like from "../models/likesSchema";
+import { addLikeToPost, removeLikeFromPost } from "../utils/postLikes";
 
 /**
  * Add likes
@@ -10,11 +11,13 @@ const addLike = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!postId) throw new Error("Post id is Missiing");
     if (!userId) throw new Error("User id is Missiing");
-
+    const paramsToAddLikeToPost = { userId, postId };
     let isAlreadyPresentPost = await Like.findOne({ userId });
+
     if (isAlreadyPresentPost) {
       isAlreadyPresentPost.postId.push(postId);
       await isAlreadyPresentPost.save();
+      await addLikeToPost(paramsToAddLikeToPost);
       res.status(201).json(isAlreadyPresentPost);
     } else {
       let createNewLikesObj = new Like({
@@ -22,6 +25,7 @@ const addLike = async (req: Request, res: Response, next: NextFunction) => {
         userId,
       });
       await createNewLikesObj.save();
+      await addLikeToPost(paramsToAddLikeToPost);
       res.status(201).json(createNewLikesObj);
     }
   } catch (error) {
@@ -38,12 +42,15 @@ const removeLike = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!postIdToRemove) throw new Error("Post id is Missiing");
     if (!userId) throw new Error("User id is Missiing");
+    const paramsToAddLikeToPost = { userId, postId: postIdToRemove };
 
     const updateLikesInPost = await Like.findOneAndUpdate(
       { userId },
       { $pull: { postId: postIdToRemove } },
       { new: true }
     );
+    await removeLikeFromPost(paramsToAddLikeToPost);
+
     res.status(201).json(updateLikesInPost);
   } catch (error) {
     next(error);

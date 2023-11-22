@@ -32,7 +32,7 @@ router.route("/user/posts").get(checkAuthorization, getUsersAllPost);
  */
 router.route("/like/add").put(checkAuthorization, addLike);
 router.route("/like/remove").delete(checkAuthorization, removeLike);
-router.route("/likes").delete(checkAuthorization, getAllLikePost);
+router.route("/likes").get(checkAuthorization, getAllLikePost);
 
 /**
  * save routes
