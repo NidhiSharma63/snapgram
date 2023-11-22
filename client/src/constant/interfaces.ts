@@ -22,6 +22,7 @@ export interface IPost {
   __v: number;
   _id: string;
   userAvatar: string;
+  likes: string[];
 }
 
 export interface IUser {

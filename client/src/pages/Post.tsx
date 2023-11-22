@@ -95,10 +95,10 @@ const PostDetails = () => {
                 </Link>
 
                 {isDeletingPost || isRemovingPostFromSaveCollection || isRemovingPostFromLikeCollection ? (
-                  <Button className="bg-transparent">
-                    <Loader />
-                  </Button>
+                  // <Button className="bg-transparent">
+                  <Loader />
                 ) : (
+                  // </Button>
                   <Button
                     onClick={handleDeletePost}
                     variant="ghost"

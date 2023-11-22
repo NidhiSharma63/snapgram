@@ -31,6 +31,7 @@ export default function useLikePost() {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_Like_POST] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
       },
     });
   }
@@ -58,6 +59,7 @@ export default function useLikePost() {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_Like_POST] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
       },
     });
   }

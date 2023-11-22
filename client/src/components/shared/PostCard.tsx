@@ -50,7 +50,7 @@ export default function PostCard({ post, user }: { post: IPost; user: IUser }) {
         <img className="post-card_img" alt="post image" src={post.file || "/assets/icons/profile-placholder.svg"} />
       </Link>
 
-      <PostStats postId={post?._id} />
+      <PostStats likes={post?.likes} postId={post?._id} />
     </div>
   );
 }
