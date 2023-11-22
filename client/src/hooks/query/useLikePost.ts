@@ -66,7 +66,7 @@ export default function useLikePost() {
    * use get all save
    */
 
-  function useGetAllSaveLike() {
+  function useGetAllLike() {
     return useQuery({
       queryKey: [QueryKeys.GET_USER_Like_POST],
       queryFn: () => customAxiosRequestForGet("/likes", null),
@@ -75,6 +75,6 @@ export default function useLikePost() {
   return {
     useAddLike,
     useRemoveLike,
-    useGetAllSaveLike,
+    useGetAllLike,
   };
 }

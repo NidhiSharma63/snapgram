@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { IPost } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
+import useLikePost from "@/hooks/query/useLikePost";
 import usePost from "@/hooks/query/usePost";
 import useSavePost from "@/hooks/query/useSavePost";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,9 +33,16 @@ export default function PostForm({ post, action }: IPostFormProps) {
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
   const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
+
+  // save post
   const { useRemoveSave, useGetAllSavePost } = useSavePost();
   const { mutateAsync: removePostFromSave, isPending: isRemovingPostFromSaveCollection } = useRemoveSave();
   const { data: savePosts } = useGetAllSavePost();
+
+  // like post
+  const { useRemoveLike, useGetAllLike } = useLikePost();
+  const { mutateAsync: removePostFromLike, isPending: isRemovingPostFromLikeCollection } = useRemoveLike();
+  const { data: likePosts } = useGetAllLike();
 
   const navigate = useNavigate();
   const { userDetails } = useUserDetail();
@@ -78,14 +86,16 @@ export default function PostForm({ post, action }: IPostFormProps) {
   }
 
   const handleDeletePost = async () => {
-    if (post) {
+    if (post && userDetails) {
       const storageRef = ref(storage, post.file);
       try {
         await deleteObject(storageRef);
         await deletePost({ _id: post._id });
         if (savePosts?.[0]?.postId.includes(post._id)) {
-          console.log("i should run bcoz save post includes post id");
           await removePostFromSave({ postId: post._id, userId: userDetails?._id });
+        }
+        if (likePosts?.[0]?.postId.includes(post._id)) {
+          await removePostFromLike({ postId: post._id, userId: userDetails?._id });
         }
         navigate("/");
       } catch (error) {

@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useAuth from "@/hooks/query/useAuth";
+import useLikePost from "@/hooks/query/useLikePost";
 import usePost from "@/hooks/query/usePost";
 import useSavePost from "@/hooks/query/useSavePost";
 import { multiFormatDateString } from "@/lib/utils";
@@ -19,9 +20,16 @@ const PostDetails = () => {
   const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
   const { data: post, isPending: isLoading } = useGetPostById(id || "");
   const { data: user, isPending: isUserLoading } = useGetUserById(post?.userId || "");
+  // save post
   const { useRemoveSave, useGetAllSavePost } = useSavePost();
   const { mutateAsync: removePostFromSave, isPending: isRemovingPostFromSaveCollection } = useRemoveSave();
   const { data: savePosts } = useGetAllSavePost();
+
+  // like post
+  const { useRemoveLike, useGetAllLike } = useLikePost();
+  const { mutateAsync: removePostFromLike, isPending: isRemovingPostFromLikeCollection } = useRemoveLike();
+  const { data: likePosts } = useGetAllLike();
+
   const { toast } = useToast();
 
   const handleDeletePost = async () => {
@@ -31,6 +39,9 @@ const PostDetails = () => {
         await deleteObject(storageRef);
         if (savePosts?.[0]?.postId.includes(post._id)) {
           await removePostFromSave({ postId: post._id, userId: userDetails?._id });
+        }
+        if (likePosts?.[0]?.postId.includes(post._id)) {
+          await removePostFromLike({ postId: post._id, userId: userDetails?._id });
         }
         await deletePost({ _id: post._id });
         /** also remove the post from save collection of active user if it is present */
@@ -83,7 +94,7 @@ const PostDetails = () => {
                   <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
                 </Link>
 
-                {isDeletingPost || isRemovingPostFromSaveCollection ? (
+                {isDeletingPost || isRemovingPostFromSaveCollection || isRemovingPostFromLikeCollection ? (
                   <Button className="bg-transparent">
                     <Loader />
                   </Button>
