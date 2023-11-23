@@ -19,7 +19,7 @@ export default function BottomBar() {
               alt={link.label}
               className={`${isActive && "invert-white"}`}
             />
-            <p className="tiny-mediu">{link.label}</p>
+            <p className="tiny-medium text-xs">{link.label}</p>
           </Link>
         );
       })}
