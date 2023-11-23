@@ -6,6 +6,7 @@ import useAuth from "@/hooks/query/useAuth";
 import { setValueToLS } from "@/lib/utils";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ThemeComponent from "./ThemeComponent";
 
 export default function TopBar() {
   const { theme } = useTheme();
@@ -41,7 +42,7 @@ export default function TopBar() {
             height={325}
           />
         </Link>
-        <div className="flex gap-4">
+        <div className="flex gap-4 relative items-center justify-center">
           <Button variant="ghost" className="shad-button_ghost" onClick={handleClick}>
             <img src="/assets/icons/logout.svg" alt="logout" />
           </Button>
@@ -52,6 +53,7 @@ export default function TopBar() {
               className="h-8 w-8 rounded-full"
             />
           </Link>
+          <ThemeComponent isDisplayedOnTopBar={true} />
         </div>
       </div>
     </section>

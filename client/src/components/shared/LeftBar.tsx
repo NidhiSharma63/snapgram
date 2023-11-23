@@ -5,16 +5,16 @@ import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import { setValueToLS } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import ThemeComponent from "./ThemeComponent";
 
 export default function LeftBar() {
   const { useLogout } = useAuth();
   const { mutate, isSuccess } = useLogout();
   const { userDetails, setUserDetail } = useUserDetail();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
-  const [isDisplayBlockForThemeIcon, setDisplayBlockForThemeIcon] = useState<string>(theme);
+  const { theme } = useTheme();
   const { pathname } = useLocation();
 
   const handleClick = () => {
@@ -24,16 +24,6 @@ export default function LeftBar() {
       token: userDetails.tokens[0].token,
     });
     setUserDetail(null);
-  };
-
-  const setThemeToDark = () => {
-    setTheme("dark");
-    setDisplayBlockForThemeIcon("dark");
-  };
-
-  const setThemeToLight = () => {
-    setTheme("light");
-    setDisplayBlockForThemeIcon("light");
   };
 
   useEffect(() => {
@@ -84,24 +74,7 @@ export default function LeftBar() {
         </ul>
       </div>
       <div className="flex justify-center mt-2 items-center relative">
-        <img
-          src="/assets/images/moonIcon.png"
-          className={`w-6 cursor-pointer transform visible  ${
-            isDisplayBlockForThemeIcon === "dark"
-              ? "transition-transform  opacity-100 translate-y-[0px] ease-in duration-300"
-              : "opacity-0 translate-y-[10px] invisible"
-          }`}
-          onClick={setThemeToLight}
-        />
-        <img
-          src="/assets/icons/sun.svg"
-          className={`w-6 cursor-pointer transition-transform duration-300 transform visible absolute ${
-            isDisplayBlockForThemeIcon === "light"
-              ? "transition-opacity opacity-100 translate-y-[0px]  left-[18%]"
-              : "opacity-0 translate-y-[10px] invisible  left-[18%]"
-          }`}
-          onClick={setThemeToDark}
-        />
+        <ThemeComponent isDisplayedOnTopBar={false} />
         <Button variant="ghost" className="shad-button_ghost" onClick={handleClick}>
           <img className="" src="/assets/icons/logout.svg" alt="logout" />
           <p className="small-medium lg:base-medium">Logout</p>
