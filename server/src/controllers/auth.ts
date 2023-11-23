@@ -126,7 +126,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
   // console.log({ id });
   try {
-    let getUser = await User.findOne({ _id: id });
+    let getUser = await User.findOne({ _id: id }).setOptions({ lean: true });
     res.status(200).json(getUser);
   } catch (error) {
     next(error);
@@ -139,7 +139,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let getAllUsers = await User.find();
+    let getAllUsers = await User.find().setOptions({ lean: true });
     res.status(200).json(getAllUsers);
   } catch (error) {
     next(error);

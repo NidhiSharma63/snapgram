@@ -66,7 +66,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
  */
 const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let getAllPost = await Post.find().sort({ createdAt: -1 });
+    let getAllPost = await Post.find().sort({ createdAt: -1 }).setOptions({ lean: true });
     res.status(200).json(getAllPost);
   } catch (error) {
     next(error);
@@ -80,7 +80,7 @@ const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
 const getOnePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.query;
-    let getOnePost = await Post.findOne({ _id: id });
+    let getOnePost = await Post.findOne({ _id: id }).setOptions({ lean: true });
     res.status(200).json(getOnePost);
   } catch (error) {
     next(error);
@@ -89,8 +89,8 @@ const getOnePost = async (req: Request, res: Response, next: NextFunction) => {
 
 const getUsersAllPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId } = req.query;
-    let getUsersAllPost = await Post.find({ userId });
+    const { id } = req.query;
+    let getUsersAllPost = await Post.find({ _id: id }).setOptions({ lean: true });
     res.status(200).json(getUsersAllPost);
   } catch (error) {
     next(error);

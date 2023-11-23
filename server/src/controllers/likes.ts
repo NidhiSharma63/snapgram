@@ -67,7 +67,7 @@ const getAllLikePost = async (req: Request, res: Response, next: NextFunction) =
 
     if (!userId) throw new Error("User id is Missiing");
 
-    const allLikePost = await Like.find({ userId });
+    const allLikePost = await Like.find({ userId }).setOptions({ lean: true });
     res.status(201).json(allLikePost);
   } catch (error) {
     next(error);

@@ -61,7 +61,7 @@ const getAllSavePost = async (req: Request, res: Response, next: NextFunction) =
 
     if (!userId) throw new Error("User id is Missiing");
 
-    const allSavePost = await Save.find({ userId });
+    const allSavePost = await Save.find({ userId }).setOptions({ lean: true });
     res.status(201).json(allSavePost);
   } catch (error) {
     next(error);
