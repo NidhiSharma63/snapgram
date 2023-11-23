@@ -27,7 +27,7 @@ const Profile = () => {
   const { data } = useGetUserById(id?.replace(":", "") || "");
   const { userDetails } = useUserDetail();
   const { useGetUserAllPost, useGetPostByIds } = usePost();
-  const { data: allPostOfUser, isPending: isUserPostLoading } = useGetUserAllPost();
+  const { data: allPostOfUser, isPending: isUserPostLoading } = useGetUserAllPost(id?.replace(":", "") || "");
   const { useGetAllLike } = useLikePost();
   const { data: allLikePostIds } = useGetAllLike();
   const { data: likePosts, isFetching: isFecthingLikePost } = useGetPostByIds(allLikePostIds?.[0]?.postId);

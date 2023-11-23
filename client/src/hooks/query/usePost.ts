@@ -120,10 +120,10 @@ function usePost() {
     });
   }
 
-  function useGetUserAllPost() {
+  function useGetUserAllPost(id: string) {
     return useQuery({
-      queryKey: [QueryKeys.GET_USER_ALL_POSTS],
-      queryFn: () => customAxiosRequestForGet("/user/posts", null),
+      queryKey: [QueryKeys.GET_USER_ALL_POSTS, id],
+      queryFn: () => customAxiosRequestForGet("/user/posts", id),
     });
   }
 
