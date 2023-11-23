@@ -26,7 +26,7 @@ export default function GridPostList({ posts, showUser = true, usersData }: IGri
                   <img
                     src={findCurrentUser?.avatar || "/assets/icons/profile-placeholder.svg"}
                     alt="creatojkghkjr"
-                    className="h-8 w-8 rounded-full"
+                    className="h-8 w-8 rounded-full object-cover"
                   />
                   <p className="line-clamp-1 text-white">{findCurrentUser?.username}</p>
                 </div>

@@ -15,7 +15,7 @@ export default function PostCard({ post, user }: { post: IPost; user: IUser }) {
         <div className="flex items-center gap-3">
           <Link to={`/profile/${post?.userId}`}>
             <img
-              className="rounded-full w-12 lg:h-12"
+              className="rounded-full w-12 lg:h-12 object-cover"
               alt="creator"
               src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
             />
