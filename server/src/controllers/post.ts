@@ -90,7 +90,7 @@ const getOnePost = async (req: Request, res: Response, next: NextFunction) => {
 const getUsersAllPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.query;
-    let getUsersAllPost = await Post.find({ _id: id }).setOptions({ lean: true });
+    let getUsersAllPost = await Post.find({ userId: id }).setOptions({ lean: true });
     res.status(200).json(getUsersAllPost);
   } catch (error) {
     next(error);
