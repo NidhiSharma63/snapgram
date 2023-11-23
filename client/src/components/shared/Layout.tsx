@@ -5,10 +5,10 @@ import { Outlet } from "react-router-dom";
 
 function Layout() {
   return (
-    <div className="w-full md:flex  h-screen md:overflow-hidden">
+    <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">
       <TopBar />
       <LeftBar />
-      <section className="flex flex-1 h-full">
+      <section className="flex flex-1 h-full overflow-x-hidden">
         <Outlet />
       </section>
       <BottomBar />
