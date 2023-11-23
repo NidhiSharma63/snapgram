@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { ErrorResponse } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
+import { useUserPostIdForSaveAndLike } from "@/context/userPostIdForSaveAndLike";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import { AxiosError } from "axios";
 
 export default function useSavePost() {
   const { toast } = useToast();
+  const { setSavePostId } = useUserPostIdForSaveAndLike();
 
   function useAddSave() {
     return useMutation({
@@ -28,6 +30,7 @@ export default function useSavePost() {
         }
       },
       onSuccess: () => {
+        setSavePostId("");
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
       },
     });
@@ -56,6 +59,7 @@ export default function useSavePost() {
         }
       },
       onSuccess: () => {
+        setSavePostId("");
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
       },
     });

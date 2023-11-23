@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { ErrorResponse } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
+import { useUserPostIdForSaveAndLike } from "@/context/userPostIdForSaveAndLike";
 import { customAxiosRequestForGet, customAxiosRequestForPost } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import { AxiosError } from "axios";
 
 export default function useLikePost() {
   const { toast } = useToast();
+  const { setLikePostId } = useUserPostIdForSaveAndLike();
 
   function useAddLike() {
     return useMutation({
@@ -28,6 +30,7 @@ export default function useLikePost() {
         }
       },
       onSuccess: () => {
+        setLikePostId("");
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_Like_POST] });
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
       },
@@ -57,6 +60,7 @@ export default function useLikePost() {
         }
       },
       onSuccess: () => {
+        setLikePostId("");
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_Like_POST] });
         queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
       },
