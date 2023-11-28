@@ -51,8 +51,8 @@ export default function LeftBar() {
             className="h-8 w-8 rounded-full"
           />
           <div className="flex flex-col">
-            <p className="body-bold">Nidhi</p>
-            <p className="small-regular text-light-3">@nidhisharma</p>
+            <p className="body-bold">@{userDetails?.username}</p>
+            <p className="small-regular text-light-3">@{userDetails?.email}</p>
           </div>
         </Link>
         <ul className="flex flex-col gap-6">
