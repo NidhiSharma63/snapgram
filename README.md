@@ -13,5 +13,7 @@ I have created Snapgram using MERN + typescript.
 - update the profile
 
 
-## Demo
+## [Demo](https://snapgram-green.vercel.app/)
+<img src="./client/public/assets//images//snapgram video.gif"/>
+
 
