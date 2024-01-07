@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { GraphQLError } from "graphql";
 import User from "../../models/userSchema";
 import isValidObjectId from "../../utils/checkUserIsValid";
+import throwError from "../../utils/throwError";
 
 interface AddUserInput {
 	email: string;
@@ -30,24 +31,24 @@ async function addUser(_: any, args: { userInput: AddUserInput }) {
 	// check if any field is missing or not
 	if (!email || !password || !email.trim() || !password.trim()) throw new GraphQLError("Email is missing");
 
-	if (!password || !password.trim()) throw new GraphQLError("Password is missing");
+	if (!password || !password.trim()) throwError("Password is missing");
 
-	if (!username) throw new GraphQLError("Username is missing");
+	if (!username) throwError("Username is missing");
 
-	if (!uniqueBrowserId) throw new GraphQLError("uniqueBrowserId is Missing");
+	if (!uniqueBrowserId) throwError("uniqueBrowserId is Missing");
 
 	/**
 	 * check if email is already present or not
 	 */
 	const isAlreadyPresentEmail = await User.find({ email });
-	if (isAlreadyPresentEmail.length > 0) throw new GraphQLError("Email is already exists");
+	if (isAlreadyPresentEmail.length > 0) throwError("Email is already exists");
 
 	/**
 	 * check if username is present
 	 */
 	const isUserNamePresent = await User.find({ username });
 	if (isUserNamePresent.length > 0) {
-		throw new Error("Username is already exists");
+		throwError("Username is already exists");
 	}
 
 	// generate hash password with round 10
@@ -74,16 +75,16 @@ async function loginUser(_: any, args: { userInput: LoginUserInput }) {
 
 	// check if user already register or not because only register user can log in
 	const user = await User.findOne({ email });
-	if (!user) throw new GraphQLError("Invalid login detail");
-	if (!uniqueBrowserId) throw new GraphQLError("uniqueBrowserId is Missing");
-	if (!password || !email) throw new GraphQLError("Email or password is Missing");
+	if (!user) throwError("Invalid login detail");
+	if (!uniqueBrowserId) throwError("uniqueBrowserId is Missing");
+	if (!password || !email) throwError("Email or password is Missing");
 
 	// check if provided password by user is same as stored in data
 	const getPassword = user.password;
 	// verify password first pass user created password and then pass stored password
 	const verifyPassword = await bcrypt.compare(password, getPassword);
 
-	if (!verifyPassword) throw new GraphQLError("Invalid login detail");
+	if (!verifyPassword) throwError("Invalid login detail");
 
 	// generate token once user have correct credentials
 	await user.generateAuthToken(uniqueBrowserId);
@@ -99,41 +100,25 @@ async function logoutUser(_: any, args: { userInput: LogoutUser }) {
 	const { userInput } = args;
 	const { userId, token } = userInput;
 
-	if (!userId)
-		throw new GraphQLError("UserId is Missing", {
-			extensions: {
-				code: "BAD REQUEST",
-			},
-		});
-	if (!token)
-		throw new GraphQLError("Token is Missing", {
-			extensions: {
-				code: "BAD REQUEST",
-			},
-		});
-	const isValidId = isValidObjectId(userId);
-	if (!isValidId)
-		throw new GraphQLError("User id is not valid", {
-			extensions: {
-				code: "BAD REQUEST",
-			},
-		});
+	// Input Validation
+	if (!userId || !token) {
+		throwError(`${!userId ? "UserId" : "Token"} is missing`);
+	}
+	// Validate ObjectId
+	if (!isValidObjectId(userId)) {
+		throwError("User id is not valid");
+	}
 
 	const getUserFromDB = await User.findOne({ _id: userId });
-	if (!getUserFromDB)
-		throw new GraphQLError("Invalid details", {
-			extensions: {
-				code: "BAD REQUEST",
-			},
-		});
-	if (getUserFromDB) {
-		// updating token
-		const updatedToken = getUserFromDB.tokens.filter((item) => item.token !== token);
-		getUserFromDB.tokens = updatedToken;
-		// saving user to database after updatig the token
-		await getUserFromDB.save();
-		return "successfully logged out";
+	if (!getUserFromDB) {
+		throwError("Invalid details");
 	}
+	// updating token
+	const updatedToken = getUserFromDB.tokens.filter((item) => item.token !== token);
+	getUserFromDB.tokens = updatedToken;
+	// saving user to database after updatig the token
+	await getUserFromDB.save();
+	return "successfully logged out";
 }
 
 export { addUser, loginUser, logoutUser };
