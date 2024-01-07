@@ -3,7 +3,7 @@ import { GraphQLError } from "graphql";
 import User from "../../models/userSchema";
 import isValidObjectId from "../../utils/checkUserIsValid";
 // import throwError from "../../utils/throwError";
-import { throwError, UserInputError } from "../../middleware/ErrorHandler";
+import { handleGraphQLError, throwError } from "../../middleware/ErrorHandler";
 
 interface AddUserInput {
 	email: string;
@@ -70,19 +70,7 @@ async function addUser(_: any, args: { userInput: AddUserInput }) {
 		await user.save();
 		return user;
 	} catch (error) {
-		// Handle unexpected server-side errors
-		console.error(error); // Log the error for debugging
-
-		if (error instanceof UserInputError) {
-			throw new GraphQLError(error.message, {
-				extensions: { code: "BAD_USER_INPUT" },
-			});
-		}
-
-		// For other types of errors (server errors)
-		throw new GraphQLError("It's ain't you, it's me", {
-			extensions: { code: "INTERNAL_SERVER_ERROR" },
-		});
+		if (error instanceof Error) handleGraphQLError(error);
 	}
 }
 
@@ -113,19 +101,7 @@ async function loginUser(_: any, args: { userInput: LoginUserInput }) {
 		// is all okay send user data back
 		return user;
 	} catch (error) {
-		// Handle unexpected server-side errors
-		console.error(error); // Log the error for debugging
-
-		if (error instanceof UserInputError) {
-			throw new GraphQLError(error.message, {
-				extensions: { code: "BAD_USER_INPUT" },
-			});
-		}
-
-		// For other types of errors (server errors)
-		throw new GraphQLError("It's ain't you, it's me", {
-			extensions: { code: "INTERNAL_SERVER_ERROR" },
-		});
+		if (error instanceof Error) handleGraphQLError(error);
 	}
 }
 
@@ -154,18 +130,7 @@ async function logoutUser(_: any, args: { userInput: LogoutUser }) {
 		return "successfully logged out";
 	} catch (error) {
 		// Handle unexpected server-side errors
-		console.error(error); // Log the error for debugging
-
-		if (error instanceof UserInputError) {
-			throw new GraphQLError(error.message, {
-				extensions: { code: "BAD_USER_INPUT" },
-			});
-		}
-
-		// For other types of errors (server errors)
-		throw new GraphQLError("It's ain't you, it's me", {
-			extensions: { code: "INTERNAL_SERVER_ERROR" },
-		});
+		if (error instanceof Error) handleGraphQLError(error);
 	}
 }
 
