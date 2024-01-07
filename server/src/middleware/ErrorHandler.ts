@@ -1,18 +1,12 @@
-class CustomError extends Error {
-	code: string;
-
-	constructor(message: string, code: string = "GENERIC_ERROR") {
+class UserInputError extends Error {
+	constructor(message: string) {
 		super(message);
-		this.code = code;
+		this.name = "UserInputError";
 	}
 }
 
-function handleError(error: CustomError): CustomError {
-	if (error.code === "USER_INPUT_ERROR") {
-		return error;
-	}
-	// Log the full error for internal debugging
-	console.error(error);
-	// Return a generic error message for unknown server errors
-	return new CustomError("Something went wrong, please try again");
+function throwError(message: string): never {
+	throw new UserInputError(message);
 }
+
+export { UserInputError, throwError };
