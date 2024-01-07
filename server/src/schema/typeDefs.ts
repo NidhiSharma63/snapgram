@@ -16,6 +16,8 @@ export const typeDefs = `#graphql
  
   type Mutation {
     addUser(userInput:AddUserInput):User
+    logoutUser(userInput:logoutUser):String
+    loginUser(userInput:LoginUserInput):User
   }
 
   type Query {
@@ -30,5 +32,16 @@ export const typeDefs = `#graphql
     avatar: String
     bio: String
     uniqueBrowserId:String
+  }
+
+  input LoginUserInput{
+    email: String
+    password: String
+    uniqueBrowserId:String
+  }
+
+  input logoutUser{
+   userId:String
+   token:String
   }
 `;
