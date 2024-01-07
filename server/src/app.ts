@@ -4,23 +4,12 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
 import errorHandle from "./middleware/errorHandle";
+import { resolvers } from "./resolver/resolvers";
+import { typeDefs } from "./schema/typeDefs";
 import connectDB from "./utils/connectBD";
 dotenv.config();
 
 const server = express();
-
-const typeDefs = `#graphql
-  type Query {
-    hello: String
-  }
-`;
-
-// Provide resolver functions for your schema fields
-const resolvers = {
-	Query: {
-		hello: () => "Hello world!",
-	},
-};
 
 const apolloServer = new ApolloServer({
 	typeDefs,
@@ -30,7 +19,7 @@ const apolloServer = new ApolloServer({
 // creating a start function that will connect to database and run the server
 const start = async () => {
 	try {
-		await connectDB(process.env.MONGO_URI || "");
+		await connectDB(process.env.MONGO_URI2 || "");
 		await apolloServer.start();
 		server.use(express.json());
 		server.use(express.urlencoded({ extended: true }));
