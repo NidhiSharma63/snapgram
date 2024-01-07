@@ -1,27 +1,44 @@
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { AppConstants } from "@/constant/keys";
-import { signUpFormSchema } from "@/constant/validation";
-import { useTheme } from "@/context/themeProviders";
-import { useUserDetail } from "@/context/userContext";
-import useAuth from "@/hooks/query/useAuth";
-import { getValueFromLS, setValueToLS } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+import {Button} from "@/components/ui/button";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+import {toast} from "@/components/ui/use-toast";
+import {AppConstants} from "@/constant/keys";
+import {signUpFormSchema} from "@/constant/validation";
+import {useTheme} from "@/context/themeProviders";
+import {useUserDetail} from "@/context/userContext";
+import {getValueFromLS, setValueToLS} from "@/lib/utils";
+import {gql, useMutation} from "@apollo/client";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {Link, useNavigate} from "react-router-dom";
+import {v4 as uuidv4} from "uuid";
+import {z} from "zod";
+
+const ADD_USER = gql`
+  mutation AddUser($userInput: AddUserInput!) {
+    addUser(userInput: $userInput) {
+      avatar
+      bio
+      email
+      username
+      tokens {
+        uniqueBrowserId
+        token
+      }
+    }
+  }
+`;
 
 function SignUpForm() {
-  const { theme } = useTheme();
-  const { setUserDetail } = useUserDetail();
+  const {theme} = useTheme();
+  const {setUserDetail} = useUserDetail();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const { useSignUp } = useAuth();
-  const { mutate, isPending, isSuccess, data } = useSignUp();
+  // const {useSignUp} = useAuth();
+  // const {mutate, isPending, isSuccess, data} = useSignUp();
   const navigate = useNavigate();
+  const [addUser, {data, loading, error}] = useMutation(ADD_USER);
 
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -29,7 +46,7 @@ function SignUpForm() {
       username: "",
       email: "",
       password: "",
-      avatar: null,
+      avatar: "",
       uniqueBrowserId: uuidv4(),
       bio: "",
     },
@@ -40,7 +57,12 @@ function SignUpForm() {
   };
 
   function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    mutate(values);
+    // mutate(values);
+    addUser({
+      variables: {
+        userInput: values,
+      },
+    });
   }
 
   /**
@@ -48,12 +70,16 @@ function SignUpForm() {
    */
 
   useEffect(() => {
-    if (isSuccess) {
-      navigate("/", { replace: true });
-      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data));
+    if (data) {
+      navigate("/", {replace: true});
+      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data.addUser));
       setUserDetail(data);
     }
-  }, [isSuccess]);
+
+    if (error) {
+      toast({title: error.message});
+    }
+  }, [data, error]);
 
   /**
    * if already token present then move user to home page
@@ -64,7 +90,7 @@ function SignUpForm() {
       const parsedValue = JSON.parse(storedValue);
       const isAuthenticated = parsedValue && parsedValue.tokens && parsedValue.tokens[0].token;
       if (isAuthenticated) {
-        navigate("/", { replace: true });
+        navigate("/", {replace: true});
       }
     }
   }, [navigate]);
@@ -82,7 +108,7 @@ function SignUpForm() {
             <FormField
               control={form.control}
               name="username"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="form-field">
                   <FormLabel>Username</FormLabel>
                   <FormControl>
@@ -95,7 +121,7 @@ function SignUpForm() {
             <FormField
               control={form.control}
               name="bio"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="form-field">
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
@@ -108,7 +134,7 @@ function SignUpForm() {
             <FormField
               control={form.control}
               name="email"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="form-field">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
@@ -121,7 +147,7 @@ function SignUpForm() {
             <FormField
               control={form.control}
               name="password"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="form-field relative">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
@@ -144,7 +170,7 @@ function SignUpForm() {
               )}
             />
             <Button type="submit" className="form-field">
-              {isPending ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
+              {loading ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
             </Button>
           </form>
         </Form>
