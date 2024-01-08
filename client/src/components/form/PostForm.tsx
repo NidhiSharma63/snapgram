@@ -76,11 +76,6 @@ export default function PostForm({ post, action }: IPostFormProps) {
 			},
 		],
 	});
-	console.log({ post });
-	// const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
-	// const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
-	// const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
-	// const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
 	const [isPostUploading, setIsPostUploading] = useState(false);
 	const [isPostDeleting, setIsPostDeleting] = useState(false);
 

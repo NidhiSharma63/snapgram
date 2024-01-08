@@ -2,17 +2,13 @@ import Loader from "@/components/shared/Loader";
 import PostCard from "@/components/shared/PostCard";
 import { IPost, IUser } from "@/constant/interfaces";
 import useAuth from "@/hooks/query/useAuth";
-import usePost from "@/hooks/query/usePost";
 import { GET_ALL_POSTS } from "@/queries/postQueries";
 import { useQuery } from "@apollo/client";
 
 function Home() {
-	const { useGetAllPost } = usePost();
 	const { data, loading } = useQuery(GET_ALL_POSTS);
-	const { data: posts, isPending: isPostLoading } = useGetAllPost();
 	const { useGetAllUser } = useAuth();
 	const { data: usersData } = useGetAllUser();
-	// console.log({ data });
 
 	return (
 		<div className="flex flex-1">

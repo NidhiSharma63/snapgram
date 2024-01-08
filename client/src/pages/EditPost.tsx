@@ -2,15 +2,11 @@ import PostForm from "@/components/form/PostForm";
 import Loader from "@/components/shared/Loader";
 import { GET_POST_BY_ID } from "@/queries/postQueries";
 import { useQuery } from "@apollo/client";
-// import { useGetPostById } from "@/lib/react-query/queryAndMutations";
 import { useParams } from "react-router-dom";
 
 export default function EditPost() {
 	const { id } = useParams();
 	const { data, loading } = useQuery(GET_POST_BY_ID, { variables: { _id: id } });
-	// console.log({ data }, "From edit post");
-	// const { useGetPostById } = usePost();
-	// const { data: post, isPending } = useGetPostById(id || "");
 	if (loading) return <Loader />;
 
 	return (
