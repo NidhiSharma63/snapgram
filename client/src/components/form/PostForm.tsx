@@ -31,23 +31,34 @@ interface IPostFormProps {
 const CREATE_POST = gql`
 	mutation CreatePost($userInput: CreatePostInput!) {
 		createPost(userInput: $userInput) {
-			caption
-			createdAt
-			file
-			likes
-			location
-			tags
-			userId
 			_id
 		}
 	}
 `;
+
+const UPDATE_POST = gql`
+	mutation UpdatePost($userInput: UpdatePostInput!) {
+		updatePost(userInput: $userInput) {
+			_id
+		}
+	}
+`;
+
+const DELETE_POST = gql`
+	mutation DeletePost($_id: String!) {
+		deletePost(_id: $_id) {
+			_id
+		}
+	}
+`;
+
 export default function PostForm({ post, action }: IPostFormProps) {
 	//   const { mutateAsync: createPost, isPending: isUploadingPost } = useCreatePost();
 
 	const [createPost, { loading: isCreatingPost }] = useMutation(CREATE_POST);
+	const [updatePost, { loading: isLoadingUpdate }] = useMutation(UPDATE_POST);
 	const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
-	const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
+	// const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
 	// const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
 	const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
 	const [isPostUploading, setIsPostUploading] = useState(false);
@@ -82,7 +93,15 @@ export default function PostForm({ post, action }: IPostFormProps) {
 	async function onSubmit(values: z.infer<typeof postFormSchema>) {
 		values;
 		if (post && action === "Update") {
-			const updatedPost = await updatePost({ ...values, file: post.file, _id: post._id });
+			const updatedPost = await updatePost({
+				variables: {
+					userInput: {
+						...values,
+						file: post.file,
+						_id: post._id,
+					},
+				},
+			});
 
 			if (!updatedPost) {
 				toast({ title: "Please try again" });
