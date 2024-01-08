@@ -71,4 +71,13 @@ async function deletePost(_: any, args: { _id: string }) {
 		if (error instanceof Error) handleGraphQLError(error);
 	}
 }
-export { createPost, deletePost, updatePost };
+
+async function getAllPost() {
+	try {
+		let getAllPost = await Post.find().sort({ createdAt: -1 }).setOptions({ lean: true });
+		return getAllPost;
+	} catch (error) {
+		if (error instanceof Error) handleGraphQLError(error);
+	}
+}
+export { createPost, deletePost, getAllPost, updatePost };

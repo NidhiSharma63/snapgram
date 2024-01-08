@@ -1,8 +1,11 @@
 import { addUser, loginUser, logoutUser } from "./mutations/authUser";
-import { createPost, deletePost, updatePost } from "./mutations/post";
+import { createPost, deletePost, getAllPost, updatePost } from "./mutations/post";
 
 // Provide resolver functions for your schema fields
 export const resolvers = {
+	Query: {
+		getAllPost,
+	},
 	Mutation: {
 		addUser,
 		logoutUser,

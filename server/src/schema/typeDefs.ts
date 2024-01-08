@@ -23,7 +23,7 @@ export const typeDefs = `#graphql
     location: [String]
     caption: [String]
     createdAt:String
-    likes:[Int]
+    likes:[String]
     _id:String
   }
  
@@ -38,7 +38,7 @@ export const typeDefs = `#graphql
 
 
   type Query {
-    _empty: String
+    getAllPost:[Post]
   }
 
   # inputs 
