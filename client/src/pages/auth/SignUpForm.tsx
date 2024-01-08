@@ -20,9 +20,9 @@ const ADD_USER = gql`
   mutation AddUser($userInput: AddUserInput!) {
     addUser(userInput: $userInput) {
       avatar
-      bio
       email
       username
+      _id
       tokens {
         uniqueBrowserId
         token
@@ -73,7 +73,7 @@ function SignUpForm() {
     if (data) {
       navigate("/", {replace: true});
       setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data.addUser));
-      setUserDetail(data);
+      setUserDetail(data.addUser);
     }
 
     if (error) {
