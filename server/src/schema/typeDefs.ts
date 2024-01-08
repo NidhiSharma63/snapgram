@@ -1,6 +1,6 @@
 //
 export const typeDefs = `#graphql
-
+  scalar Date
   type User {
     email: String
     password: String
@@ -22,7 +22,7 @@ export const typeDefs = `#graphql
     tags: [String]
     location: [String]
     caption: [String]
-    createdAt:String
+    createdAt:Date
     likes:[String]
     _id:String
   }
