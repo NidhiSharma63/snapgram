@@ -12,7 +12,6 @@ import { IPost } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useLikePost from "@/hooks/query/useLikePost";
-import usePost from "@/hooks/query/usePost";
 import useSavePost from "@/hooks/query/useSavePost";
 import { GET_ALL_POSTS } from "@/queries/postQueries";
 import { gql, useMutation } from "@apollo/client";
@@ -70,12 +69,20 @@ export default function PostForm({ post, action }: IPostFormProps) {
 			},
 		],
 	});
+	const [deletePost, { loading: isDeletingPost }] = useMutation(DELETE_POST, {
+		refetchQueries: [
+			{
+				query: GET_ALL_POSTS,
+			},
+		],
+	});
 	console.log({ post });
-	const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
+	// const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
 	// const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
 	// const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
-	const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
+	// const { mutateAsync: deletePost, isPending: isDeletingPost } = useDeletePost();
 	const [isPostUploading, setIsPostUploading] = useState(false);
+	const [isPostDeleting, setIsPostDeleting] = useState(false);
 
 	// save post
 	const { useRemoveSave, useGetAllSavePost } = useSavePost();
@@ -103,12 +110,9 @@ export default function PostForm({ post, action }: IPostFormProps) {
 		},
 	});
 
-	console.log({ form });
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof postFormSchema>) {
-		console.log(values);
 		if (post && action === "Update") {
-			console.log("i run");
 			const updatedPost = await updatePost({
 				variables: {
 					userInput: {
@@ -152,8 +156,12 @@ export default function PostForm({ post, action }: IPostFormProps) {
 		if (post && userDetails) {
 			const storageRef = ref(storage, post.file);
 			try {
-				setIsPostUploading(true);
-				await deletePost({ _id: post._id });
+				setIsPostDeleting(true);
+				deletePost({
+					variables: {
+						_id: post._id,
+					},
+				});
 				await deleteObject(storageRef);
 				if (savePosts?.[0]?.postId.includes(post._id)) {
 					await removePostFromSave({ postId: post._id, userId: userDetails?._id });
@@ -166,7 +174,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
 				toast({ title: "Please try again" });
 				setIsPostUploading(false);
 			}
-			setIsPostUploading(false);
+			setIsPostDeleting(false);
 		}
 	};
 
@@ -254,11 +262,12 @@ export default function PostForm({ post, action }: IPostFormProps) {
 								isLoadingUpdate ||
 								isDeletingPost ||
 								isRemovingPostFromSaveCollection ||
-								isRemovingPostFromLikeCollection
+								isRemovingPostFromLikeCollection ||
+								isPostDeleting
 							}
 							onClick={handleDeletePost}
 						>
-							Delete
+							{isPostDeleting ? <Loader /> : "Delete"}
 						</Button>
 					) : (
 						<Button
@@ -269,11 +278,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
 							Cancel
 						</Button>
 					)}
-					{isCreatingPost ||
-					isLoadingUpdate ||
-					isDeletingPost ||
-					isRemovingPostFromSaveCollection ||
-					isPostUploading ? (
+					{isCreatingPost || isLoadingUpdate || isRemovingPostFromSaveCollection || isPostUploading ? (
 						<Button className="shad-button_primary whitespace-nowrap">
 							<Loader />
 						</Button>
@@ -281,6 +286,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
 						<Button
 							type="submit"
 							className="shad-button_primary whitespace-nowrap"
+							disabled={isDeletingPost}
 						>
 							{action === "Update" ? "Update" : "Upload"}
 						</Button>
