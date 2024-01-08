@@ -24,7 +24,6 @@ function Home() {
 					) : (
 						<ul className="flex flex-col flex-1 gap-9 w-full">
 							{data?.getAllPost?.map((post: IPost) => {
-								console.log(post);
 								const findCurrentUser = usersData?.find((item: IUser) => item._id === post.userId);
 								return (
 									<PostCard

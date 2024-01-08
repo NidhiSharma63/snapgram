@@ -14,3 +14,17 @@ export const GET_ALL_POSTS = gql`
 		}
 	}
 `;
+
+export const GET_POST_BY_ID = gql`
+	query GetPostById($_id: String) {
+		getPostById(_id: $_id) {
+			caption
+			file
+			location
+			tags
+			userId
+			_id
+			createdAt
+		}
+	}
+`;

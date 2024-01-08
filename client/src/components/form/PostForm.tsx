@@ -63,7 +63,14 @@ export default function PostForm({ post, action }: IPostFormProps) {
 			},
 		],
 	});
-	const [updatePost, { loading: isLoadingUpdate }] = useMutation(UPDATE_POST);
+	const [updatePost, { loading: isLoadingUpdate }] = useMutation(UPDATE_POST, {
+		refetchQueries: [
+			{
+				query: GET_ALL_POSTS,
+			},
+		],
+	});
+	console.log({ post });
 	const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
 	// const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
 	// const { mutateAsync: createPost, isPending: isCreatingPost } = useCreatePost();
@@ -88,7 +95,7 @@ export default function PostForm({ post, action }: IPostFormProps) {
 		resolver: zodResolver(postFormSchema),
 		defaultValues: {
 			caption: post ? post.caption[0] : "",
-			file: [],
+			// file: [],
 			location: post ? post.location[0] : "",
 			tags: post ? post.tags.join(",") : "",
 			userId: userDetails && userDetails._id,
@@ -96,20 +103,24 @@ export default function PostForm({ post, action }: IPostFormProps) {
 		},
 	});
 
+	console.log({ form });
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof postFormSchema>) {
-		values;
+		console.log(values);
 		if (post && action === "Update") {
+			console.log("i run");
 			const updatedPost = await updatePost({
 				variables: {
 					userInput: {
-						...values,
-						file: post.file,
+						// ...values,
+						// file: post.file,
 						_id: post._id,
+						caption: values.caption,
+						location: values.location,
+						tags: values.tags,
 					},
 				},
 			});
-
 			if (!updatedPost) {
 				toast({ title: "Please try again" });
 			}
@@ -117,7 +128,6 @@ export default function PostForm({ post, action }: IPostFormProps) {
 		}
 		const { file } = values;
 		try {
-			console.log("i run");
 			setIsPostUploading(true);
 			const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
 			const snapshot = await uploadBytes(imageRef, file[0]);

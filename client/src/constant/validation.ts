@@ -26,6 +26,7 @@ export const postFormSchema = z.object({
 	caption: z.string().min(5, { message: "Caption is too short" }).max(2100, { message: "Caption is too long" }),
 	tags: z.string(),
 	file: z.custom<File[]>(),
+	// file: z.string(),
 	location: z.string().min(0).max(100),
 	userId: z.string().nullable(),
 	createdAt: z.date(),
