@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
 import { AppConstants } from "@/constant/keys";
 import { signInFormSchema } from "@/constant/validation";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
-import useAuth from "@/hooks/query/useAuth";
 import { getValueFromLS, setValueToLS } from "@/lib/utils";
+import { gql, useMutation } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,14 +15,32 @@ import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
+
+const LOGIN_USER = gql`
+  mutation LoginUser($userInput: LoginUserInput!) {
+    loginUser(userInput: $userInput) {
+      avatar
+      email
+      username
+      _id
+      tokens {
+        uniqueBrowserId
+        token
+      }
+    }
+  }
+`;
+
 function SignInForm() {
   const { theme } = useTheme();
   const { setUserDetail, userDetails } = useUserDetail();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const { useSignIn } = useAuth();
-  const { mutate, isSuccess, data, isPending } = useSignIn();
+  // const { useSignIn } = useAuth();
+  // const { mutate, isSuccess, data, isPending } = useSignIn();
   const navigate = useNavigate();
-  console.log(userDetails);
+  const [logoutUser, {data, loading, error}] = useMutation(LOGIN_USER);
+
+
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -36,19 +55,27 @@ function SignInForm() {
   };
 
   function onSubmit(values: z.infer<typeof signInFormSchema>) {
-    mutate(values);
+    // mutate(values);
+    logoutUser({
+      variables:{
+        userInput:values
+      }
+    })
   }
 
   /**
    * redirect the user to home page after successfull login
    */
   useEffect(() => {
-    if (isSuccess) {
+    if (data) {
       navigate("/", { replace: true });
-      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data));
-      setUserDetail(data);
+      setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data.loginUser));
+      setUserDetail(data.loginUser);
     }
-  }, [isSuccess, navigate]);
+    if (error) {
+      toast({title: error.message});
+    }
+  }, [data, navigate,error]);
 
   /**
    * if already token present then move user to home page
@@ -108,7 +135,7 @@ function SignInForm() {
               )}
             />
             <Button type="submit">
-              {isPending ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
+              {loading ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
             </Button>
           </form>
         </Form>
