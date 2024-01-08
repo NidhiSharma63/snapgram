@@ -8,6 +8,7 @@ export const typeDefs = `#graphql
     avatar: String
     bio: String
     tokens: [Token]
+    _id:String
   }
   type Token {
     token: String
