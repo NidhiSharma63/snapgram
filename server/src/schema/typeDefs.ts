@@ -39,6 +39,7 @@ export const typeDefs = `#graphql
 
   type Query {
     getAllPost:[Post]
+    getPostById(_id:String):Post
   }
 
   # inputs 

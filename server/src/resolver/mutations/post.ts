@@ -80,4 +80,14 @@ async function getAllPost() {
 		if (error instanceof Error) handleGraphQLError(error);
 	}
 }
-export { createPost, deletePost, getAllPost, updatePost };
+
+async function getPostById(_: any, args: { _id: string }) {
+	try {
+		const { _id } = args;
+		let getOnePost = await Post.findOne({ _id }).setOptions({ lean: true });
+		return getOnePost;
+	} catch (error) {
+		if (error instanceof Error) handleGraphQLError(error);
+	}
+}
+export { createPost, deletePost, getAllPost, getPostById, updatePost };
