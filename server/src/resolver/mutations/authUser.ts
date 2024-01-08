@@ -31,7 +31,7 @@ async function addUser(_: any, args: { userInput: AddUserInput }) {
 		const { email, password, avatar, bio, username, uniqueBrowserId } = userDetails;
 
 		// check if any field is missing or not
-		if (!email || !password || !email.trim() || !password.trim()) throw new GraphQLError("Email is missing");
+		if (!email || !email.trim()) throw new GraphQLError("Email is missing");
 
 		if (!password || !password.trim()) throwError("Password is missing");
 
