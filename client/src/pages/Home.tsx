@@ -33,7 +33,7 @@ function Home() {
 									/>
 								);
 							})}
-							{posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
+							{data?.getAllPost?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
 						</ul>
 					)}
 				</div>
