@@ -14,6 +14,7 @@ import { storage } from "@/firebase/config";
 import useLikePost from "@/hooks/query/useLikePost";
 import usePost from "@/hooks/query/usePost";
 import useSavePost from "@/hooks/query/useSavePost";
+import { GET_ALL_POSTS } from "@/queries/postQueries";
 import { gql, useMutation } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -55,7 +56,13 @@ const DELETE_POST = gql`
 export default function PostForm({ post, action }: IPostFormProps) {
 	//   const { mutateAsync: createPost, isPending: isUploadingPost } = useCreatePost();
 
-	const [createPost, { loading: isCreatingPost }] = useMutation(CREATE_POST);
+	const [createPost, { loading: isCreatingPost }] = useMutation(CREATE_POST, {
+		refetchQueries: [
+			{
+				query: GET_ALL_POSTS,
+			},
+		],
+	});
 	const [updatePost, { loading: isLoadingUpdate }] = useMutation(UPDATE_POST);
 	const { useCreatePost, useUpdatePost, useDeletePost } = usePost();
 	// const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();

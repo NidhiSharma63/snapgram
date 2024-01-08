@@ -3,22 +3,9 @@ import PostCard from "@/components/shared/PostCard";
 import { IPost, IUser } from "@/constant/interfaces";
 import useAuth from "@/hooks/query/useAuth";
 import usePost from "@/hooks/query/usePost";
-import { gql, useQuery } from "@apollo/client";
+import { GET_ALL_POSTS } from "@/queries/postQueries";
+import { useQuery } from "@apollo/client";
 
-const GET_ALL_POSTS = gql`
-	query GetAllPosts {
-		getAllPost {
-			_id
-			caption
-			createdAt
-			file
-			likes
-			location
-			tags
-			userId
-		}
-	}
-`;
 function Home() {
 	const { useGetAllPost } = usePost();
 	const { data, loading } = useQuery(GET_ALL_POSTS);
