@@ -1,4 +1,4 @@
-import { passwordRegex } from "@/constant/regex";
+import { passwordRegex } from "@/src/constant/regex";
 import * as z from "zod";
 
 export const signInFormSchema = z.object({

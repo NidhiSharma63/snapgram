@@ -1,19 +1,26 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { signInFormSchema } from "@/constant/validation";
+import { Button } from "@/src/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import { Input } from "@/src/components/ui/input";
+import { useToast } from "@/src/components/ui/use-toast";
+import { signInFormSchema } from "@/src/constant/validation";
+import { login } from "@/src/server/authActions/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 function Page() {
+  const { toast } = useToast();
+  const router = useRouter();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [isPending, setIsPending] = useState<boolean>(false);
+  // const [error, setError] = useState(true);
+
   const handleClick = () => {
     setPasswordVisible((prev: boolean) => !prev);
   };
@@ -26,7 +33,24 @@ function Page() {
     },
   });
 
-  const handleSubmit = () => {};
+  const onSubmit = async (values: z.infer<typeof signInFormSchema>) => {
+    setIsPending(true);
+
+    const response = await login(values);
+    console.log(response);
+
+    // if (response?.headers) {
+    //   // Handle any additional logic if needed
+    //   router.push("/home"); // Redirect to home page or dashboard
+    // }
+    // console.log("error", response);
+    // if (response?.error) {
+    //   toast({
+    //     title: response.error,
+    //   });
+    // }
+    setIsPending(false);
+  };
 
   return (
     <div className="w-full h-full border flex justify-between">
@@ -37,7 +61,7 @@ function Page() {
           Welcome back, Please enter your account details
         </p>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="email"
