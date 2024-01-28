@@ -1,12 +1,12 @@
-/** @type {import('next').NextConfig} */
-// import withBundleAnalyzer from "@next/bundle-analyzer";
-
-// withBundleAnalyzer({
-//   enabled: process.env.ANALYZE === "true",
-// });
-
 const nextConfig = {
   reactStrictMode: true,
 };
 
-export default nextConfig;
+// Dynamically import postcss.config.js
+const postcssConfig = await import("./postcss.config.js");
+
+export default {
+  ...nextConfig,
+  // Merge postcssConfig into the exported configuration
+  ...postcssConfig,
+};
