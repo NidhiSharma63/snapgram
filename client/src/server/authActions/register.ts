@@ -79,7 +79,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser._id.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 5000,
+      maxAge: 50,
       secure: true,
       sameSite: "strict",
     });
@@ -88,7 +88,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser.tokens[0].token.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 5000,
+      maxAge: 50,
       secure: true,
       sameSite: "strict",
     });
