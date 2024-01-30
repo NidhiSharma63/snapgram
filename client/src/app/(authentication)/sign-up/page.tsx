@@ -41,8 +41,15 @@ function Page() {
   const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     setIsPending(true);
     const response = await registerUser(values);
-    console.log(response);
+    // console.log(response);
 
+    if (response?.createdUser) {
+      router.push("/");
+    } else {
+      toast({
+        title: response?.error,
+      });
+    }
     setIsPending(false);
   };
 
@@ -128,7 +135,7 @@ function Page() {
         <p className="text-small-regualr text-ligh-2 text-center mt-2">
           Already have Account ?
           <Link href="/login" className="text-primary-500 text-small-semibold ml-1">
-            Sign In
+            login
           </Link>
         </p>
       </div>

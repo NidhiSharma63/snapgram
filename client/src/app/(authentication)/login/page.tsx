@@ -8,7 +8,6 @@ import { signInFormSchema } from "@/src/constant/validation";
 import { login } from "@/src/server/authActions/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
@@ -16,7 +15,6 @@ import { z } from "zod";
 
 function Page() {
   const { toast } = useToast();
-  const router = useRouter();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [isPending, setIsPending] = useState<boolean>(false);
   // const [error, setError] = useState(true);

@@ -98,7 +98,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser.tokens[0].uniqueBrowserId.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 5000,
+      maxAge: 50,
       secure: true,
       sameSite: "strict",
     });
