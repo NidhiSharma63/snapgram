@@ -2,6 +2,7 @@
 
 import User from "@/src/schema/userSchema";
 import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
 type loginValues = {
   email: string;
   password: string;
@@ -30,10 +31,39 @@ export async function login(values: loginValues) {
     const updatedUserWithToken = foundUser.tokens.filter((item) => item.uniqueBrowserId === uniqueBrowserId);
     foundUser.tokens = updatedUserWithToken;
 
+    cookies().set({
+      name: "userId",
+      value: foundUser._id.toString(),
+      httpOnly: true,
+      path: "/",
+      maxAge: 5000,
+      secure: true,
+      sameSite: "strict",
+    });
+    cookies().set({
+      name: "token",
+      value: foundUser.tokens[0].token.toString(),
+      httpOnly: true,
+      path: "/",
+      maxAge: 5000,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    cookies().set({
+      name: "browserId",
+      value: foundUser.tokens[0].uniqueBrowserId.toString(),
+      httpOnly: true,
+      path: "/",
+      maxAge: 50,
+      secure: true,
+      sameSite: "strict",
+    });
+
     return {
       user: foundUser,
     };
-  } catch (error) {
+  } catch (error: any) {
     return { error: error.message };
   }
 }
