@@ -1,13 +1,20 @@
 "use client";
 
-// import logout from "@/src/server/authActions/logout";
-import getUserDetails from "../lib/getUserDetails";
-
+import { toast } from "@/src/components/ui/use-toast";
+import logout from "@/src/server/authActions/logout";
+import { useRouter } from "next/navigation";
 function Page() {
+  const router = useRouter();
   const handleLogout = async () => {
-    const { userId, token } = getUserDetails();
-    console.log({ userId, token });
-    // await logout({ userId, token });
+    console.log("first");
+    const res = await logout();
+    if (res?.message) {
+      router.push("/");
+    } else {
+      toast({
+        title: res?.error,
+      });
+    }
   };
   return (
     <div>

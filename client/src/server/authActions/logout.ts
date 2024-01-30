@@ -8,13 +8,13 @@ const logout = async () => {
   try {
     const { userId, token } = getUserDetails();
 
-    if (!userId) {
+    if (!userId?.value) {
       throw new Error("UserId is Missing");
     }
-    if (!token) {
+    if (!token?.value) {
       throw new Error("Token is Missing");
     }
-    const getUserFromDB = await User.findOne({ _id: userId });
+    const getUserFromDB = await User.findOne({ _id: userId?.value });
 
     if (!getUserFromDB) {
       throw new Error("User not found");

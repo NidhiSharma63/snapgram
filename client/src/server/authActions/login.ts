@@ -61,7 +61,7 @@ export async function login(values: loginValues) {
     });
 
     return {
-      user: foundUser,
+      user: JSON.parse(JSON.stringify(foundUser)),
     };
   } catch (error: any) {
     return { error: error.message };
