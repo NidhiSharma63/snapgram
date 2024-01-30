@@ -1,5 +1,5 @@
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
 // Define the IUser interface for the User model
 interface IUser extends Document {
@@ -60,6 +60,6 @@ userSchema.methods.generateAuthToken = async function (uniqueBrowserId: string) 
 };
 // now we need to create the collection
 // const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 
 export default User;
