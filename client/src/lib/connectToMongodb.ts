@@ -1,16 +1,33 @@
-// creating a start function that will connect to database and run the server
-import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 
-const connectDB = async (uri: string): Promise<typeof mongoose> => {
-  return mongoose.connect(uri, {});
-};
-const connectToMongoDB = async () => {
-  try {
-    await connectDB(process.env.VITE_MONGODB_URI || "");
-    console.log("connected to monogodb");
-  } catch (error) {
-    console.log("::error::", error);
+if (!process.env.VITE_MONGODB_URI) {
+  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+}
+
+const uri = process.env.VITE_MONGODB_URI;
+const options = {};
+
+let client;
+let clientPromise: Promise<MongoClient>;
+
+if (process.env.NODE_ENV === "development") {
+  // In development mode, use a global variable so that the value
+  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  const globalWithMongo = global as typeof globalThis & {
+    _mongoClientPromise?: Promise<MongoClient>;
+  };
+
+  if (!globalWithMongo._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    globalWithMongo._mongoClientPromise = client.connect();
   }
-};
+  clientPromise = globalWithMongo._mongoClientPromise;
+} else {
+  // In production mode, it's best to not use a global variable.
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
 
-export { connectToMongoDB };
+// Export a module-scoped MongoClient promise. By doing this in a
+// separate module, the client can be shared across functions.
+export default clientPromise;
