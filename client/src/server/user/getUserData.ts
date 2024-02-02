@@ -2,8 +2,9 @@
 
 import getUserDetails from "@/src/lib/getUserDetails";
 import User from "@/src/schema/userSchema";
+import { UserType } from "@/src/types/user";
 
-async function getUserData() {
+async function getUserData(): Promise<UserType> {
   try {
     const { token, userId, uniqueBrowserId } = getUserDetails();
     const getUserDetailsFromDB = await User.findOne({ _id: userId?.value });
@@ -14,6 +15,7 @@ async function getUserData() {
     if (!getUserDetailsFromDB || !isValidTokenAndBrowserIdPresent) {
       throw new Error("User not found");
     }
+
     return { user: JSON.parse(JSON.stringify(getUserDetailsFromDB)) };
   } catch (err) {
     return { error: err.message };
