@@ -1,6 +1,5 @@
 "use server";
 
-import connectDB from "@/src/lib/connectToMongodb";
 import User from "@/src/schema/userSchema";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
@@ -29,7 +28,7 @@ type RegisterResponse = {
 async function registerUser(values: registerValues): Promise<RegisterResponse> {
   // console.log("i call all the time");
   try {
-    await connectDB();
+    // await connectDB();
     // const db = clientPromise.db("snapgramNextStaging");
     const { email, password, bio, username, uniqueBrowserId } = values;
 

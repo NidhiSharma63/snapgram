@@ -1,4 +1,5 @@
 import { Toaster } from "@/src/components/ui/toaster";
+import connectDB from "@/src/lib/connectToMongodb";
 import "@/src/styles/global.css";
 
 export const metadata = {
@@ -8,6 +9,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // await connectToMongoDB();
+  await connectDB();
   return (
     <html lang="en">
       <head>
