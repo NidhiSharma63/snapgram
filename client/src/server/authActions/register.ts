@@ -81,7 +81,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser._id.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50,
+      maxAge: 50000,
       secure: true,
       sameSite: "strict",
     });
@@ -90,7 +90,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser.tokens[0].token.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50,
+      maxAge: 50000,
       secure: true,
       sameSite: "strict",
     });
@@ -100,7 +100,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser.tokens[0].uniqueBrowserId.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50,
+      maxAge: 50000,
       secure: true,
       sameSite: "strict",
     });

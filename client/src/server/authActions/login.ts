@@ -36,7 +36,7 @@ export async function login(values: loginValues) {
       value: foundUser._id.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 5000,
+      maxAge: 50000,
       secure: true,
       sameSite: "strict",
     });
@@ -55,7 +55,7 @@ export async function login(values: loginValues) {
       value: foundUser.tokens[0].uniqueBrowserId.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50,
+      maxAge: 50000,
       secure: true,
       sameSite: "strict",
     });
