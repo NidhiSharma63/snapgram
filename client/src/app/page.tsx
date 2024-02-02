@@ -25,13 +25,8 @@ async function Page() {
           ) : (
             <ul className="flex flex-col flex-1 gap-9 w-full">
               {posts?.map((post) => {
-                const findCurrentUser = users?.find((item: User) => item._id === post.userId);
-                return (
-                  <>
-                    {JSON.stringify(post)}
-                    {JSON.stringify(users)}
-                  </>
-                );
+                const findCurrentUser = users?.find((item: User) => item._id === post.userId) as User;
+
                 return <PostCard key={post._id} post={post} user={findCurrentUser} />;
               })}
               {posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
