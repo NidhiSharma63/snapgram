@@ -4,7 +4,7 @@ import getUserDetails from "@/src/lib/getUserDetails";
 import User from "@/src/schema/userSchema";
 import { UserType } from "@/src/types/user";
 
-async function getUserData(): Promise<UserType> {
+async function getActiveUserData(): Promise<UserType> {
   try {
     const { token, userId, uniqueBrowserId } = getUserDetails();
     const getUserDetailsFromDB = await User.findOne({ _id: userId?.value });
@@ -22,4 +22,4 @@ async function getUserData(): Promise<UserType> {
   }
 }
 
-export default getUserData;
+export default getActiveUserData;
