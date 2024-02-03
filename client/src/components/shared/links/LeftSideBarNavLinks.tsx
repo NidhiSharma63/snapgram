@@ -37,6 +37,7 @@ function NavLinks({ userDetails }: { userDetails: User }) {
           width={170}
           onClick={handleClickOnLogo}
           height={36}
+          src="/assets/images/logo-light.svg"
         />
         <div onClick={handleClickOnProfile} className="flex gap-3 items-center">
           <img
