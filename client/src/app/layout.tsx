@@ -29,8 +29,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <>
               <TopBar />
               <LeftBar />
-              <BottomBar />
               <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
+              <BottomBar />
             </>
           )}
         </div>
