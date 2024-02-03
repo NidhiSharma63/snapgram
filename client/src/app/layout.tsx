@@ -1,3 +1,4 @@
+import BottomBar from "@/src/components/shared/BottomBar";
 import LeftBar from "@/src/components/shared/LeftSidebar";
 import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
@@ -14,7 +15,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // await connectToMongoDB();
   await connectDB();
   const { user } = await getActiveUserData();
-  console.log({ user });
+  // console.log({ user });
   return (
     <html lang="en">
       <head>
@@ -28,10 +29,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <>
               <TopBar />
               <LeftBar />
+              <BottomBar />
               <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
             </>
           )}
-          {/* <BottomBar /> */}
         </div>
 
         <Toaster />
