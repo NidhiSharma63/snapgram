@@ -1,4 +1,4 @@
-import TopSidebarNavlinks from "@/src/components/shared/TopSidebarNavlinks";
+import TopSidebarNavlinks from "@/src/components/shared/links/TopSidebarNavlinks";
 import getActiveUserData from "@/src/server/user/getActiveUserData";
 import { User } from "@/src/types/user";
 

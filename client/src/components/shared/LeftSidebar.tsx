@@ -1,4 +1,4 @@
-import NavLinks from "@/src/components/shared/LeftSideBarNavLinks";
+import NavLinks from "@/src/components/shared/links/LeftSideBarNavLinks";
 import getActiveUserData from "@/src/server/user/getActiveUserData";
 import { User } from "@/src/types/user";
 
