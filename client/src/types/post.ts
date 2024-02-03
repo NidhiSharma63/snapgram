@@ -14,3 +14,5 @@ export type PostTypeRes = {
   posts?: PostType[];
   error?: string;
 };
+
+export type PostTypeForCreatingPost = Omit<PostType, "_id">;
