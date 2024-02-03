@@ -1,18 +1,55 @@
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-// import { useAuthContext } from "@/context/AuthContext";
-// import { useCreatePost, useUpdatePost } from "@/lib/react-query/queryAndMutations";
-import FileUploader from "@/components/shared/FileUploader";
-import Loader from "@/components/shared/Loader";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+"use client";
 
-interface IPostFormProps {
-  post?: IPost;
-  action: "Create" | "Update";
-}
+import FileUploader from "@/src/components/shared/fileUploader";
+import { Button } from "@/src/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import { Input } from "@/src/components/ui/input";
+import { Textarea } from "@/src/components/ui/textarea";
+import { postFormSchema } from "@/src/constant/validation";
+import { PostFormProps } from "@/src/types/post";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
-export default function PostForm({ post, action }: IPostFormProps) {
+function PostForm({ post, action, userDetails }: PostFormProps) {
+  const form = useForm<z.infer<typeof postFormSchema>>({
+    resolver: zodResolver(postFormSchema),
+    defaultValues: {
+      caption: post ? post.caption[0] : "",
+      file: [],
+      location: post ? post.location[0] : "",
+      tags: post ? post.tags.join(",") : "",
+      userId: userDetails && userDetails._id,
+      userAvatar: userDetails && userDetails.avatar,
+      createdAt: post ? new Date(post.createdAt) : new Date(),
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof postFormSchema>) {
+    values;
+    if (post && action === "Update") {
+      // const updatedPost = await updatePost({ ...values, file: post.file, _id: post._id });
+      // if (!updatedPost) {
+      //   ToastError({ msg: "Please try again" });
+      // }
+      // return navigate(`/posts/${post._id}`);
+    }
+    // const { file } = values;
+    // try {
+    //   setIsPostUploading(true);
+    //   const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
+    //   const snapshot = await uploadBytes(imageRef, file[0]);
+    //   const url = await getDownloadURL(snapshot.ref);
+    //   const updatedPayload = { ...values, file: url };
+    //   await createPost({ ...updatedPayload });
+    // } catch (error) {
+    //   toast({ title: "Please try again" });
+    //   setIsPostUploading(false);
+    // }
+
+    // navigate("/");
+    // setIsPostUploading(false);
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-9 w-full max-w-5xl">
@@ -73,25 +110,27 @@ export default function PostForm({ post, action }: IPostFormProps) {
             <Button
               type="button"
               className="shad-btn-delete"
-              disabled={
-                isCreatingPost ||
-                isLoadingUpdate ||
-                isDeletingPost ||
-                isRemovingPostFromSaveCollection ||
-                isRemovingPostFromLikeCollection
-              }
-              onClick={handleDeletePost}>
+              //   disabled={
+              //     isCreatingPost ||
+              //     isLoadingUpdate ||
+              //     isDeletingPost ||
+              //     isRemovingPostFromSaveCollection ||
+              //     isRemovingPostFromLikeCollection
+              //   }
+              // onClick={handleDeletePost}
+            >
               Delete
             </Button>
           ) : (
             <Button
               type="button"
               className="shad-button_dark_4"
-              disabled={isCreatingPost || isLoadingUpdate || isDeletingPost || isPostUploading}>
+              //   disabled={isCreatingPost || isLoadingUpdate || isDeletingPost || isPostUploading}
+            >
               Cancel
             </Button>
           )}
-          {isCreatingPost ||
+          {/* {isCreatingPost ||
           isLoadingUpdate ||
           isDeletingPost ||
           isRemovingPostFromSaveCollection ||
@@ -103,9 +142,11 @@ export default function PostForm({ post, action }: IPostFormProps) {
             <Button type="submit" className="shad-button_primary whitespace-nowrap">
               {action === "Update" ? "Update" : "Upload"}
             </Button>
-          )}
+          )} */}
         </div>
       </form>
     </Form>
   );
 }
+
+export default PostForm;

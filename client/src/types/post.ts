@@ -1,3 +1,5 @@
+import { User } from "@/src/types/user";
+
 export type PostType = {
   file: string;
   userId: string;
@@ -16,3 +18,9 @@ export type PostTypeRes = {
 };
 
 export type PostTypeForCreatingPost = Omit<PostType, "_id">;
+
+export type PostFormProps = {
+  post?: PostTypeForCreatingPost;
+  action: "Create" | "Update";
+  userDetails: User;
+};
