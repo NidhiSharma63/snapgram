@@ -1,6 +1,6 @@
 import Loader from "@/src/components/shared/Loader";
 import PostCard from "@/src/components/shared/PostCard";
-import getAllPosts from "@/src/server/getAllPosts";
+import getAllPosts from "@/src/server/post/getAllPosts";
 import getActiveUserData from "@/src/server/user/getActiveUserData";
 import getAllUser from "@/src/server/user/getAllUser";
 import { User } from "@/src/types/user";
