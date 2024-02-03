@@ -2,6 +2,7 @@ import LeftBar from "@/src/components/shared/LeftSidebar";
 import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
 import connectDB from "@/src/lib/connectToMongodb";
+import getActiveUserData from "@/src/server/user/getActiveUserData";
 import "@/src/styles/global.css";
 
 export const metadata = {
@@ -12,6 +13,8 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // await connectToMongoDB();
   await connectDB();
+  const { user } = await getActiveUserData();
+  console.log({ user });
   return (
     <html lang="en">
       <head>
@@ -19,9 +22,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">
-          <TopBar />
-          <LeftBar />
-          <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
+          {!user ? (
+            <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
+          ) : (
+            <>
+              <TopBar />
+              <LeftBar />
+              <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
+            </>
+          )}
           {/* <BottomBar /> */}
         </div>
 
