@@ -1,7 +1,8 @@
+import LeftBar from "@/src/components/shared/LeftSidebar";
+import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
 import connectDB from "@/src/lib/connectToMongodb";
 import "@/src/styles/global.css";
-import LeftBar from "../components/shared/LeftSidebar";
 
 export const metadata = {
   title: "Next.js",
@@ -18,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">
-          {/* <TopBar /> */}
+          <TopBar />
           <LeftBar />
           <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
           {/* <BottomBar /> */}
