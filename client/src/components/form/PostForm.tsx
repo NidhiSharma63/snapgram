@@ -60,7 +60,7 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         setIsPostUploading(false);
         return;
       }
-      console.log(file[0], file);
+      // console.log(file[0], file);
       const imageRef = ref(storage, `/images/${file[0]?.name}-${v4()}`);
       const snapshot = await uploadBytes(imageRef, file[0]);
       const url = await getDownloadURL(snapshot.ref);
