@@ -42,7 +42,7 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof postFormSchema>) {
-    values;
+    console.log("statring", action);
     setIsPostUploading(true);
     if (post && action === "Update") {
       // const updatedPost = await updatePost({ ...values, file: post.file, _id: post._id });
@@ -53,14 +53,22 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
     }
     const { file } = values;
     try {
+      if (file.length === 0) {
+        toast({
+          title: "Please add an image",
+        });
+        setIsPostUploading(false);
+        return;
+      }
       const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
       const snapshot = await uploadBytes(imageRef, file[0]);
       const url = await getDownloadURL(snapshot.ref);
       const updatedPayload = { ...values, file: url };
-      if (typeof updatedPayload.userId === "string") {
-        await createPost({ ...updatedPayload });
-        router.push("/");
-      }
+      console.log("outside");
+
+      console.log("running");
+      await createPost({ ...updatedPayload });
+      router.push("/");
     } catch (error) {
       // ToastError({ msg: "Please try again" });
       console.log({ error });
@@ -164,19 +172,6 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
               {action === "Update" ? "Update" : "Upload"}
             </Button>
           )}
-          {/* {isCreatingPost ||
-          isLoadingUpdate ||
-          isDeletingPost ||
-          isRemovingPostFromSaveCollection ||
-          isPostUploading ? (
-            <Button className="shad-button_primary whitespace-nowrap">
-              <Loader />
-            </Button>
-          ) : (
-            <Button type="submit" className="shad-button_primary whitespace-nowrap">
-              {action === "Update" ? "Update" : "Upload"}
-            </Button>
-          )} */}
         </div>
       </form>
     </Form>
