@@ -2,7 +2,6 @@ import BottomBar from "@/src/components/shared/BottomBar";
 import LeftBar from "@/src/components/shared/LeftSidebar";
 import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
-import connectDB from "@/src/lib/connectToMongodb";
 import getActiveUserData from "@/src/server/user/getActiveUserData";
 import "@/src/styles/global.css";
 
@@ -13,7 +12,8 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // await connectToMongoDB();
-  await connectDB();
+  // await connectDB();
+
   const { user } = await getActiveUserData();
   // console.log({ user });
   return (

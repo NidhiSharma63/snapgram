@@ -1,11 +1,13 @@
 "use server";
 
+import connectDB from "@/src/lib/connectToMongodb";
 import getUserDetails from "@/src/lib/getUserDetails";
 import User from "@/src/schema/userSchema";
 import { UserType } from "@/src/types/user";
 
 async function getActiveUserData(): Promise<UserType> {
   try {
+    await connectDB();
     const { token, userId, uniqueBrowserId } = getUserDetails();
     const getUserDetailsFromDB = await User.findOne({ _id: userId?.value });
 

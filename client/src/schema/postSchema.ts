@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 // Define the IUser interface for the User model
 interface IPost extends Document {
@@ -34,6 +34,8 @@ const postSchema = new mongoose.Schema<IPost>({
 // } else {
 //   mongoose.model<IPost>("Post", postSchema);
 // }
-const Post: Model<IPost> = mongoose?.models?.Post ? mongoose.models.Post : mongoose.model<IPost>("Post", postSchema);
+// const Post: Model<IPost> = mongoose?.models?.Post ? mongoose.models.Post : mongoose.model<IPost>("Post", postSchema);
 
-export default Post;
+export default mongoose.models?.Post || mongoose.model<IPost>("Post", postSchema);
+
+// export default Post;

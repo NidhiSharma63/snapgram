@@ -1,8 +1,12 @@
+"use server";
+
+import connectDB from "@/src/lib/connectToMongodb";
 import Post from "@/src/schema/postSchema";
 import { PostTypeForCreatingPost } from "@/src/types/post";
 
 async function createPost(values: PostTypeForCreatingPost) {
   try {
+    await connectDB();
     const { file, userId, tags, caption, location, createdAt, userAvatar } = values;
 
     if (!file) throw new Error("Image is Missiing");
@@ -18,8 +22,10 @@ async function createPost(values: PostTypeForCreatingPost) {
       likes: [],
     });
     await postCreated.save();
+    // console.log({ "post created": res });
     return { post: JSON.parse(JSON.stringify(postCreated)) };
   } catch (err) {
+    console.log({ err }, "from create post");
     return { error: err.message };
   }
 }

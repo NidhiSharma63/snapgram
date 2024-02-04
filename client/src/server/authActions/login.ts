@@ -1,8 +1,10 @@
 "use server";
 
+import connectDB from "@/src/lib/connectToMongodb";
 import User from "@/src/schema/userSchema";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
+
 type loginValues = {
   email: string;
   password: string;
@@ -11,6 +13,7 @@ type loginValues = {
 
 export async function login(values: loginValues) {
   try {
+    await connectDB();
     const { email, password, uniqueBrowserId } = values;
 
     const foundUser = await User.findOne({ email });

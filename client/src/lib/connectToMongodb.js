@@ -1,3 +1,5 @@
+"use server";
+
 // import { MongoClient } from "mongodb";
 
 // if (!process.env.VITE_MONGODB_URI) {
@@ -60,6 +62,7 @@ async function connectDB() {
       return mongoose;
     });
   }
+  // console.log("connected");
   cached.conn = await cached.promise;
   return cached.conn;
 }

@@ -1,11 +1,13 @@
 "use server";
 
+import connectDB from "@/src/lib/connectToMongodb";
 import getUserDetails from "@/src/lib/getUserDetails";
 import User from "@/src/schema/userSchema";
 import { cookies } from "next/headers";
 
 const logout = async () => {
   try {
+    await connectDB();
     const { userId, token } = getUserDetails();
 
     if (!userId?.value) {

@@ -22,8 +22,6 @@ const firebaseConfig: IFirebase = {
   appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
-console.log(process.env.NEXT_PUBLIC_FIREBASE_API_KEY, "apikey");
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // Initialize Cloud Storage and get a reference to the service

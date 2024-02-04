@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   // await connectDB();
-
+  console.log(" i run very very very first ");
   const token = request.cookies.get("token");
   const userId = request.cookies.get("userId");
   const uniqueBrowserId = request.cookies.get("browserId");

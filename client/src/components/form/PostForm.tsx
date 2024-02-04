@@ -42,7 +42,7 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof postFormSchema>) {
-    console.log("statring", action);
+    // console.log("statring", action);
     setIsPostUploading(true);
     if (post && action === "Update") {
       // const updatedPost = await updatePost({ ...values, file: post.file, _id: post._id });
@@ -60,15 +60,18 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         setIsPostUploading(false);
         return;
       }
-      const imageRef = ref(storage, `/images/${file[0]}-${v4()}`);
+      console.log(file[0], file);
+      const imageRef = ref(storage, `/images/${file[0]?.name}-${v4()}`);
       const snapshot = await uploadBytes(imageRef, file[0]);
       const url = await getDownloadURL(snapshot.ref);
       const updatedPayload = { ...values, file: url };
-      console.log("outside");
+      // console.log("outside");
 
-      console.log("running");
-      await createPost({ ...updatedPayload });
-      router.push("/");
+      // console.log("running");
+      const { post } = await createPost({ ...updatedPayload });
+      if (post) {
+        router.push("/");
+      }
     } catch (error) {
       // ToastError({ msg: "Please try again" });
       console.log({ error });
