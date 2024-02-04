@@ -29,6 +29,11 @@ const postSchema = new mongoose.Schema<IPost>({
   likes: [String],
 });
 
-const Post: Model<IPost> = mongoose.models.Post || mongoose.model<IPost>("Post", postSchema);
+// if( mongoose?.models?.Post ){
+
+// } else {
+//   mongoose.model<IPost>("Post", postSchema);
+// }
+const Post: Model<IPost> = mongoose?.models?.Post ? mongoose.models.Post : mongoose.model<IPost>("Post", postSchema);
 
 export default Post;

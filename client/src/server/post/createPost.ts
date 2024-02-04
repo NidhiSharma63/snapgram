@@ -1,7 +1,7 @@
 import Post from "@/src/schema/postSchema";
 import { PostTypeForCreatingPost } from "@/src/types/post";
 
-async function createPost({ values }: { values: PostTypeForCreatingPost }) {
+async function createPost(values: PostTypeForCreatingPost) {
   try {
     const { file, userId, tags, caption, location, createdAt, userAvatar } = values;
 

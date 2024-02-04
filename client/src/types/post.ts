@@ -17,7 +17,16 @@ export type PostTypeRes = {
   error?: string;
 };
 
-export type PostTypeForCreatingPost = Omit<PostType, "_id">;
+export type PostTypeForCreatingPost = {
+  caption: string;
+  file: string;
+  location: string;
+  tags: string;
+  userId: string | null;
+  userAvatar: string | null;
+  createdAt: Date;
+};
+// export type PostTypeForCreatingPostFromClientSide = Omit<PostType, "_id">;
 
 export type PostFormProps = {
   post?: PostTypeForCreatingPost;

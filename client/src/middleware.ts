@@ -1,7 +1,9 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // await connectDB();
+
   const token = request.cookies.get("token");
   const userId = request.cookies.get("userId");
   const uniqueBrowserId = request.cookies.get("browserId");
