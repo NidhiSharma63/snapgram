@@ -1,9 +1,9 @@
 "use client";
 
-import { multiFormatDateString } from "@/src/lib/utils";
 import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
 import Link from "next/link";
+import ShowTime from "./showTime";
 // type PostCardProps = {
 //   post: Models.Document;
 // };
@@ -38,10 +38,8 @@ export default function PostCard({
                 <div className="flex flex-col">
                   <p className="base-medium lg:body-bold dark:text-light-1">{user?.username}</p>
                   <div className="flex-center gap-2 text-light-3">
-                    <p className="subtle-semibold lg:small-reguler">
-                      {multiFormatDateString(post.createdAt.toString())}
-                    </p>
-                    -<p className="subtle-semibold lg:small-reguler">{post.location}</p>
+                    <ShowTime createdAt={post?.createdAt} />-
+                    <p className="subtle-semibold lg:small-reguler">{post.location}</p>
                   </div>
                 </div>
               </div>
