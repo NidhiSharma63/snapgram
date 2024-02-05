@@ -21,7 +21,7 @@ export default function PostCard({
   // const { user: userDetails } = await getActiveUserData();
 
   return (
-    <ul className="mb-10">
+    <ul className="flex flex-col flex-1 gap-9 w-full">
       {posts.map((post: PostType) => {
         const user = users?.find((item: User) => item._id === post.userId) as User;
 
