@@ -2,6 +2,7 @@
 
 import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
+import Image from "next/image";
 import Link from "next/link";
 import ShowTime from "./showTime";
 // type PostCardProps = {
@@ -20,7 +21,7 @@ export default function PostCard({
   // const { user: userDetails } = await getActiveUserData();
 
   return (
-    <ul>
+    <ul className="mb-10">
       {posts.map((post: PostType) => {
         const user = users?.find((item: User) => item._id === post.userId) as User;
 
@@ -29,8 +30,10 @@ export default function PostCard({
             <div className="flex-between">
               <div className="flex items-center gap-3">
                 <Link href={`/profile/${post?.userId}`}>
-                  <img
-                    className="rounded-full w-12 lg:h-12 object-cover"
+                  <Image
+                    width={12}
+                    height={12}
+                    className="rounded-full object-cover"
                     alt="creator"
                     src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
                   />
@@ -46,7 +49,7 @@ export default function PostCard({
               <Link
                 href={`/update-post/${post._id}`}
                 className={`${userDetails && userDetails._id !== post.userId && "hidden"} `}>
-                <img src="/assets/icons/edit.svg" width={20} height={20} alt="edit" />
+                <Image src="/assets/icons/edit.svg" width={20} height={20} alt="edit" />
               </Link>
             </div>
             <Link href={`/posts/${post._id}`}>
@@ -62,10 +65,12 @@ export default function PostCard({
                   })}
                 </ul>
               </div>
-              <img
+              <Image
+                width={500}
+                height={500}
                 className="post-card_img"
                 alt="post image"
-                src={post.file || "/assets/icons/profile-placholder.svg"}
+                src={post?.file || "/assets/icons/profile-placholder.svg"}
               />
             </Link>
 
