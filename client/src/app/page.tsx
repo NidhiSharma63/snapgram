@@ -8,7 +8,7 @@ import { User } from "@/src/types/user";
 async function Page() {
   const { users, error: usersError } = await getAllUser();
   const { posts, error: postError } = await getAllPosts();
-  const { error: activeUserError } = await getActiveUserData();
+  const { error: activeUserError, user: userDetails } = await getActiveUserData();
   console.log({ users, posts });
 
   // if (usersError || postError) return <div>{usersError || postError}</div>;
@@ -23,14 +23,10 @@ async function Page() {
           ) : !users || !posts ? (
             <Loader />
           ) : (
-            <ul className="flex flex-col flex-1 gap-9 w-full">
-              {posts?.map((post) => {
-                const findCurrentUser = users?.find((item: User) => item._id === post.userId) as User;
-
-                return <PostCard key={post._id} post={post} user={findCurrentUser} />;
-              })}
+            <>
+              <PostCard posts={posts} users={users} userDetails={userDetails as User} />;
               {posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
-            </ul>
+            </>
           )}
         </div>
       </div>
@@ -39,6 +35,13 @@ async function Page() {
 }
 
 export default Page;
+
+{
+  /* <>
+<PostCard posts={posts} users={users} userDetails={userDetails as User} />;
+{posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
+</> */
+}
 
 // const handleLogout = async () => {
 //   const res = await logout();
