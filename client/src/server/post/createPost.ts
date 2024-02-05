@@ -3,6 +3,7 @@
 import connectDB from "@/src/lib/connectToMongodb";
 import Post from "@/src/schema/postSchema";
 import { PostTypeForCreatingPost } from "@/src/types/post";
+import { revalidatePath } from "next/cache";
 
 async function createPost(values: PostTypeForCreatingPost) {
   try {
@@ -23,6 +24,7 @@ async function createPost(values: PostTypeForCreatingPost) {
     });
     await postCreated.save();
     // console.log({ "post created": res });
+    revalidatePath("/");
     return { post: JSON.parse(JSON.stringify(postCreated)) };
   } catch (err) {
     console.log({ err }, "from create post");

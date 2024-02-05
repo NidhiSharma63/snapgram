@@ -69,7 +69,9 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
 
       // console.log("running");
       const { post } = await createPost({ ...updatedPayload });
+      console.log({ post });
       if (post) {
+        // revalidatePath("/");
         router.push("/");
       }
     } catch (error) {

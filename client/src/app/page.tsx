@@ -24,7 +24,7 @@ async function Page() {
             <Loader />
           ) : (
             <>
-              <PostCard posts={posts} users={users} userDetails={userDetails as User} />;
+              <PostCard posts={posts} users={users} userDetails={userDetails as User} />
               {posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
             </>
           )}
