@@ -42,15 +42,8 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof postFormSchema>) {
-    // console.log("statring", action);
     setIsPostUploading(true);
-    if (post && action === "Update") {
-      // const updatedPost = await updatePost({ ...values, file: post.file, _id: post._id });
-      // if (!updatedPost) {
-      //   ToastError({ msg: "Please try again" });
-      // }
-      // return navigate(`/posts/${post._id}`);
-    }
+
     const { file } = values;
     try {
       if (file.length === 0) {
@@ -60,27 +53,18 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         setIsPostUploading(false);
         return;
       }
-      // console.log(file[0], file);
       const imageRef = ref(storage, `/images/${file[0]?.name}-${v4()}`);
       const snapshot = await uploadBytes(imageRef, file[0]);
       const url = await getDownloadURL(snapshot.ref);
       const updatedPayload = { ...values, file: url };
-      // console.log("outside");
-
-      // console.log("running");
       const { post } = await createPost({ ...updatedPayload });
-      console.log({ post });
       if (post) {
-        // revalidatePath("/");
         router.push("/");
       }
     } catch (error) {
-      // ToastError({ msg: "Please try again" });
-      console.log({ error });
-      // toast({
-      //   title: error,
-      // });
-
+      toast({
+        title: error.message,
+      });
       setIsPostUploading(false);
     }
     setIsPostUploading(false);
@@ -184,3 +168,10 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
 }
 
 export default PostForm;
+
+// if (error) {
+//   toast({
+//     title: error,
+//   });
+// }
+// console.log({ error }, "upper wala part");

@@ -9,7 +9,6 @@ async function createPost(values: PostTypeForCreatingPost) {
   try {
     await connectDB();
     const { file, userId, tags, caption, location, createdAt, userAvatar } = values;
-
     if (!file) throw new Error("Image is Missiing");
 
     const postCreated = new Post({
@@ -23,12 +22,10 @@ async function createPost(values: PostTypeForCreatingPost) {
       likes: [],
     });
     await postCreated.save();
-    // console.log({ "post created": res });
     revalidatePath("/");
     return { post: JSON.parse(JSON.stringify(postCreated)) };
-  } catch (err) {
-    console.log({ err }, "from create post");
-    return { error: err.message };
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 
