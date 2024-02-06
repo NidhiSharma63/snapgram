@@ -1,5 +1,5 @@
 import NavLinks from "@/src/components/shared/links/LeftSideBarNavLinks";
-import getActiveUserData from "@/src/server/user/getActiveUserData";
+import { getActiveUserData } from "@/src/server/user";
 import { User } from "@/src/types/user";
 
 export default async function LeftBar() {

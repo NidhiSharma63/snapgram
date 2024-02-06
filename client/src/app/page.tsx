@@ -1,8 +1,7 @@
 import Loader from "@/src/components/shared/Loader";
 import PostCard from "@/src/components/shared/PostCard";
-import getAllPosts from "@/src/server/post/getAllPosts";
-import getActiveUserData from "@/src/server/user/getActiveUserData";
-import getAllUser from "@/src/server/user/getAllUser";
+import { getAllPosts } from "@/src/server/post";
+import { getActiveUserData, getAllUser } from "@/src/server/user";
 import { User } from "@/src/types/user";
 
 async function Page() {

@@ -8,7 +8,7 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { storage } from "@/src/constant/firebase/config";
 import { postFormSchema } from "@/src/constant/validation";
-import createPost from "@/src/server/post/createPost";
+import { createPost } from "@/src/server/post";
 import { PostFormProps } from "@/src/types/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";

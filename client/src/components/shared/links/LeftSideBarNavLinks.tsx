@@ -3,7 +3,7 @@
 import { Button } from "@/src/components/ui/button";
 import { sidebarLinks } from "@/src/constant/link";
 import ToastError from "@/src/lib/toastError";
-import logout from "@/src/server/authActions/logout";
+import { logout } from "@/src/server/auth";
 import { User } from "@/src/types/user";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

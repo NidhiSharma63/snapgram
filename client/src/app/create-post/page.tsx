@@ -1,6 +1,6 @@
 import PostForm from "@/src/components/form/PostForm";
+import { getActiveUserData } from "@/src/server/user";
 import { User } from "@/src/types/user";
-import getActiveUserData from "@/src/server/user/getActiveUserData";
 
 async function Page() {
   const { user } = await getActiveUserData();

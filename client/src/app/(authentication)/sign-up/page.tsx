@@ -6,7 +6,7 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { useToast } from "@/src/components/ui/use-toast";
 import { signUpFormSchema } from "@/src/constant/validation";
-import registerUser from "@/src/server/authActions/register";
+import { registerUser } from "@/src/server/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

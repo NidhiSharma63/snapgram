@@ -5,7 +5,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/src/components/ui/input";
 import { useToast } from "@/src/components/ui/use-toast";
 import { signInFormSchema } from "@/src/constant/validation";
-import { login } from "@/src/server/authActions/login";
+import { login } from "@/src/server/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

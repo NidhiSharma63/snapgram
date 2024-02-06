@@ -1,5 +1,5 @@
 import TopSidebarNavlinks from "@/src/components/shared/links/TopSidebarNavlinks";
-import getActiveUserData from "@/src/server/user/getActiveUserData";
+import { getActiveUserData } from "@/src/server/user";
 import { User } from "@/src/types/user";
 
 export default async function TopBar() {

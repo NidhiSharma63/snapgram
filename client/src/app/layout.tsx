@@ -2,7 +2,7 @@ import BottomBar from "@/src/components/shared/BottomBar";
 import LeftBar from "@/src/components/shared/LeftSidebar";
 import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
-import getActiveUserData from "@/src/server/user/getActiveUserData";
+import { getActiveUserData } from "@/src/server/user";
 import "@/src/styles/global.css";
 
 export const metadata = {
