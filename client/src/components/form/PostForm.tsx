@@ -31,7 +31,7 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
       caption: post ? post.caption[0] : "",
       file: [],
       location: post ? post.location[0] : "",
-      tags: post ? post.tags : "",
+      tags: post ? (Array.isArray(post.tags) ? post.tags : [post.tags]) : [],
       userId: userDetails && userDetails._id,
       userAvatar: userDetails && userDetails.avatar,
       createdAt: post ? new Date(post.createdAt) : new Date(),
@@ -47,20 +47,24 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
 
     const { file } = values;
     try {
-      if (file.length === 0) {
-        toast({
-          title: "Please add an image",
-        });
-        setIsPostUploading(false);
-        return;
-      }
-      const imageRef = ref(storage, `/images/${file[0]?.name}-${v4()}`);
-      const snapshot = await uploadBytes(imageRef, file[0]);
-      const url = await getDownloadURL(snapshot.ref);
-      const updatedPayload = { ...values, file: url };
-      const { post } = await createPost({ ...updatedPayload });
-      if (post) {
-        router.push("/");
+      if (action === "Update") {
+        console.log("updae");
+      } else {
+        if (file.length === 0) {
+          toast({
+            title: "Please add an image",
+          });
+          setIsPostUploading(false);
+          return;
+        }
+        const imageRef = ref(storage, `/images/${file[0]?.name}-${v4()}`);
+        const snapshot = await uploadBytes(imageRef, file[0]);
+        const url = await getDownloadURL(snapshot.ref);
+        const updatedPayload = { ...values, file: url };
+        const { post } = await createPost({ ...updatedPayload });
+        if (post) {
+          router.push("/");
+        }
       }
     } catch (error) {
       toast({

@@ -23,7 +23,7 @@ export const signUpFormSchema = z.object({
 
 export const postFormSchema = z.object({
   caption: z.string().min(5, { message: "Caption is too short" }).max(2100, { message: "Caption is too long" }),
-  tags: z.string(),
+  tags: z.string().array(),
   file: z.custom<File[]>(),
   location: z.string().min(0).max(100),
   userId: z.string().nullable(),

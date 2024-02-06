@@ -21,7 +21,7 @@ export type PostTypeForCreatingPost = {
   caption: string;
   file: string;
   location: string;
-  tags: string;
+  tags: string[];
   userId: string | null;
   userAvatar: string | null;
   createdAt: Date;
