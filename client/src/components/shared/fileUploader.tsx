@@ -5,16 +5,11 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 
 type fileUploaderProps = {
   fieldChange: (FILES: File[]) => void;
-  mediaUrl: string;
   isComponentUserInProfilePage?: boolean;
 };
 
-export default function FileUploader({
-  fieldChange,
-  mediaUrl,
-  isComponentUserInProfilePage = false,
-}: fileUploaderProps) {
-  const [fileUrl, setFileUrl] = useState(mediaUrl);
+export default function FileUploader({ fieldChange, isComponentUserInProfilePage = false }: fileUploaderProps) {
+  const [fileUrl, setFileUrl] = useState("");
   // const [file, setFile] = useState<File[]>([]);
 
   const onDrop = useCallback(
@@ -40,7 +35,7 @@ export default function FileUploader({
       {fileUrl ? (
         <>
           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
-            <img src={fileUrl || mediaUrl} alt="image" className="file_uploader-img" />
+            <img src={fileUrl} alt="image" className="file_uploader-img" />
           </div>
           <p className="file_uploader-label">Click or drag photo to replace</p>
         </>

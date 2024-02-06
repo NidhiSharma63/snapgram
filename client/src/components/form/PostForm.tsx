@@ -12,6 +12,7 @@ import { createPost } from "@/src/server/post";
 import { PostFormProps } from "@/src/types/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -85,19 +86,29 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="file"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="shad-form_label">Add Photos</FormLabel>
-              <FormControl>
-                <FileUploader fieldChange={field.onChange} mediaUrl={post ? post?.file : ""} />
-              </FormControl>
-              <FormMessage className="shad-form_message" />
-            </FormItem>
-          )}
-        />
+        {action === "Update" ? (
+          <Image
+            width={500}
+            height={500}
+            src={post?.file || ""}
+            alt="Image"
+            className="post-card_img bg-off-white py-5"
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="shad-form_label">Add Photos</FormLabel>
+                <FormControl>
+                  <FileUploader fieldChange={field.onChange} />
+                </FormControl>
+                <FormMessage className="shad-form_message" />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="location"

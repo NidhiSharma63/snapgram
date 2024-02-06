@@ -41,4 +41,14 @@ async function getAllPosts(): Promise<PostTypeRes> {
   }
 }
 
-export { createPost, getAllPosts };
+/** get post by ID */
+async function getPostById(id: string) {
+  try {
+    await connectDB();
+    const post = await Post.findOne({ _id: id });
+    return { post: JSON.parse(JSON.stringify(post)) };
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export { createPost, getAllPosts, getPostById };
