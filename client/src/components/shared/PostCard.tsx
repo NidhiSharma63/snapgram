@@ -31,8 +31,8 @@ export default function PostCard({
               <div className="flex items-center gap-3">
                 <Link href={`/profile/${post?.userId}`}>
                   <Image
-                    width={12}
-                    height={12}
+                    width={40}
+                    height={40}
                     className="rounded-full object-cover"
                     alt="creator"
                     src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
