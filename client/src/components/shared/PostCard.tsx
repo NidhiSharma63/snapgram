@@ -56,10 +56,10 @@ export default function PostCard({
               <div className="small-medium lg:base-meduim py-5">
                 <p>{post.caption}</p>
                 <ul className="flex gap-1 mt-2">
-                  {post.tags?.[0].split(",").map((tag: string) => {
+                  {post.tags.split(",").map((tag: string) => {
                     return (
                       <li key={tag} className="text-light-3">
-                        #{tag.trim()}
+                        {tag.trim()?.length > 0 && "#" + tag.trim()}
                       </li>
                     );
                   })}

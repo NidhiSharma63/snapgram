@@ -8,7 +8,7 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { storage } from "@/src/constant/firebase/config";
 import { postFormSchema } from "@/src/constant/validation";
-import { createPost } from "@/src/server/post";
+import { createPost, updatePost } from "@/src/server/post";
 import { PostFormProps } from "@/src/types/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -28,10 +28,10 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
     defaultValues: {
-      caption: post ? post.caption[0] : "",
+      caption: post ? post?.caption : "",
       file: [],
-      location: post ? post.location[0] : "",
-      tags: post ? (Array.isArray(post.tags) ? post.tags : [post.tags]) : [],
+      location: post ? post?.location : "",
+      tags: post ? post?.tags : "",
       userId: userDetails && userDetails._id,
       userAvatar: userDetails && userDetails.avatar,
       createdAt: post ? new Date(post.createdAt) : new Date(),
@@ -49,6 +49,10 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
     try {
       if (action === "Update") {
         console.log("updae");
+        if (post?._id) {
+          const { tags, location, caption } = values;
+          updatePost({ _id: post?._id, tags, location, caption });
+        }
       } else {
         if (file.length === 0) {
           toast({

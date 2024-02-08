@@ -70,7 +70,7 @@ async function login(values: loginValues) {
       value: foundUser.tokens[0].token.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 5000,
+      maxAge: 50000,
       secure: true,
       sameSite: "strict",
     });
@@ -88,8 +88,8 @@ async function login(values: loginValues) {
     return {
       user: JSON.parse(JSON.stringify(foundUser)),
     };
-  } catch (error: any) {
-    return { error: error.message };
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 
@@ -116,38 +116,12 @@ const logout = async () => {
     // saving user to database after updatig the token
     await getUserFromDB.save();
 
-    cookies().set({
-      name: "userId",
-      value: "",
-      httpOnly: true,
-      path: "/",
-      maxAge: 0,
-      secure: true,
-      sameSite: "strict",
-    });
-
-    cookies().set({
-      name: "token",
-      value: "",
-      httpOnly: true,
-      path: "/",
-      maxAge: 0,
-      secure: true,
-      sameSite: "strict",
-    });
-
-    cookies().set({
-      name: "browserId",
-      value: "",
-      httpOnly: true,
-      path: "/",
-      maxAge: 0,
-      secure: true,
-      sameSite: "strict",
-    });
+    cookies().delete("userId");
+    cookies().delete("token");
+    cookies().delete("browserId");
     return { message: "successfully logged out" };
   } catch (error) {
-    return { error: error.message };
+    return Promise.reject(error);
   }
 };
 
