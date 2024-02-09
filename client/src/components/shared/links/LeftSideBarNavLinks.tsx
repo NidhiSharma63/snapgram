@@ -43,7 +43,7 @@ function NavLinks({ userDetails }: { userDetails: User }) {
           <img
             alt="profile"
             src={(userDetails && userDetails?.avatar) || "/assets/icons/profile-placeholder.svg"}
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full object-cover"
           />
           <div className="flex flex-col">
             <p className="body-bold">@{userDetails?.username}</p>

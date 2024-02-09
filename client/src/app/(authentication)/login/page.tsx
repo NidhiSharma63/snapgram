@@ -34,15 +34,16 @@ function Page() {
   });
 
   const onSubmit = async (values: z.infer<typeof signInFormSchema>) => {
-    setIsPending(true);
+    try {
+      setIsPending(true);
 
-    const response = await login(values);
-    if (response?.user) {
+      await login(values);
       router.push("/");
-    } else {
+    } catch (error) {
       toast({
-        title: response?.error,
+        title: error?.message,
       });
+      setIsPending(false);
     }
 
     setIsPending(false);
