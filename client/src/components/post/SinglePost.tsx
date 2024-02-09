@@ -137,9 +137,11 @@ function SinglePost({
 
       <div className="w-full max-w-5xl">
         <hr className="border w-full border-dark-4/80" />
-
         {relatedPost?.length > 0 ? (
-          <GridPostList posts={relatedPost} usersData={allUsers} />
+          <>
+            <h3 className="body-bold md:h3-bold w-full my-10">More related Post</h3>
+            <GridPostList posts={relatedPost} usersData={allUsers} />
+          </>
         ) : (
           <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
         )}
