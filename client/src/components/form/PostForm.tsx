@@ -51,7 +51,10 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         console.log("updae");
         if (post?._id) {
           const { tags, location, caption } = values;
-          updatePost({ _id: post?._id, tags, location, caption });
+          const { post: updatedPost } = await updatePost({ _id: post?._id, tags, location, caption });
+          if (updatedPost) {
+            router.push("/");
+          }
         }
       } else {
         if (file.length === 0) {
