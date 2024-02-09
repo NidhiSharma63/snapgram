@@ -11,7 +11,7 @@ async function getAllUser(): Promise<UserTypeArray> {
     const getUsersFromDB = await User.find();
     return { users: JSON.parse(JSON.stringify(getUsersFromDB)) };
   } catch (err) {
-    return { error: err.message };
+    return Promise.reject(err);
   }
 }
 
@@ -30,8 +30,18 @@ async function getActiveUserData(): Promise<UserType> {
 
     return { user: JSON.parse(JSON.stringify(getUserDetailsFromDB)) };
   } catch (err) {
-    return { error: err.message };
+    return Promise.reject(err);
+  }
+}
+async function getUserById(_id: string) {
+  try {
+    await connectDB();
+    const getUserDetailsFromDB = await User.findOne({ _id });
+    if (!getUserDetailsFromDB) throw new Error("User not found");
+    return { user: JSON.parse(JSON.stringify(getUserDetailsFromDB)) };
+  } catch (err) {
+    return Promise.reject(err);
   }
 }
 
-export { getActiveUserData, getAllUser };
+export { getActiveUserData, getAllUser, getUserById };

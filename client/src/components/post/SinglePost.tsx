@@ -1,17 +1,59 @@
 "use client";
 
+import { storage } from "@/src/constant/firebase/config";
+import { multiFormatDateString } from "@/src/lib/utils";
+import { deletePost } from "@/src/server/post";
 import { PostType } from "@/src/types/post";
+import { User } from "@/src/types/user";
+import { deleteObject, ref } from "firebase/storage";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import GridPostList from "../explore/GridPostList";
 import Loader from "../shared/Loader";
 import { Button } from "../ui/button";
-
-function SinglePost({ post }: { post: PostType }) {
+import { useToast } from "../ui/use-toast";
+function SinglePost({
+  post,
+  activeUser,
+  userWhoCreatedPost,
+  relatedPost,
+  allUsers,
+}: {
+  post: PostType;
+  activeUser: User;
+  userWhoCreatedPost: User;
+  relatedPost: PostType[];
+  allUsers: User[];
+}) {
   const router = useRouter();
+  const [createdTime, setCreatedTime] = useState(post?.createdAt.toString());
+  const [isDeletingPost, setIsDeletingPost] = useState(false);
+  const { toast } = useToast();
 
+  useEffect(() => {
+    setCreatedTime(multiFormatDateString(post?.createdAt.toString()));
+  }, [post?.createdAt]);
   const handleBackButton = () => {
     router.back();
   };
+
+  const handleDeletePost = async () => {
+    setIsDeletingPost(true);
+    try {
+      const storageRef = ref(storage, post.file);
+      await deleteObject(storageRef);
+      await deletePost({ _id: post?._id });
+      setIsDeletingPost(false);
+      router.push("/");
+    } catch (error) {
+      toast({
+        title: error.message,
+      });
+    }
+  };
+  console.log({ post });
   return (
     <div className="post_details-container mt-98">
       <div className=" md:flex max-w-5xl w-full">
@@ -38,40 +80,38 @@ function SinglePost({ post }: { post: PostType }) {
 
           <div className="post_details-info">
             <div className="flex-between w-full">
-              {/* <Link to={`/profile/${post?.userId}`} className="flex items-center gap-3">
-            <img
-              src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
-              alt="creator"
-              className="w-8 h-8 lg:w-12 lg:h-12 rounded-full object-cover"
-            />
-            <div className="flex gap-1 flex-col">
-              <p className="base-medium lg:body-bold dark:text-light-1">{user?.username}</p>
-              <div className="flex-center gap-2 text-light-3">
-                <p className="subtle-semibold lg:small-regular ">{multiFormatDateString(post?.createdAt)}</p>•
-                <p className="subtle-semibold lg:small-regular">{post?.location[0]}</p>
-              </div>
-            </div>
-          </Link> */}
+              <Link href={`/profile/${post?.userId}`} className="flex items-center gap-3">
+                <img
+                  src={userWhoCreatedPost?.avatar || "/assets/icons/profile-placeholder.svg"}
+                  alt="creator"
+                  className="w-8 h-8 lg:w-12 lg:h-12 rounded-full object-cover"
+                />
+                <div className="flex gap-1 flex-col">
+                  <p className="base-medium lg:body-bold dark:text-light-1">{userWhoCreatedPost?.username}</p>
+                  <div className="flex-center gap-2 text-light-3">
+                    <p className="subtle-semibold lg:small-regular ">{createdTime}</p>•
+                    <p className="subtle-semibold lg:small-regular">{post?.location[0]}</p>
+                  </div>
+                </div>
+              </Link>
 
               <div className="flex-center gap-4">
-                {/* <Link
-              to={`/update-post/${post?._id}`}
-              className={`${userDetails && userDetails._id !== post?.userId && "hidden"}`}>
-              <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
-            </Link> */}
+                <Link
+                  href={`/update-post/${post?._id}`}
+                  className={`${activeUser && activeUser._id !== post?.userId && "hidden"}`}>
+                  <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
+                </Link>
 
-                {/* {isDeletingPost ? (
-              <Loader />
-            ) : (
-              <Button
-                onClick={handleDeletePost}
-                variant="ghost"
-                className={`ghost_details-delete_btn ${
-                  userDetails && userDetails._id !== post?.userId && "hidden"
-                }`}>
-                <img src={"/assets/icons/delete.svg"} alt="delete" width={24} height={24} />
-              </Button>
-            )} */}
+                {isDeletingPost ? (
+                  <Loader />
+                ) : (
+                  <Button
+                    onClick={handleDeletePost}
+                    variant="ghost"
+                    className={`ghost_details-delete_btn ${activeUser && activeUser._id !== post?.userId && "hidden"}`}>
+                    <img src={"/assets/icons/delete.svg"} alt="delete" width={24} height={24} />
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -83,7 +123,7 @@ function SinglePost({ post }: { post: PostType }) {
                 {post?.tags?.[0].split(",").map((tag: string) => {
                   return (
                     <li key={tag} className="text-light-3">
-                      #{tag.trim()}
+                      {tag.trim()?.length > 0 && "#" + tag.trim()}
                     </li>
                   );
                 })}
@@ -98,18 +138,11 @@ function SinglePost({ post }: { post: PostType }) {
       <div className="w-full max-w-5xl">
         <hr className="border w-full border-dark-4/80" />
 
-        {/* {relatedPost?.length > 0 ? (
-      <>
-        <h3 className="body-bold md:h3-bold w-full my-10">More Related Posts</h3>
-        {isLoadingAllPost || isLoadingAllUser ? (
-          <Loader />
+        {relatedPost?.length > 0 ? (
+          <GridPostList posts={relatedPost} usersData={allUsers} />
         ) : (
-          <GridPostList posts={relatedPost} usersData={allUser} />
+          <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
         )}
-      </>
-    ) : (
-      <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
-    )} */}
       </div>
     </div>
   );

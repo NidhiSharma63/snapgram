@@ -2,7 +2,7 @@ const nextConfig = {
   reactStrictMode: true,
   /** image source thats allowed */
   images: {
-    domains: ["firebasestorage.googleapis.com"],
+    remotePatterns: [{ protocol: "https", hostname: "firebasestorage.googleapis.com", port: "", pathname: "" }],
   },
 };
 
