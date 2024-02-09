@@ -37,7 +37,7 @@ async function getAllPosts(): Promise<PostTypeRes> {
     const getAllPost = await Post.find().sort({ createdAt: -1 }).setOptions({ lean: true });
     return { posts: JSON.parse(JSON.stringify(getAllPost)) };
   } catch (err) {
-    return { error: err.message };
+    return Promise.reject(err);
   }
 }
 

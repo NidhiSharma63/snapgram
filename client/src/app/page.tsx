@@ -8,7 +8,7 @@ async function Page() {
   const { users, error: usersError } = await getAllUser();
   const { posts, error: postError } = await getAllPosts();
   const { error: activeUserError, user: userDetails } = await getActiveUserData();
-  console.log({ users, posts });
+  // console.log({ users, posts });
 
   // if (usersError || postError) return <div>{usersError || postError}</div>;
 

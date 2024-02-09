@@ -202,10 +202,3 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
 }
 
 export default PostForm;
-
-// if (error) {
-//   toast({
-//     title: error,
-//   });
-// }
-// console.log({ error }, "upper wala part");
