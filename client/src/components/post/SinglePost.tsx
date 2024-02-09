@@ -24,8 +24,17 @@ function SinglePost({ post }: { post: PostType }) {
       {!post ? (
         <Loader />
       ) : (
-        <div className="post_details-card">
-          <Image src={post?.file} alt="creator" width={500} height={500} className="post_details-img" />
+        <div className="post_details-card md:py-10 pt-10">
+          <div className="flex py-3 relative h-80 lg:h-[480px] xl:w-[48%] rounded-t-[30px] xl:rounded-l-[24px] xl:rounded-tr-none object-contain dark:bg-dark-1">
+            <Image
+              src={post?.file}
+              alt="creator"
+              fill
+              style={{
+                objectFit: "contain",
+              }}
+            />
+          </div>
 
           <div className="post_details-info">
             <div className="flex-between w-full">

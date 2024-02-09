@@ -62,6 +62,7 @@ export default function PostCard({
                 </ul>
               </div>
               <Image
+                priority
                 width={500}
                 height={500}
                 className="post-card_img"
