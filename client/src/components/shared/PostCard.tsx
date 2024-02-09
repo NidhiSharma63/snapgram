@@ -17,14 +17,10 @@ export default function PostCard({
   users: User[];
   userDetails: User;
 }) {
-  //   const { userDetails } = useUserDetail();
-  // const { user: userDetails } = await getActiveUserData();
-
   return (
     <ul className="flex flex-col flex-1 gap-9 w-full">
       {posts.map((post: PostType) => {
         const user = users?.find((item: User) => item._id === post.userId) as User;
-        console.log({ post });
         return (
           <div className="post-card" key={post._id}>
             <div className="flex-between">

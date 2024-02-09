@@ -8,10 +8,10 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { storage } from "@/src/constant/firebase/config";
 import { postFormSchema } from "@/src/constant/validation";
-import { createPost, updatePost } from "@/src/server/post";
+import { createPost, deletePost, updatePost } from "@/src/server/post";
 import { PostFormProps } from "@/src/types/post";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -23,6 +23,7 @@ import { useToast } from "../ui/use-toast";
 function PostForm({ post, action, userDetails }: PostFormProps) {
   const router = useRouter();
   const [isPostUploading, setIsPostUploading] = useState(false);
+  const [isPostDeleting, setIsPostDeleting] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof postFormSchema>>({
@@ -48,7 +49,6 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
     const { file } = values;
     try {
       if (action === "Update") {
-        console.log("updae");
         if (post?._id) {
           const { tags, location, caption } = values;
           const { post: updatedPost } = await updatePost({ _id: post?._id, tags, location, caption });
@@ -81,6 +81,29 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
     }
     setIsPostUploading(false);
   }
+
+  const handleDeletePost = async () => {
+    if (post && post?._id) {
+      const storageRef = ref(storage, post.file);
+      try {
+        setIsPostDeleting(true);
+        await deleteObject(storageRef);
+        await deletePost({ _id: post._id });
+        // if (savePosts?.[0]?.postId.includes(post._id)) {
+        //   await removePostFromSave({ postId: post._id, userId: userDetails?._id });
+        // }
+        // if (likePosts?.[0]?.postId.includes(post._id)) {
+        //   await removePostFromLike({ postId: post._id, userId: userDetails?._id });
+        // }
+        // navigate("/");
+        router.push("/");
+      } catch (error) {
+        toast({ title: error.message });
+        setIsPostDeleting(false);
+      }
+      setIsPostDeleting(false);
+    }
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-9 w-full max-w-5xl">
@@ -148,25 +171,14 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         />
         <div className="flex gap-4 items-center justify-end">
           {action === "Update" ? (
-            <Button
-              type="button"
-              className="shad-btn-delete"
-              //   disabled={
-              //     isCreatingPost ||
-              //     isLoadingUpdate ||
-              //     isDeletingPost ||
-              //     isRemovingPostFromSaveCollection ||
-              //     isRemovingPostFromLikeCollection
-              //   }
-              // onClick={handleDeletePost}
-            >
-              Delete
+            <Button type="button" className="shad-btn-delete" disabled={isPostDeleting} onClick={handleDeletePost}>
+              {isPostDeleting ? <Loader /> : "Delete"}
             </Button>
           ) : (
             <Button
               type="button"
               className="shad-button_dark_4"
-              disabled={isPostUploading}
+              disabled={isPostUploading || isPostDeleting}
               onClick={handleClickOnCancelBtn}
               //   disabled={isCreatingPost || isLoadingUpdate || isDeletingPost || isPostUploading}
             >
@@ -179,7 +191,7 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
               <Loader />
             </Button>
           ) : (
-            <Button type="submit" className="shad-button_primary whitespace-nowrap">
+            <Button type="submit" disabled={isPostDeleting} className="shad-button_primary whitespace-nowrap">
               {action === "Update" ? "Update" : "Upload"}
             </Button>
           )}
