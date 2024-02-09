@@ -16,3 +16,10 @@ export type UserTypeArray = {
   users?: User[];
   error?: string;
 };
+
+export type UserUpdateProfileValues = {
+  userId: string;
+  file: string;
+  username: string;
+  bio: string;
+};

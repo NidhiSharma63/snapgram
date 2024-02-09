@@ -3,7 +3,7 @@
 import connectDB from "@/src/lib/connectToMongodb";
 import getUserDetails from "@/src/lib/getUserDetails";
 import User from "@/src/schema/userSchema";
-import { UserType, UserTypeArray } from "@/src/types/user";
+import { UserType, UserTypeArray, UserUpdateProfileValues } from "@/src/types/user";
 
 async function getAllUser(): Promise<UserTypeArray> {
   try {
@@ -44,4 +44,30 @@ async function getUserById(_id: string) {
   }
 }
 
-export { getActiveUserData, getAllUser, getUserById };
+/** update profile */
+async function updateProfile(values: UserUpdateProfileValues) {
+  const { userId, file, username, bio } = values;
+  try {
+    const getUser = await User.findOne({ _id: userId });
+    /**
+     * check if username is present
+     */
+    const isUserNamePresent = await User.find({ username });
+
+    if (isUserNamePresent.length > 0 && isUserNamePresent[0]._id.toString() !== userId) {
+      throw new Error("Username is already exists");
+    }
+    /** update user */
+    if (getUser) {
+      getUser.username = username;
+      getUser.avatar = file;
+      getUser.bio = bio;
+    }
+    await getUser?.save();
+    return { user: JSON.parse(JSON.stringify(getUser)) };
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+export { getActiveUserData, getAllUser, getUserById, updateProfile };

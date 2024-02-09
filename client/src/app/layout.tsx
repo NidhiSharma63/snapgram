@@ -2,8 +2,8 @@ import BottomBar from "@/src/components/shared/BottomBar";
 import LeftBar from "@/src/components/shared/LeftSidebar";
 import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
-import { getActiveUserData } from "@/src/server/user";
 import "@/src/styles/global.css";
+import getUserDetails from "../lib/getUserDetails";
 
 export const metadata = {
   title: "Next.js",
@@ -14,7 +14,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // await connectToMongoDB();
   // await connectDB();
 
-  const { user } = await getActiveUserData();
+  const { token, userId, uniqueBrowserId } = await getUserDetails();
   // console.log({ user });
   return (
     <html lang="en">
@@ -23,7 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">
-          {!user ? (
+          {!token || !userId || !uniqueBrowserId ? (
             <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
           ) : (
             <>

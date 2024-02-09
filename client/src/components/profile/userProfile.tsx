@@ -45,7 +45,7 @@ function UserProfile({ data, activeUser, posts }: { data: User; activeUser: User
           <div className="flex justify-center gap-4">
             <div className={`${activeUser && activeUser._id !== data._id && "hidden"}`}>
               <Link
-                href={`/update-profile/${data._id}`}
+                href={`/update-profile`}
                 className={`h-12 dark:bg-dark-4 px-5 bg-off-white text-light-1 flex-center gap-2 rounded-lg ${
                   activeUser && activeUser._id !== data._id && "hidden"
                 }`}>

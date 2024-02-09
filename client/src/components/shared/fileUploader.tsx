@@ -5,11 +5,16 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 
 type fileUploaderProps = {
   fieldChange: (FILES: File[]) => void;
+  mediaUrl: string;
   isComponentUserInProfilePage?: boolean;
 };
 
-export default function FileUploader({ fieldChange, isComponentUserInProfilePage = false }: fileUploaderProps) {
-  const [fileUrl, setFileUrl] = useState("");
+export default function FileUploader({
+  fieldChange,
+  isComponentUserInProfilePage = false,
+  mediaUrl,
+}: fileUploaderProps) {
+  const [fileUrl, setFileUrl] = useState(mediaUrl);
   // const [file, setFile] = useState<File[]>([]);
 
   const onDrop = useCallback(
