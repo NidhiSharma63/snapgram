@@ -10,7 +10,7 @@ function GridPostList({
   showUser = true,
 }: {
   posts: PostType[];
-  usersData: User[];
+  usersData?: User[];
   showUser?: boolean;
 }) {
   return (

@@ -81,4 +81,15 @@ async function deletePost(values: { _id: string }) {
     return Promise.reject(error);
   }
 }
-export { createPost, deletePost, getAllPosts, getPostById, updatePost };
+
+/** get user all posts */
+async function getUserPosts(id: string) {
+  try {
+    await connectDB();
+    const getUserPosts = await Post.find({ userId: id }).sort({ createdAt: -1 }).setOptions({ lean: true });
+    return { posts: JSON.parse(JSON.stringify(getUserPosts)) };
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export { createPost, deletePost, getAllPosts, getPostById, getUserPosts, updatePost };
