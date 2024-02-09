@@ -28,10 +28,10 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
     defaultValues: {
-      caption: post ? post?.caption : "",
+      caption: post ? post?.caption[0] : "",
       file: [],
-      location: post ? post?.location : "",
-      tags: post ? post?.tags : "",
+      location: post ? post?.location[0] : "",
+      tags: post ? post?.tags[0] : "",
       userId: userDetails && userDetails._id,
       userAvatar: userDetails && userDetails.avatar,
       createdAt: post ? new Date(post.createdAt) : new Date(),

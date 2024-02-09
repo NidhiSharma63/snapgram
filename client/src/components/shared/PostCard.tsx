@@ -24,7 +24,7 @@ export default function PostCard({
     <ul className="flex flex-col flex-1 gap-9 w-full">
       {posts.map((post: PostType) => {
         const user = users?.find((item: User) => item._id === post.userId) as User;
-
+        console.log({ post });
         return (
           <div className="post-card" key={post._id}>
             <div className="flex-between">
@@ -42,7 +42,7 @@ export default function PostCard({
                   <p className="base-medium lg:body-bold dark:text-light-1">{user?.username}</p>
                   <div className="flex-center gap-2 text-light-3">
                     <ShowTime createdAt={post?.createdAt} />-
-                    <p className="subtle-semibold lg:small-reguler">{post.location}</p>
+                    <p className="subtle-semibold lg:small-reguler">{post.location[0]}</p>
                   </div>
                 </div>
               </div>
@@ -54,9 +54,9 @@ export default function PostCard({
             </div>
             <Link href={`/posts/${post._id}`}>
               <div className="small-medium lg:base-meduim py-5">
-                <p>{post.caption}</p>
+                <p>{post.caption[0]}</p>
                 <ul className="flex gap-1 mt-2">
-                  {post.tags.split(",").map((tag: string) => {
+                  {post.tags[0].split(",").map((tag: string) => {
                     return (
                       <li key={tag} className="text-light-3">
                         {tag.trim()?.length > 0 && "#" + tag.trim()}
