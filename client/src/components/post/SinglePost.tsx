@@ -30,6 +30,7 @@ function SinglePost({
   const router = useRouter();
   const [createdTime, setCreatedTime] = useState(post?.createdAt.toString());
   const [isDeletingPost, setIsDeletingPost] = useState(false);
+  const [relatedPostToDisplay, setRelatedPost] = useState(relatedPost);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -54,6 +55,13 @@ function SinglePost({
     }
   };
   console.log({ post });
+
+  useEffect(() => {
+    setRelatedPost(() => {
+      return relatedPost?.filter((item: PostType) => item._id !== post._id);
+    });
+  }, [relatedPost, post._id]);
+
   return (
     <div className="post_details-container mt-98">
       <div className=" md:flex max-w-5xl w-full">
@@ -137,10 +145,10 @@ function SinglePost({
 
       <div className="w-full max-w-5xl">
         <hr className="border w-full border-dark-4/80" />
-        {relatedPost?.length > 0 ? (
+        {relatedPostToDisplay?.length > 0 ? (
           <>
             <h3 className="body-bold md:h3-bold w-full my-10">More related Post</h3>
-            <GridPostList posts={relatedPost} usersData={allUsers} />
+            <GridPostList posts={relatedPostToDisplay} usersData={allUsers} />
           </>
         ) : (
           <h3 className="body-bold md:h3-bold w-full my-10">No Related Posts</h3>
