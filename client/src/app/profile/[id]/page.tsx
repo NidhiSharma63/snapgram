@@ -11,7 +11,8 @@ async function page({ params }: { params: { id: string } }) {
     const { user: activeUser } = await getActiveUserData();
     return <UserProfile data={user as User} posts={posts as PostType[]} activeUser={activeUser as User} />;
   } catch (error) {
-    return <div>Something went wrong. Error : {error?.message}</div>;
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return <div>Something went wrong. Error : {e?.message}</div>;
   }
 }
 

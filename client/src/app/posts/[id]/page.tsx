@@ -6,35 +6,26 @@ import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
 
 async function page({ params }: { params: { id: string } }) {
-  const { post } = await getPostById(params.id || "");
-  const { user: userWhoCreatedPost } = await getUserById(post?.userId || "");
-  const { user } = await getActiveUserData();
-  const { posts } = await getAllPosts();
-  const { users } = await getAllUser();
-  // try {
+  try {
+    const { post } = await getPostById(params.id || "");
+    const { user: userWhoCreatedPost } = await getUserById(post?.userId || "");
+    const { user } = await getActiveUserData();
+    const { posts } = await getAllPosts();
+    const { users } = await getAllUser();
 
-  //   if (!post || !user || !posts || !users || !userWhoCreatedPost) return <Loader />;
-  //   return (
-  //     <SinglePost
-  //       post={post}
-  //       activeUser={user as User}
-  //       userWhoCreatedPost={userWhoCreatedPost as User}
-  //       relatedPost={posts as PostType[]}
-  //       allUsers={users as User[]}
-  //     />
-  //   );
-  // } catch (error) {
-  //   return <div>{error?.message}</div>;
-  // }
-  return (
-    <SinglePost
-      post={post}
-      activeUser={user as User}
-      userWhoCreatedPost={userWhoCreatedPost as User}
-      relatedPost={posts as PostType[]}
-      allUsers={users as User[]}
-    />
-  );
+    return (
+      <SinglePost
+        post={post}
+        activeUser={user as User}
+        userWhoCreatedPost={userWhoCreatedPost as User}
+        relatedPost={posts as PostType[]}
+        allUsers={users as User[]}
+      />
+    );
+  } catch (error) {
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return <div>Something went wrong. Error : {e?.message}</div>;
+  }
 }
 
 export default page;
