@@ -55,7 +55,7 @@ function SinglePost({
       });
     }
   };
-  console.log({ post });
+  // console.log({ post });
 
   useEffect(() => {
     setRelatedPost(() => {

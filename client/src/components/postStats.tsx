@@ -70,7 +70,7 @@ function PostStats({
     setIsPostSaveLoading(false);
   };
 
-  console.log({ savePosts });
+  // console.log({ savePosts });
   return (
     <div className={`flex justify-between items-center z-20 ${containerStyles}`}>
       <div className="flex gap-2 mr-5">
