@@ -53,8 +53,9 @@ function UpdateProfile({ user }: { user: User }) {
       router.push(`/profile/${user._id}`);
     } catch (error) {
       setIsPending(false);
+      const e = error instanceof Error ? error : new Error("Something went wrong");
       toast({
-        title: error.message,
+        title: e.message,
       });
     }
   };

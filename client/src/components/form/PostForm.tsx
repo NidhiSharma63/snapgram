@@ -74,8 +74,9 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         }
       }
     } catch (error) {
+      const e = error instanceof Error ? error : new Error("Something went wrong");
       toast({
-        title: error.message,
+        title: e.message,
       });
       setIsPostUploading(false);
     }
@@ -98,7 +99,8 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         // navigate("/");
         router.push("/");
       } catch (error) {
-        toast({ title: error.message });
+        const e = error instanceof Error ? error : new Error("Something went wrong");
+        toast({ title: e.message });
         setIsPostDeleting(false);
       }
       setIsPostDeleting(false);

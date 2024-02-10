@@ -40,14 +40,13 @@ function Page() {
 
   const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     setIsPending(true);
-    const response = await registerUser(values);
-    // console.log(response);
-
-    if (response?.createdUser) {
+    try {
+      await registerUser(values);
       router.push("/");
-    } else {
+    } catch (error) {
+      const e = error instanceof Error ? error : new Error("Something went wrong");
       toast({
-        title: response?.error,
+        title: e.message,
       });
     }
     setIsPending(false);

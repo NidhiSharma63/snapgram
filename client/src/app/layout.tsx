@@ -15,7 +15,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <head>
         <title content="Todo's"></title>
-        <metadata />
+        {/* <metadata /> */}
       </head>
       <body>
         <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">

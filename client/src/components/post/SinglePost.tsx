@@ -49,8 +49,9 @@ function SinglePost({
       setIsDeletingPost(false);
       router.push("/");
     } catch (error) {
+      const e = error instanceof Error ? error : new Error("Something went wrong");
       toast({
-        title: error.message,
+        title: e.message,
       });
     }
   };

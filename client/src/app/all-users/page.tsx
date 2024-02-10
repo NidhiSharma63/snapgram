@@ -25,7 +25,8 @@ async function page() {
       </div>
     );
   } catch (error) {
-    return <div>Something went wrong Error: {error.message}</div>;
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return <div>Something went wrong Error: {e.message}</div>;
   }
 }
 

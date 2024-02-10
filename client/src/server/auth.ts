@@ -206,7 +206,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
     });
     return { createdUser: JSON.parse(JSON.stringify(createdUser)) };
   } catch (err) {
-    return { error: err.message };
+    return Promise.reject(err);
   }
 }
 export { login, logout, registerUser };
