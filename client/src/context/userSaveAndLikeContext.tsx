@@ -9,8 +9,8 @@ type useUserPostIdForSaveAndLikeProviderProps = {
 type useUserPostIdForSaveAndLikeProviderState = {
   postsWhichUserLiked: string[];
   setPostsWhichUserLiked: Dispatch<SetStateAction<string[]>>;
-  userSavePostId: string;
-  setSavePostId: (val: string) => void;
+  userSavePostId: string[];
+  setUserSavePostId: (val: string[]) => void;
   initialRender: boolean;
   setInitialRender: Dispatch<SetStateAction<boolean>>;
 };
@@ -18,8 +18,8 @@ type useUserPostIdForSaveAndLikeProviderState = {
 const initialState: useUserPostIdForSaveAndLikeProviderState = {
   postsWhichUserLiked: [],
   setPostsWhichUserLiked: () => {},
-  userSavePostId: "",
-  setSavePostId: () => null,
+  userSavePostId: [],
+  setUserSavePostId: () => null,
   initialRender: false,
   setInitialRender: () => null,
 };
@@ -28,7 +28,7 @@ const useUserPostIdProvider = createContext<useUserPostIdForSaveAndLikeProviderS
 
 export function UserPostIdSaveAndLikeProvider({ children }: useUserPostIdForSaveAndLikeProviderProps) {
   const [postsWhichUserLiked, setPostsWhichUserLiked] = useState<string[]>([]);
-  const [userSavePostId, setSavePostId] = useState<string>("");
+  const [userSavePostId, setUserSavePostId] = useState<string[]>([]);
   const [initialRender, setInitialRender] = useState<boolean>(false);
 
   return (
@@ -37,7 +37,7 @@ export function UserPostIdSaveAndLikeProvider({ children }: useUserPostIdForSave
         postsWhichUserLiked,
         setPostsWhichUserLiked,
         userSavePostId,
-        setSavePostId,
+        setUserSavePostId,
         initialRender,
         setInitialRender,
       }}>

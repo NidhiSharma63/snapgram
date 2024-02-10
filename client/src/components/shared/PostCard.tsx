@@ -13,10 +13,12 @@ export default function PostCard({
   posts,
   users,
   userDetails,
+  savePosts,
 }: {
   posts: PostType[];
   users: User[];
   userDetails: User;
+  savePosts: string[];
 }) {
   return (
     <ul className="flex flex-col flex-1 gap-9 w-full">
@@ -75,7 +77,7 @@ export default function PostCard({
               />
             </Link>
 
-            <PostStats likes={post?.likes} postId={post?._id} activeUser={userDetails} />
+            <PostStats savePosts={savePosts} likes={post?.likes} postId={post?._id} activeUser={userDetails} />
           </div>
         );
       })}
