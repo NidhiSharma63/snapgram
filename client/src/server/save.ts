@@ -2,6 +2,7 @@
 
 import connectDB from "@/src/lib/connectToMongodb";
 import Save from "@/src/schema/saveSchema";
+import { revalidatePath } from "next/cache";
 
 async function addSaves(values: { userId: string; postId: string }) {
   try {
@@ -14,6 +15,7 @@ async function addSaves(values: { userId: string; postId: string }) {
     if (isAlreadyPresentPost) {
       isAlreadyPresentPost.postId.push(postId);
       await isAlreadyPresentPost.save();
+      revalidatePath("/saved");
       return { res: JSON.parse(JSON.stringify(isAlreadyPresentPost)) };
     } else {
       const createNewLikesObj = new Save({
@@ -21,6 +23,7 @@ async function addSaves(values: { userId: string; postId: string }) {
         userId,
       });
       await createNewLikesObj.save();
+      revalidatePath("/saved");
       return { res: JSON.parse(JSON.stringify(createNewLikesObj)) };
     }
     // revalidatePath("/");
@@ -42,6 +45,7 @@ async function removeSaves(values: { userId: string; postId: string }) {
       { $pull: { postId: postIdToRemove } },
       { new: true }
     );
+    revalidatePath("/saved");
     return { res: JSON.parse(JSON.stringify(updateLikesInPost)) };
   } catch (error) {
     return Promise.reject(error);
