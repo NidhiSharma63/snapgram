@@ -10,15 +10,17 @@ import { useEffect, useState } from "react";
 function PostStats({ likes, postId, activeUser }: { likes: string[]; postId: string; activeUser: User }) {
   const pathname = usePathname();
   const containerStyles = pathname.startsWith("/profile") ? "w-full" : "";
-  const { setPostsWhichUserLiked, postsWhichUserLiked } = useUserPostIdForSaveAndLike();
+  const { setPostsWhichUserLiked, postsWhichUserLiked, initialRender, setInitialRender } =
+    useUserPostIdForSaveAndLike();
   const [isPostLikeLoading, setIsPostLikeLoading] = useState(false);
   // const [userLikedPost, setUserLikedPost] = useState(likes.includes(activeUser._id));
 
   useEffect(() => {
-    if (postsWhichUserLiked.length === 0) {
+    if (!initialRender) {
       setPostsWhichUserLiked(likes);
+      setInitialRender(true);
     }
-  }, []);
+  }, [likes]);
   const handleAddLikePost = async () => {
     setIsPostLikeLoading(true);
     await addLike({ userId: activeUser?._id, postId });
@@ -60,7 +62,7 @@ function PostStats({ likes, postId, activeUser }: { likes: string[]; postId: str
         )}
 
         <p className="small-medium lg:base-medium text-[#877EFF]">
-          {postsWhichUserLiked?.length > 0 ? likes?.length : ""}
+          {postsWhichUserLiked?.length > 0 ? postsWhichUserLiked?.length : ""}
         </p>
       </div>
 
