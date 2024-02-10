@@ -2,6 +2,7 @@
 
 import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
+import Image from "next/image";
 import Link from "next/link";
 import PostStats from "../postStats";
 
@@ -21,13 +22,20 @@ function GridPostList({
   showStats?: boolean;
 }) {
   return (
-    <ul className="grid-container">
+    <ul className="grid-container gap-11">
       {posts?.map((post: PostType) => {
         const findCurrentUser = usersData?.find((item: User) => item?._id === post?.userId);
         return (
-          <li key={post?._id} className="relative min-w-80 h-80">
+          <li key={post?._id} className="relative h-80">
             <Link href={`/posts/${post?._id}`} className="grid-post_link">
-              <img src={post?.file} alt="post" className="w-full h-full object-cover" />
+              <Image
+                priority
+                width={200}
+                height={200}
+                src={post?.file}
+                alt="post"
+                className="w-full h-full object-cover"
+              />
             </Link>
             <div className="grid-post_user">
               {showUser && (

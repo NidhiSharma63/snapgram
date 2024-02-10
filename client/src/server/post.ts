@@ -24,6 +24,7 @@ async function createPost(values: PostTypeForCreatingPost) {
     });
     await postCreated.save();
     revalidatePath("/");
+    revalidatePath("/explore");
     return { post: JSON.parse(JSON.stringify(postCreated)) };
   } catch (error) {
     return Promise.reject(error);
@@ -64,6 +65,7 @@ async function updatePost(values: UpdatePostType) {
 
     await findPostToUpdate[0].save();
     revalidatePath("/");
+    revalidatePath("/explore");
     return { post: JSON.parse(JSON.stringify(findPostToUpdate[0])) };
   } catch (error) {
     return Promise.reject(error);
@@ -76,6 +78,7 @@ async function deletePost(values: { _id: string }) {
     const deletedPost = await Post.findOneAndDelete({ _id });
     if (!deletedPost) throw new Error("Couldn't found the post");
     revalidatePath("/");
+    revalidatePath("/explore");
     return { post: JSON.parse(JSON.stringify(deletedPost)) };
   } catch (error) {
     return Promise.reject(error);
