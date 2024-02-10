@@ -115,11 +115,7 @@ function UpdateProfile({ user }: { user: User }) {
               )}
             />
             <div className="flex gap-4 items-center justify-end">
-              <Button
-                disabled={isPending}
-                type="submit"
-                className="shad-button_primary whitespace-nowrap"
-                onClick={handleCancel}>
+              <Button disabled={isPending} className="shad-button_primary whitespace-nowrap" onClick={handleCancel}>
                 Cancel
               </Button>
               {isPending ? (
