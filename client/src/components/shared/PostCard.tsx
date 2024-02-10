@@ -1,10 +1,11 @@
 "use client";
 
+import PostStats from "@/src/components/postStats";
+import ShowTime from "@/src/components/shared/showTime";
 import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
 import Image from "next/image";
 import Link from "next/link";
-import ShowTime from "./showTime";
 // type PostCardProps = {
 //   post: Models.Document;
 // };
@@ -74,7 +75,7 @@ export default function PostCard({
               />
             </Link>
 
-            {/* <PostStats likes={post?.likes} postId={post?._id} /> */}
+            <PostStats likes={post?.likes} postId={post?._id} activeUser={userDetails} />
           </div>
         );
       })}

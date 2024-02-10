@@ -13,5 +13,5 @@ const saveSchema = new mongoose.Schema<ISaves>({
 });
 
 // now we need to create the collection
-const Save: Model<ISaves> = mongoose.models.Like || mongoose.model<ISaves>("Save", saveSchema);
+const Save: Model<ISaves> = mongoose.models?.Save || mongoose.model<ISaves>("Save", saveSchema);
 export default Save;

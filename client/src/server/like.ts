@@ -1,3 +1,6 @@
+"use server";
+
+import connectDB from "@/src/lib/connectToMongodb";
 import Like from "@/src/schema/likeSchema";
 import postSchema from "@/src/schema/postSchema";
 
@@ -19,6 +22,7 @@ async function addLikeToPost(params: { userId: string; postId: string }) {
 
 async function addLike(values: { userId: string; postId: string }) {
   try {
+    await connectDB();
     const { userId, postId } = values;
 
     if (!postId) throw new Error("Post id is Missiing");
@@ -38,6 +42,7 @@ async function addLike(values: { userId: string; postId: string }) {
       });
       await createNewLikesObj.save();
       await addLikeToPost(paramsToAddLikeToPost);
+      // revalidatePath("/");
       return { res: JSON.parse(JSON.stringify(createNewLikesObj)) };
     }
   } catch (error) {
@@ -47,6 +52,7 @@ async function addLike(values: { userId: string; postId: string }) {
 
 async function removeLike(values: { userId: string; postId: string }) {
   try {
+    await connectDB();
     const { userId, postId } = values;
     const findPostToUpdate = await postSchema.findOne({ _id: postId });
     if (!findPostToUpdate) throw new Error("Couldn't found the post");
@@ -57,6 +63,7 @@ async function removeLike(values: { userId: string; postId: string }) {
       findPostToUpdate.likes.splice(userIndex, 1);
     }
     await findPostToUpdate.save();
+    // revalidatePath("/");
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
     console.log("Error in removeLike:", error);

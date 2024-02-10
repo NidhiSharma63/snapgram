@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 // Define the IUser interface for the User model
 interface ILikes extends Document {
@@ -13,6 +13,5 @@ const postSchema = new mongoose.Schema<ILikes>({
 });
 
 // now we need to create the collection
-const Like: Model<ILikes> = mongoose.models.Like || mongoose.model<ILikes>("Like", postSchema);
 
-export default Like;
+export default mongoose.models?.Like || mongoose.model<ILikes>("Like", postSchema);

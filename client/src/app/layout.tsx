@@ -1,9 +1,10 @@
+import Provider from "@/src/app/Provider";
 import BottomBar from "@/src/components/shared/BottomBar";
 import LeftBar from "@/src/components/shared/LeftSidebar";
 import TopBar from "@/src/components/shared/TopSidebar";
 import { Toaster } from "@/src/components/ui/toaster";
+import getUserDetails from "@/src/lib/getUserDetails";
 import "@/src/styles/global.css";
-import getUserDetails from "../lib/getUserDetails";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // await connectToMongoDB();
@@ -18,19 +19,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* <metadata /> */}
       </head>
       <body>
-        <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">
-          {!token || !userId || !uniqueBrowserId ? (
-            <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
-          ) : (
-            <>
-              <TopBar />
-              <LeftBar />
+        <Provider>
+          <div className="w-full md:flex  h-screen md:overflow-hidden overflow-y-scroll overflow-x-hidden">
+            {!token || !userId || !uniqueBrowserId ? (
               <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
-              <BottomBar />
-            </>
-          )}
-        </div>
-
+            ) : (
+              <>
+                <TopBar />
+                <LeftBar />
+                <section className="flex flex-1 h-full overflow-x-hidden">{children}</section>
+                <BottomBar />
+              </>
+            )}
+          </div>
+        </Provider>
+        {/* </UserPostIdSaveAndLikeProvider> */}
         <Toaster />
       </body>
     </html>
