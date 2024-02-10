@@ -10,11 +10,12 @@ import { useRouter } from "next/navigation";
 function TopSidebarNavlinks({ userDetails }: { userDetails: User }) {
   const router = useRouter();
   const handleClick = async () => {
-    const res = await logout();
-    if (res?.message) {
+    try {
+      await logout();
       router.push("/");
-    } else {
-      ToastError({ msg: res?.error });
+    } catch (error) {
+      const e = error instanceof Error ? error : new Error("Something went wrong");
+      ToastError({ msg: e?.message });
     }
   };
   return (
