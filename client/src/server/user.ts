@@ -4,6 +4,7 @@ import connectDB from "@/src/lib/connectToMongodb";
 import getUserDetails from "@/src/lib/getUserDetails";
 import User from "@/src/schema/userSchema";
 import { UserType, UserTypeArray, UserUpdateProfileValues } from "@/src/types/user";
+import { revalidatePath } from "next/cache";
 
 async function getAllUser(): Promise<UserTypeArray> {
   try {
@@ -64,6 +65,7 @@ async function updateProfile(values: UserUpdateProfileValues) {
       getUser.bio = bio;
     }
     await getUser?.save();
+    revalidatePath(`/profile/${userId}`);
     return { user: JSON.parse(JSON.stringify(getUser)) };
   } catch (error) {
     return Promise.reject(error);

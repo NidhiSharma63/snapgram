@@ -1,3 +1,5 @@
+export const revalidate = 10;
+
 import UserProfile from "@/src/components/profile/userProfile";
 import { getUserPosts } from "@/src/server/post";
 import { getActiveUserData, getUserById } from "@/src/server/user";
