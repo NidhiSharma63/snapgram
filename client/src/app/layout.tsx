@@ -14,7 +14,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // await connectToMongoDB();
   // await connectDB();
 
-  const { token, userId, uniqueBrowserId } = await getUserDetails();
+  const { token, userId, uniqueBrowserId } = getUserDetails();
   // console.log({ user });
   return (
     <html lang="en">

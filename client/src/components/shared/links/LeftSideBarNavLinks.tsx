@@ -5,6 +5,7 @@ import { sidebarLinks } from "@/src/constant/link";
 import ToastError from "@/src/lib/toastError";
 import { logout } from "@/src/server/auth";
 import { User } from "@/src/types/user";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 function NavLinks({ userDetails }: { userDetails: User }) {
@@ -31,7 +32,7 @@ function NavLinks({ userDetails }: { userDetails: User }) {
   return (
     <>
       <div className="flex flex-col gap-11">
-        <img
+        <Image
           // src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"}
           alt="logo"
           width={170}
@@ -56,9 +57,11 @@ function NavLinks({ userDetails }: { userDetails: User }) {
             return (
               <li key={link.label} className={`leftsidebar-link group ${isActive && "bg-primary-500"}`}>
                 <Link href={link.route} className="flex gap-4 items-center p-4">
-                  <img
+                  <Image
                     src={link.imgURL}
                     alt={link.label}
+                    width={24}
+                    height={24}
                     className={`group-hover:invert-white ${isActive && "invert-white"}`}
                   />
                   {link.label}

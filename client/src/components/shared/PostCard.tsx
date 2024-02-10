@@ -28,9 +28,11 @@ export default function PostCard({
                 <Link href={`/profile/${post?.userId}`}>
                   <Image
                     width={40}
+                    // className="post-card_img"
                     height={40}
                     className="rounded-full object-cover"
                     alt="creator"
+                    // style={{ objectFit: "cover", height: "20px!important" }}
                     src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
                   />
                 </Link>
@@ -65,7 +67,7 @@ export default function PostCard({
                 priority
                 width={500}
                 height={500}
-                className="post-card_img"
+                // className="post-card_img"
                 alt="post image"
                 src={post?.file || "/assets/icons/profile-placholder.svg"}
               />

@@ -66,7 +66,7 @@ function SinglePost({
     <div className="post_details-container mt-98">
       <div className=" md:flex max-w-5xl w-full">
         <Button onClick={handleBackButton} variant="ghost" className="shad-button_ghost">
-          <img src={"/assets/icons/back.svg"} alt="back" width={24} height={24} />
+          <Image src={"/assets/icons/back.svg"} alt="back" width={24} height={24} />
           <p className="small-medium lg:base-medium">Back</p>
         </Button>
       </div>
@@ -89,10 +89,15 @@ function SinglePost({
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link href={`/profile/${post?.userId}`} className="flex items-center gap-3">
-                <img
+                <Image
+                  width={20}
+                  style={{
+                    objectFit: "contain",
+                  }}
+                  height={20}
                   src={userWhoCreatedPost?.avatar || "/assets/icons/profile-placeholder.svg"}
                   alt="creator"
-                  className="w-8 h-8 lg:w-12 lg:h-12 rounded-full object-cover"
+                  // className="rounded-full object-cover"
                 />
                 <div className="flex gap-1 flex-col">
                   <p className="base-medium lg:body-bold dark:text-light-1">{userWhoCreatedPost?.username}</p>
@@ -105,7 +110,7 @@ function SinglePost({
 
               <div className="flex-center gap-4">
                 <Link href={`/update-post`} className={`${activeUser && activeUser._id !== post?.userId && "hidden"}`}>
-                  <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
+                  <Image src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
                 </Link>
 
                 {isDeletingPost ? (
