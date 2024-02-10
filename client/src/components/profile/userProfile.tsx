@@ -17,7 +17,17 @@ const StatBlock = ({ value, label }: StabBlockProps) => (
     <p className="small-medium lg:base-medium dark:text-light-2">{label}</p>
   </div>
 );
-function UserProfile({ data, activeUser, posts }: { data: User; activeUser: User; posts: PostType[] }) {
+function UserProfile({
+  data,
+  activeUser,
+  posts,
+  savedPost,
+}: {
+  data: User;
+  activeUser: User;
+  posts: PostType[];
+  savedPost: string[];
+}) {
   return (
     <div className="profile-container">
       <div className="profile-inner_container">
@@ -65,14 +75,15 @@ function UserProfile({ data, activeUser, posts }: { data: User; activeUser: User
           </TabsList>
 
           <TabsContent value="Posts">
-            <GridPostList posts={posts} showUser={false} />
+            <GridPostList posts={posts} showUser={false} activeUser={activeUser} showStats savedPost={savedPost} />
           </TabsContent>
           <TabsContent value="Likes">{/* <GridPostList posts={likePosts} showUser={false} /> */}</TabsContent>
         </Tabs>
       ) : posts.length === 0 && activeUser && activeUser._id !== data?._id ? (
         data?.username + " haven't posted anything"
       ) : (
-        <GridPostList posts={posts} showUser={false} />
+        "sajnj"
+        // <GridPostList posts={posts} showUser={false} />
       )}
     </div>
   );
