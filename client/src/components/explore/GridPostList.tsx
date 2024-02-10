@@ -3,15 +3,22 @@
 import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
 import Link from "next/link";
+import PostStats from "../postStats";
 
 function GridPostList({
   posts,
   usersData,
   showUser = true,
+  activeUser,
+  savedPost,
+  showStats = false,
 }: {
   posts: PostType[];
   usersData?: User[];
   showUser?: boolean;
+  activeUser?: User;
+  savedPost?: string[];
+  showStats?: boolean;
 }) {
   return (
     <ul className="grid-container">
@@ -35,7 +42,14 @@ function GridPostList({
               )}
 
               {/* {showStats && <PostStats post={post} userId={user.id} />} */}
-              {/* <PostStats postId={post?._id} likes={post?.likes} /> */}
+              {showStats && (
+                <PostStats
+                  postId={post?._id}
+                  likes={post?.likes}
+                  activeUser={activeUser as User}
+                  savePosts={savedPost as string[]}
+                />
+              )}
             </div>
           </li>
         );

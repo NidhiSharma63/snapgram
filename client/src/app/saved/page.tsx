@@ -8,10 +8,6 @@ async function page() {
   try {
     const { user } = await getActiveUserData();
     const { posts } = await getAllSavePost(user?._id || "");
-    // const allSavedPosts = [];
-    /** fetch posts which are present in saved post by using id */
-    //  function fetchPostUsingIds() {
-    console.log({ posts });
     const promises = posts[0]?.postId?.map((id: string) => getPostById(id));
 
     const results = await Promise.allSettled(promises);
@@ -30,15 +26,16 @@ async function page() {
           <h2 className="h3-bold md:h2-bold text-left w-full">Saved Posts</h2>
         </div>
 
-        {!posts ? (
-          <Loader />
-        ) : // <ul className="w-full flex justify-center max-w-5xl gap-9">
-        posts.length === 0 ? (
-          <p className="text-light-4">No available posts</p>
-        ) : (
-          <GridPostList posts={postss} />
-        )
-        // </ul>
+        {
+          !posts ? (
+            <Loader />
+          ) : // <ul className="w-full flex justify-center max-w-5xl gap-9">
+          posts.length === 0 ? (
+            <p className="text-light-4">No available posts</p>
+          ) : (
+            <GridPostList activeUser={user} posts={postss} savedPost={posts?.[0]?.postId} showStats />
+          )
+          // </ul>
         }
       </div>
     );
