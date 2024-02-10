@@ -30,7 +30,7 @@ async function page() {
           !posts ? (
             <Loader />
           ) : // <ul className="w-full flex justify-center max-w-5xl gap-9">
-          posts.length === 0 ? (
+          postss.length === 0 ? (
             <p className="text-light-4">No available posts</p>
           ) : (
             <GridPostList activeUser={user} posts={postss} savedPost={posts?.[0]?.postId} showStats />
