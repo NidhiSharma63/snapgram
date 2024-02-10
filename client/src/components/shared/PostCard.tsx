@@ -28,6 +28,7 @@ export default function PostCard({
                 <Link href={`/profile/${post?.userId}`}>
                   <Image
                     width={40}
+                    priority
                     // className="post-card_img"
                     height={40}
                     className="rounded-full object-cover"
