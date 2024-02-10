@@ -71,4 +71,15 @@ async function removeLike(values: { userId: string; postId: string }) {
   }
 }
 
-export { addLike, removeLike };
+async function getAllLikePost(id: string) {
+  try {
+    if (!id) throw new Error("User id is Missiing");
+
+    const allLikePost = await Like.find({ userId: id }).setOptions({ lean: true });
+    return { posts: JSON.parse(JSON.stringify(allLikePost)) };
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+export { addLike, getAllLikePost, removeLike };
