@@ -89,7 +89,8 @@ async function login(values: loginValues) {
       user: JSON.parse(JSON.stringify(foundUser)),
     };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -104,6 +105,7 @@ const logout = async () => {
     if (!token?.value) {
       throw new Error("Token is Missing");
     }
+    // console.log(userId?.value);
     const getUserFromDB = await User.findOne({ _id: userId?.value });
 
     if (!getUserFromDB) {

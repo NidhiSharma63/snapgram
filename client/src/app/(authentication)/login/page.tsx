@@ -34,19 +34,13 @@ function Page() {
   });
 
   const onSubmit = async (values: z.infer<typeof signInFormSchema>) => {
-    try {
-      setIsPending(true);
-
-      await login(values);
-      router.push("/");
-    } catch (error) {
-      const e = error instanceof Error ? error : new Error("Something went wrong");
+    setIsPending(true);
+    const { error } = await login(values);
+    if (error) {
       toast({
-        title: e.message,
+        title: error,
       });
-      setIsPending(false);
     }
-
     setIsPending(false);
   };
 
