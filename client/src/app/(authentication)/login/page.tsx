@@ -40,8 +40,11 @@ function Page() {
       toast({
         title: error,
       });
+      setIsPending(false);
+      return;
     }
     setIsPending(false);
+    router.push("/");
   };
 
   return (
