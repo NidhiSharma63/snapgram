@@ -4,6 +4,7 @@ import connectDB from "@/src/lib/connectToMongodb";
 import Post from "@/src/schema/postSchema";
 import { PostTypeForCreatingPost, PostTypeRes, UpdatePostType } from "@/src/types/post";
 import { revalidatePath } from "next/cache";
+import getUserDetails from "../lib/getUserDetails";
 
 /** create post */
 async function createPost(values: PostTypeForCreatingPost) {
@@ -58,6 +59,7 @@ async function updatePost(values: UpdatePostType) {
     const { _id, tags, caption, location } = values;
     const findPostToUpdate = await Post.find({ _id });
     if (!findPostToUpdate) throw new Error("Couldn't found the post");
+    const { userId } = getUserDetails();
 
     findPostToUpdate[0].caption = caption;
     findPostToUpdate[0].tags = tags;
@@ -66,6 +68,8 @@ async function updatePost(values: UpdatePostType) {
     await findPostToUpdate[0].save();
     revalidatePath("/");
     revalidatePath("/explore");
+    revalidatePath("/saved");
+    revalidatePath("/profile/" + userId);
     return { post: JSON.parse(JSON.stringify(findPostToUpdate[0])) };
   } catch (error) {
     return Promise.reject(error);
