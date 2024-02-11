@@ -38,6 +38,8 @@ export default function PostCard({
                     height={40}
                     className="rounded-full object-cover"
                     alt="creator"
+                    style={{height:"40px !important"}}
+                    
                     // style={{ objectFit: "cover", height: "20px!important" }}
                     src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
                   />
@@ -74,6 +76,7 @@ export default function PostCard({
                 width={500}
                 height={500}
                 // className="post-card_img"
+                style={{height:"500px !important",objectFit:"contain"}}
                 alt="post image"
                 src={post?.file || "/assets/icons/profile-placholder.svg"}
               />
