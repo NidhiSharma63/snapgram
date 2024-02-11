@@ -8,14 +8,19 @@ async function page() {
   try {
     const { user } = await getActiveUserData();
     const { posts } = await getAllSavePost(user?._id || "");
-    const promises = posts[0]?.postId?.map((id: string) => getPostById(id));
+    if (!posts[0])
+      return (
+        <div className="saved-container">
+          <p className="text-light-4">No available posts</p>
+        </div>
+      );
+    const promises = posts[0] && posts?.[0]?.postId?.map((id: string) => getPostById(id));
 
     const results = await Promise.allSettled(promises);
 
     const postss = results
-      .map((result) => (result.status === "fulfilled" ? result.value : []))
+      ?.map((result) => (result.status === "fulfilled" ? result.value : []))
       ?.map((elem) => elem?.post);
-   
 
     return (
       <div className="saved-container">
@@ -28,7 +33,7 @@ async function page() {
           !posts ? (
             <Loader />
           ) : // <ul className="w-full flex justify-center max-w-5xl gap-9">
-          postss.length === 0 ? (
+          postss?.length === 0 ? (
             <p className="text-light-4">No available posts</p>
           ) : (
             <GridPostList activeUser={user} posts={postss} savedPost={posts?.[0]?.postId} showStats />

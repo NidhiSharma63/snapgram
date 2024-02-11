@@ -84,7 +84,7 @@ function PostStats({
       <div className="flex gap-2 mr-5">
         {isPostLikeLoading ? (
           <Loader />
-        ) : postsWhichUserLiked.includes(postId) ? (
+        ) : postsWhichUserLiked?.includes(postId) ? (
           <img
             alt="like"
             src="/assets/icons/liked.svg"
@@ -110,7 +110,7 @@ function PostStats({
       <div className="flex gap-2">
         {isPostSaveLoading ? (
           <Loader />
-        ) : userSavePostId.includes(postId) ? (
+        ) : userSavePostId?.includes(postId) ? (
           <img
             // src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
             src={"/assets/icons/saved.svg"}

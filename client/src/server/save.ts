@@ -45,6 +45,8 @@ async function removeSaves(values: { userId: string; postId: string }) {
       { $pull: { postId: postIdToRemove } },
       { new: true }
     );
+
+    console.log({updateLikesInPost})
     revalidatePath("/saved");
     return { res: JSON.parse(JSON.stringify(updateLikesInPost)) };
   } catch (error) {

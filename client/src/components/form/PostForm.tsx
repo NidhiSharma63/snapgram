@@ -8,7 +8,10 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { storage } from "@/src/constant/firebase/config";
 import { postFormSchema } from "@/src/constant/validation";
+import { useUserPostIdForSaveAndLike } from "@/src/context/userSaveAndLikeContext";
+import { removeLike } from "@/src/server/like";
 import { createPost, deletePost, updatePost } from "@/src/server/post";
+import { removeSaves } from "@/src/server/save";
 import { PostFormProps } from "@/src/types/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -25,6 +28,7 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   const [isPostUploading, setIsPostUploading] = useState(false);
   const [isPostDeleting, setIsPostDeleting] = useState(false);
   const { toast } = useToast();
+  const {userSavePostId,postsWhichUserLiked,setPostsWhichUserLiked,setUserSavePostId} = useUserPostIdForSaveAndLike()
 
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
@@ -90,13 +94,18 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         setIsPostDeleting(true);
         await deleteObject(storageRef);
         await deletePost({ _id: post._id });
-        // if (savePosts?.[0]?.postId.includes(post._id)) {
-        //   await removePostFromSave({ postId: post._id, userId: userDetails?._id });
-        // }
-        // if (likePosts?.[0]?.postId.includes(post._id)) {
-        //   await removePostFromLike({ postId: post._id, userId: userDetails?._id });
-        // }
-        // navigate("/");
+        if(userSavePostId.includes(post._id)){
+          const updatedUserSavePostId = userSavePostId.filter(id => id !== post._id)
+          setUserSavePostId(updatedUserSavePostId)
+         await removeSaves({userId:userDetails?._id,postId:post._id})
+        }
+
+        if(postsWhichUserLiked.includes(post._id)){
+          const updatedPostsWhichUserLiked = postsWhichUserLiked.filter(id => id !== post._id)
+          setPostsWhichUserLiked(updatedPostsWhichUserLiked)
+          await removeLike({userId:userDetails?._id,postId:post._id})
+        }
+        
         router.push("/");
       } catch (error) {
         const e = error instanceof Error ? error : new Error("Something went wrong");

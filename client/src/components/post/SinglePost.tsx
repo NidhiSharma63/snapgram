@@ -1,8 +1,11 @@
 "use client";
 
 import { storage } from "@/src/constant/firebase/config";
+import { useUserPostIdForSaveAndLike } from "@/src/context/userSaveAndLikeContext";
 import { multiFormatDateString } from "@/src/lib/utils";
+import { removeLike } from "@/src/server/like";
 import { deletePost } from "@/src/server/post";
+import { removeSaves } from "@/src/server/save";
 import { PostType } from "@/src/types/post";
 import { User } from "@/src/types/user";
 import { deleteObject, ref } from "firebase/storage";
@@ -32,6 +35,7 @@ function SinglePost({
   const [isDeletingPost, setIsDeletingPost] = useState(false);
   const [relatedPostToDisplay, setRelatedPost] = useState(relatedPost);
   const { toast } = useToast();
+  const {userSavePostId,postsWhichUserLiked,setPostsWhichUserLiked,setUserSavePostId} = useUserPostIdForSaveAndLike()
 
   useEffect(() => {
     setCreatedTime(multiFormatDateString(post?.createdAt.toString()));
@@ -47,6 +51,17 @@ function SinglePost({
       await deleteObject(storageRef);
       await deletePost({ _id: post?._id });
       setIsDeletingPost(false);
+      if(userSavePostId.includes(post._id)){
+        const updatedUserSavePostId = userSavePostId.filter(id => id !== post._id)
+        setUserSavePostId(updatedUserSavePostId)
+       await removeSaves({userId:activeUser?._id,postId:post._id})
+      }
+
+      if(postsWhichUserLiked.includes(post._id)){
+        const updatedPostsWhichUserLiked = postsWhichUserLiked.filter(id => id !== post._id)
+        setPostsWhichUserLiked(updatedPostsWhichUserLiked)
+        await removeLike({userId:activeUser?._id,postId:post._id})
+      }
       router.push("/");
     } catch (error) {
       const e = error instanceof Error ? error : new Error("Something went wrong");
