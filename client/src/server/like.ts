@@ -25,7 +25,7 @@ async function removeLikeFromPost(params: { userId: string; postId: string }) {
   try {
     if (!params.postId) throw new Error("Post id is Missiing");
     if (!params.userId) throw new Error("User id is Missiing");
-    const findPostToUpdate = await Like.findOne({ userId:params.userId });
+    const findPostToUpdate = await Like.findOne({ userId: params.userId });
     // console.log({findPostToUpdate})
     // Use splice to remove postId from likes array
     const postIndex = findPostToUpdate.postId.indexOf(params.postId);
@@ -56,7 +56,6 @@ async function addLike(values: { userId: string; postId: string }) {
       await addLikeToPost(paramsToAddLikeToPost);
       revalidatePath(`/profile/${userId}`);
       return { res: JSON.parse(JSON.stringify(isAlreadyPresentPost)) };
-
     } else {
       const createNewLikesObj = new Like({
         postId,
@@ -76,6 +75,7 @@ async function removeLike(values: { userId: string; postId: string }) {
   try {
     await connectDB();
     const { userId, postId } = values;
+    // console.log({ postId }, "data removed");
     const findPostToUpdate = await postSchema.findOne({ _id: postId });
     if (!findPostToUpdate) throw new Error("Couldn't found the post");
 
@@ -85,8 +85,9 @@ async function removeLike(values: { userId: string; postId: string }) {
       findPostToUpdate.likes.splice(userIndex, 1);
     }
     await findPostToUpdate.save();
-    await removeLikeFromPost({userId,postId})
+    await removeLikeFromPost({ userId, postId });
     revalidatePath(`/profile/${userId}`);
+    console.log("path revalidated ");
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
     console.log("Error in removeLike:", error);

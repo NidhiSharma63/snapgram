@@ -35,7 +35,8 @@ function SinglePost({
   const [isDeletingPost, setIsDeletingPost] = useState(false);
   const [relatedPostToDisplay, setRelatedPost] = useState(relatedPost);
   const { toast } = useToast();
-  const {userSavePostId,postsWhichUserLiked,setPostsWhichUserLiked,setUserSavePostId} = useUserPostIdForSaveAndLike()
+  const { userSavePostId, postsWhichUserLiked, setPostsWhichUserLiked, setUserSavePostId } =
+    useUserPostIdForSaveAndLike();
 
   useEffect(() => {
     setCreatedTime(multiFormatDateString(post?.createdAt.toString()));
@@ -49,19 +50,20 @@ function SinglePost({
     try {
       const storageRef = ref(storage, post.file);
       await deleteObject(storageRef);
+      if (postsWhichUserLiked.includes(post._id)) {
+        const updatedPostsWhichUserLiked = postsWhichUserLiked.filter((id) => id !== post._id);
+        setPostsWhichUserLiked(updatedPostsWhichUserLiked);
+        // console.log("postID", post?._id);
+        await removeLike({ userId: activeUser?._id, postId: post._id });
+      }
       await deletePost({ _id: post?._id });
       setIsDeletingPost(false);
-      if(userSavePostId.includes(post._id)){
-        const updatedUserSavePostId = userSavePostId.filter(id => id !== post._id)
-        setUserSavePostId(updatedUserSavePostId)
-       await removeSaves({userId:activeUser?._id,postId:post._id})
+      if (userSavePostId.includes(post._id)) {
+        const updatedUserSavePostId = userSavePostId.filter((id) => id !== post._id);
+        setUserSavePostId(updatedUserSavePostId);
+        await removeSaves({ userId: activeUser?._id, postId: post._id });
       }
 
-      if(postsWhichUserLiked.includes(post._id)){
-        const updatedPostsWhichUserLiked = postsWhichUserLiked.filter(id => id !== post._id)
-        setPostsWhichUserLiked(updatedPostsWhichUserLiked)
-        await removeLike({userId:activeUser?._id,postId:post._id})
-      }
       router.push("/");
     } catch (error) {
       const e = error instanceof Error ? error : new Error("Something went wrong");
