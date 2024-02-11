@@ -12,13 +12,13 @@ function TopSidebarNavlinks({ userDetails }: { userDetails: User }) {
   const router = useRouter();
   const handleClick = async () => {
     const { error } = await logout();
-    router.push("/");
     if (error) {
       toast({
         title: error,
       });
       return;
     }
+    router.push("/");
   };
   return (
     <>
