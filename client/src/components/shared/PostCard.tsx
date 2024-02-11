@@ -38,8 +38,7 @@ export default function PostCard({
                     height={40}
                     className="rounded-full object-cover"
                     alt="creator"
-                    style={{height:"40px !important"}}
-                    
+                    style={{ height: "40px !important" }}
                     // style={{ objectFit: "cover", height: "20px!important" }}
                     src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
                   />
@@ -58,8 +57,8 @@ export default function PostCard({
                 <Image src="/assets/icons/edit.svg" width={20} height={20} alt="edit" />
               </Link>
             </div>
-            <Link href={`/posts/${post._id}`}>
-              <div className="small-medium lg:base-meduim py-5">
+            <Link href={`/posts/${post._id}`} className="flex flex-col items-center">
+              <div className="small-medium lg:base-meduim py-5 w-full">
                 <p>{post.caption[0]}</p>
                 <ul className="flex gap-1 mt-2">
                   {post.tags[0].split(",").map((tag: string) => {
@@ -76,7 +75,7 @@ export default function PostCard({
                 width={500}
                 height={500}
                 // className="post-card_img"
-                style={{height:"500px !important",objectFit:"contain"}}
+                style={{ maxHeight: "500px !important", objectFit: "contain" }}
                 alt="post image"
                 src={post?.file || "/assets/icons/profile-placholder.svg"}
               />
