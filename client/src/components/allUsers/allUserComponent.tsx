@@ -7,7 +7,14 @@ import Link from "next/link";
 function AllUserComponent({ user }: { user: User }) {
   return (
     <Link href={`/profile/${user._id}`} className="user-card">
-      <Image width={40} height={40} src={user.avatar || "/assets/icons/profile-placeholder.svg"} alt="creator" />
+      <Image
+        width={40}
+        height={40}
+        priority
+        style={{ height: "40px !important", objectFit: "cover", borderRadius: "50%" }}
+        src={user.avatar || "/assets/icons/profile-placeholder.svg"}
+        alt="creator"
+      />
 
       <div className="flex-center flex-col gap-1">
         <p className="base-medium dark:text-light-1 text-center line-clamp-1">@{user.username}</p>
