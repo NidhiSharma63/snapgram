@@ -23,7 +23,7 @@ function GridPostList({
   showStats?: boolean;
   likedPostIds?:string[]
 }) {
-  console.log({likedPostIds})
+  // console.log({likedPostIds})
   return (
     <ul className="grid-container gap-11">
       {posts?.map((post: PostType) => {

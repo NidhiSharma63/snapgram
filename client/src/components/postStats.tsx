@@ -36,7 +36,7 @@ function PostStats({
   const [totalLikes,setTotalLikes] = useState(totalLike)
   // const [userLikedPost, setUserLikedPost] = useState(likes.includes(activeUser._id));
 
-  console.log({ postsWhichUserLiked,likes });
+  // console.log({ postsWhichUserLiked,likes });
   useEffect(() => {
     if (!initialRender) {
       setPostsWhichUserLiked(likes);

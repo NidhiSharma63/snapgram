@@ -25,7 +25,7 @@ async function page({ params }: { params: { id: string } }) {
       .map((result) => (result.status === "fulfilled" ? result.value : []))
       ?.map((elem) => elem?.post);
 
-    console.log({ likedPost,postss });
+    // console.log({ likedPost,postss });
 
     if(!user ||!activeUser||!savedPost||!postss)return <Loader/>
 
