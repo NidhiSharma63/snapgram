@@ -28,7 +28,7 @@ async function page({ params }: { params: { id: string } }) {
     console.log({ likedPost,postss });
 
     if(!user ||!activeUser||!savedPost||!postss)return <Loader/>
-    
+
     return (
       <UserProfile
         data={user as User}
@@ -36,6 +36,7 @@ async function page({ params }: { params: { id: string } }) {
         activeUser={activeUser as User}
         savedPost={savedPost?.[0]?.postId}
         likedPost={postss}
+        likedPostsIds={likedPost[0]?.postId}
       />
     );
   } catch (error) {

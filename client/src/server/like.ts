@@ -3,6 +3,7 @@
 import connectDB from "@/src/lib/connectToMongodb";
 import Like from "@/src/schema/likeSchema";
 import postSchema from "@/src/schema/postSchema";
+import { revalidatePath } from "next/cache";
 
 async function addLikeToPost(params: { userId: string; postId: string }) {
   try {
@@ -32,7 +33,6 @@ async function removeLikeFromPost(params: { userId: string; postId: string }) {
       findPostToUpdate.postId.splice(postIndex, 1);
     }
     await findPostToUpdate.save();
-    // revalidatePath("/");
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
     console.log("Error in removeLike:", error);
@@ -54,7 +54,9 @@ async function addLike(values: { userId: string; postId: string }) {
       isAlreadyPresentPost.postId.push(postId);
       await isAlreadyPresentPost.save();
       await addLikeToPost(paramsToAddLikeToPost);
+      revalidatePath(`/profile/${userId}`);
       return { res: JSON.parse(JSON.stringify(isAlreadyPresentPost)) };
+
     } else {
       const createNewLikesObj = new Like({
         postId,
@@ -62,7 +64,7 @@ async function addLike(values: { userId: string; postId: string }) {
       });
       await createNewLikesObj.save();
       await addLikeToPost(paramsToAddLikeToPost);
-      // revalidatePath("/");
+      revalidatePath(`/profile/${userId}`);
       return { res: JSON.parse(JSON.stringify(createNewLikesObj)) };
     }
   } catch (error) {
@@ -84,7 +86,7 @@ async function removeLike(values: { userId: string; postId: string }) {
     }
     await findPostToUpdate.save();
     await removeLikeFromPost({userId,postId})
-    // revalidatePath("/");
+    revalidatePath(`/profile/${userId}`);
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
     console.log("Error in removeLike:", error);
@@ -97,6 +99,8 @@ async function getAllLikePost(id: string) {
     if (!id) throw new Error("User id is Missiing");
 
     const allLikePost = await Like.find({ userId: id }).setOptions({ lean: true });
+    revalidatePath(`/profile/${id}`);
+    // revalidatePath("/")
     return { posts: JSON.parse(JSON.stringify(allLikePost)) };
   } catch (error) {
     return Promise.reject(error);

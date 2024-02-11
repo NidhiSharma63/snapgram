@@ -23,12 +23,14 @@ function UserProfile({
   posts,
   savedPost,
   likedPost,
+  likedPostsIds
 }: {
   data: User;
   activeUser: User;
   posts: PostType[];
   savedPost: string[];
   likedPost: PostType[];
+  likedPostsIds:string[]
 }) {
   return (
     <div className="profile-container">
@@ -77,7 +79,7 @@ function UserProfile({
           </TabsList>
 
           <TabsContent value="Posts">
-            <GridPostList posts={posts} showUser={false} activeUser={activeUser} showStats savedPost={savedPost} />
+            <GridPostList posts={posts} showUser={false} activeUser={activeUser} showStats savedPost={savedPost } likedPostIds={likedPostsIds as string[]} />
           </TabsContent>
           <TabsContent value="Likes">
             <GridPostList posts={likedPost} showUser={false} />

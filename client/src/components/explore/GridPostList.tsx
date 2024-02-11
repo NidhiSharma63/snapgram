@@ -13,6 +13,7 @@ function GridPostList({
   activeUser,
   savedPost,
   showStats = false,
+  likedPostIds
 }: {
   posts: PostType[];
   usersData?: User[];
@@ -20,7 +21,9 @@ function GridPostList({
   activeUser?: User;
   savedPost?: string[];
   showStats?: boolean;
+  likedPostIds?:string[]
 }) {
+  console.log({likedPostIds})
   return (
     <ul className="grid-container gap-11">
       {posts?.map((post: PostType) => {
@@ -52,8 +55,9 @@ function GridPostList({
               {/* {showStats && <PostStats post={post} userId={user.id} />} */}
               {showStats && (
                 <PostStats
+                  totalLike={post?.likes.length}
                   postId={post?._id}
-                  likes={post?.likes}
+                  likes={likedPostIds as string[]}
                   activeUser={activeUser as User}
                   savePosts={savedPost as string[]}
                 />

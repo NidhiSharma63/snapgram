@@ -15,9 +15,7 @@ async function page() {
     const postss = results
       .map((result) => (result.status === "fulfilled" ? result.value : []))
       ?.map((elem) => elem?.post);
-    // console.log({ postss });
-    // return postss;
-    // }
+   
 
     return (
       <div className="saved-container">

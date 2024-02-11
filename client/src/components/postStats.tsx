@@ -36,7 +36,7 @@ function PostStats({
   const [totalLikes,setTotalLikes] = useState(totalLike)
   // const [userLikedPost, setUserLikedPost] = useState(likes.includes(activeUser._id));
 
-  console.log({ postsWhichUserLiked });
+  console.log({ postsWhichUserLiked,likes });
   useEffect(() => {
     if (!initialRender) {
       setPostsWhichUserLiked(likes);
@@ -44,6 +44,7 @@ function PostStats({
       setInitialRender(true);
     }
   }, [likes, savePosts]);
+
   const handleAddLikePost = async () => {
     setIsPostLikeLoading(true);
     await addLike({ userId: activeUser?._id, postId });
