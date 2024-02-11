@@ -22,14 +22,14 @@ async function addLikeToPost(params: { userId: string; postId: string }) {
 
 async function removeLikeFromPost(params: { userId: string; postId: string }) {
   try {
-    if (!postId) throw new Error("Post id is Missiing");
-    if (!userId) throw new Error("User id is Missiing");
-    const findPostToUpdate = await Like.findOne({ userId });
-
+    if (!params.postId) throw new Error("Post id is Missiing");
+    if (!params.userId) throw new Error("User id is Missiing");
+    const findPostToUpdate = await Like.findOne({ userId:params.userId });
+    console.log({findPostToUpdate})
     // Use splice to remove postId from likes array
-    const postIndex = findPostToUpdate.likes.indexOf(postId);
+    const postIndex = findPostToUpdate.postId.indexOf(params.postId);
     if (postIndex !== -1) {
-      findPostToUpdate.likes.splice(postIndex, 1);
+      findPostToUpdate.postId.splice(postIndex, 1);
     }
     await findPostToUpdate.save();
     // revalidatePath("/");
@@ -83,6 +83,7 @@ async function removeLike(values: { userId: string; postId: string }) {
       findPostToUpdate.likes.splice(userIndex, 1);
     }
     await findPostToUpdate.save();
+    await removeLikeFromPost({userId,postId})
     // revalidatePath("/");
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
