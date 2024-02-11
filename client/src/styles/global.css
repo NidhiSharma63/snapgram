@@ -90,10 +90,7 @@
 @layer utilities {
 
 
-  /* img {
-    height: 1000px !important
-  } */
-
+  /
   /* UTILITIES */
   .invert-white {
     @apply invert brightness-0 transition;
