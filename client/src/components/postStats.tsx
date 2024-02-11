@@ -33,6 +33,7 @@ function PostStats({
   } = useUserPostIdForSaveAndLike();
   const [isPostLikeLoading, setIsPostLikeLoading] = useState(false);
   const [isPostSaveLoading, setIsPostSaveLoading] = useState(false);
+  const [totalLikes,setTotalLikes] = useState(totalLike)
   // const [userLikedPost, setUserLikedPost] = useState(likes.includes(activeUser._id));
 
   console.log({ postsWhichUserLiked });
@@ -48,6 +49,7 @@ function PostStats({
     await addLike({ userId: activeUser?._id, postId });
     setPostsWhichUserLiked([...postsWhichUserLiked, postId]);
     setIsPostLikeLoading(false);
+    setTotalLikes((prev)=>prev+1)
     // setUserLikedPost(true);
   };
 
@@ -57,6 +59,7 @@ function PostStats({
 
     setPostsWhichUserLiked(postsWhichUserLiked.filter((item) => item !== postId));
     setIsPostLikeLoading(false);
+    setTotalLikes((prev)=>prev-1)
   };
 
   const handleAddSavePost = async () => {
@@ -100,7 +103,7 @@ function PostStats({
           />
         )}
 
-        <p className="small-medium lg:base-medium text-[#877EFF]">{totalLike > 0 ? totalLike : ""}</p>
+        <p className="small-medium lg:base-medium text-[#877EFF]">{totalLikes > 0 ? totalLikes : ""}</p>
       </div>
 
       <div className="flex gap-2">

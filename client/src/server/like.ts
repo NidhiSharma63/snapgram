@@ -25,7 +25,7 @@ async function removeLikeFromPost(params: { userId: string; postId: string }) {
     if (!params.postId) throw new Error("Post id is Missiing");
     if (!params.userId) throw new Error("User id is Missiing");
     const findPostToUpdate = await Like.findOne({ userId:params.userId });
-    console.log({findPostToUpdate})
+    // console.log({findPostToUpdate})
     // Use splice to remove postId from likes array
     const postIndex = findPostToUpdate.postId.indexOf(params.postId);
     if (postIndex !== -1) {
