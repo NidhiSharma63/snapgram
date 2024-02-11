@@ -4,12 +4,14 @@ import { getAllPosts } from "@/src/server/post";
 import { getAllSavePost } from "@/src/server/save";
 import { getActiveUserData, getAllUser } from "@/src/server/user";
 import { User } from "@/src/types/user";
+import { getAllLikePost } from "../server/like";
 async function Page() {
   try {
     const { users } = await getAllUser();
     const { posts } = await getAllPosts();
     const { user: userDetails } = await getActiveUserData();
     const { posts: savePosts } = await getAllSavePost(userDetails?._id || "");
+    const { posts: likePosts } = await getAllLikePost(userDetails?._id || "");
     // console.log({ users, posts });
     // console.log({ savePosts }, "From page");
 
@@ -29,6 +31,7 @@ async function Page() {
                   posts={posts}
                   users={users}
                   userDetails={userDetails as User}
+                  likePosts={likePosts[0]?.postId ?? []}
                 />
                 {posts?.length === 0 ? <p className="text-center">Create posts to see here!</p> : ""}
               </>

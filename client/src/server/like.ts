@@ -20,6 +20,26 @@ async function addLikeToPost(params: { userId: string; postId: string }) {
   }
 }
 
+async function removeLikeFromPost(params: { userId: string; postId: string }) {
+  try {
+    if (!postId) throw new Error("Post id is Missiing");
+    if (!userId) throw new Error("User id is Missiing");
+    const findPostToUpdate = await Like.findOne({ userId });
+
+    // Use splice to remove postId from likes array
+    const postIndex = findPostToUpdate.likes.indexOf(postId);
+    if (postIndex !== -1) {
+      findPostToUpdate.likes.splice(postIndex, 1);
+    }
+    await findPostToUpdate.save();
+    // revalidatePath("/");
+    return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
+  } catch (error) {
+    console.log("Error in removeLike:", error);
+    return Promise.reject(error);
+  }
+}
+
 async function addLike(values: { userId: string; postId: string }) {
   try {
     await connectDB();

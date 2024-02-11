@@ -1,6 +1,7 @@
 export const revalidate = 10;
 
 import UserProfile from "@/src/components/profile/userProfile";
+import { getAllLikePost } from "@/src/server/like";
 import { getUserPosts } from "@/src/server/post";
 import { getAllSavePost } from "@/src/server/save";
 import { getActiveUserData, getUserById } from "@/src/server/user";
@@ -13,12 +14,15 @@ async function page({ params }: { params: { id: string } }) {
     const { posts } = await getUserPosts(params.id || "");
     const { user: activeUser } = await getActiveUserData();
     const { posts: savedPost } = await getAllSavePost(activeUser?._id || "");
+    const { posts: likedPost } = await getAllLikePost(params.id || "");
+    // console.log({ likedPost });
     return (
       <UserProfile
         data={user as User}
         posts={posts as PostType[]}
         activeUser={activeUser as User}
         savedPost={savedPost?.[0]?.postId}
+        likedPost={likedPost}
       />
     );
   } catch (error) {

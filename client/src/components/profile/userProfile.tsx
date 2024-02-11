@@ -22,11 +22,13 @@ function UserProfile({
   activeUser,
   posts,
   savedPost,
+  likedPost,
 }: {
   data: User;
   activeUser: User;
   posts: PostType[];
   savedPost: string[];
+  likedPost: PostType[];
 }) {
   return (
     <div className="profile-container">
@@ -77,7 +79,9 @@ function UserProfile({
           <TabsContent value="Posts">
             <GridPostList posts={posts} showUser={false} activeUser={activeUser} showStats savedPost={savedPost} />
           </TabsContent>
-          <TabsContent value="Likes">{/* <GridPostList posts={likePosts} showUser={false} /> */}</TabsContent>
+          <TabsContent value="Likes">
+            <GridPostList posts={likedPost} showUser={false} />
+          </TabsContent>
         </Tabs>
       ) : posts.length === 0 && activeUser && activeUser._id !== data?._id ? (
         data?.username + " haven't posted anything"

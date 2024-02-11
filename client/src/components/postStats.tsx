@@ -13,11 +13,13 @@ function PostStats({
   postId,
   activeUser,
   savePosts,
+  totalLike,
 }: {
   likes: string[];
   postId: string;
   activeUser: User;
   savePosts: string[];
+  totalLike: number;
 }) {
   const pathname = usePathname();
   const containerStyles = pathname.startsWith("/profile") ? "w-full" : "";
@@ -33,6 +35,7 @@ function PostStats({
   const [isPostSaveLoading, setIsPostSaveLoading] = useState(false);
   // const [userLikedPost, setUserLikedPost] = useState(likes.includes(activeUser._id));
 
+  console.log({ postsWhichUserLiked });
   useEffect(() => {
     if (!initialRender) {
       setPostsWhichUserLiked(likes);
@@ -43,7 +46,7 @@ function PostStats({
   const handleAddLikePost = async () => {
     setIsPostLikeLoading(true);
     await addLike({ userId: activeUser?._id, postId });
-    setPostsWhichUserLiked([...postsWhichUserLiked, activeUser._id]);
+    setPostsWhichUserLiked([...postsWhichUserLiked, postId]);
     setIsPostLikeLoading(false);
     // setUserLikedPost(true);
   };
@@ -52,7 +55,7 @@ function PostStats({
     setIsPostLikeLoading(true);
     await removeLike({ userId: activeUser?._id, postId });
 
-    setPostsWhichUserLiked(postsWhichUserLiked.filter((item) => item !== activeUser._id));
+    setPostsWhichUserLiked(postsWhichUserLiked.filter((item) => item !== postId));
     setIsPostLikeLoading(false);
   };
 
@@ -69,6 +72,7 @@ function PostStats({
     setUserSavePostId(savePosts.filter((item: string) => item !== postId));
     setIsPostSaveLoading(false);
   };
+  console.log({ postsWhichUserLiked });
 
   // console.log({ savePosts });
   return (
@@ -76,7 +80,7 @@ function PostStats({
       <div className="flex gap-2 mr-5">
         {isPostLikeLoading ? (
           <Loader />
-        ) : postsWhichUserLiked.includes(activeUser._id) ? (
+        ) : postsWhichUserLiked.includes(postId) ? (
           <img
             alt="like"
             src="/assets/icons/liked.svg"
@@ -96,9 +100,7 @@ function PostStats({
           />
         )}
 
-        <p className="small-medium lg:base-medium text-[#877EFF]">
-          {postsWhichUserLiked?.length > 0 ? postsWhichUserLiked?.length : ""}
-        </p>
+        <p className="small-medium lg:base-medium text-[#877EFF]">{totalLike > 0 ? totalLike : ""}</p>
       </div>
 
       <div className="flex gap-2">
