@@ -75,7 +75,7 @@ function PostStats({
     setUserSavePostId(savePosts.filter((item: string) => item !== postId));
     setIsPostSaveLoading(false);
   };
-  console.log({ postsWhichUserLiked });
+  // console.log({ postsWhichUserLiked });
 
   // console.log({ savePosts });
   return (
