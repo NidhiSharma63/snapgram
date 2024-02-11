@@ -123,7 +123,8 @@ const logout = async () => {
     cookies().delete("browserId");
     return { message: "successfully logged out" };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 };
 
@@ -207,8 +208,9 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       sameSite: "strict",
     });
     return { createdUser: JSON.parse(JSON.stringify(createdUser)) };
-  } catch (err) {
-    return Promise.reject(err);
+  } catch (error) {
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 export { login, logout, registerUser };

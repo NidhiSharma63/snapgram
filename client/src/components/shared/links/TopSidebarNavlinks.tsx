@@ -1,21 +1,23 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
-import ToastError from "@/src/lib/toastError";
+import { useToast } from "@/src/components/ui/use-toast";
 import { logout } from "@/src/server/auth";
 import { User } from "@/src/types/user";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 function TopSidebarNavlinks({ userDetails }: { userDetails: User }) {
+  const { toast } = useToast();
   const router = useRouter();
   const handleClick = async () => {
-    try {
-      await logout();
-      router.push("/");
-    } catch (error) {
-      const e = error instanceof Error ? error : new Error("Something went wrong");
-      ToastError({ msg: e?.message });
+    const { error } = await logout();
+    router.push("/");
+    if (error) {
+      toast({
+        title: error,
+      });
+      return;
     }
   };
   return (

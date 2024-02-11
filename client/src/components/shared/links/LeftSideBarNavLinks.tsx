@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
+import { useToast } from "@/src/components/ui/use-toast";
 import { sidebarLinks } from "@/src/constant/link";
-import ToastError from "@/src/lib/toastError";
 import { logout } from "@/src/server/auth";
 import { User } from "@/src/types/user";
 import Image from "next/image";
@@ -11,6 +11,7 @@ import { usePathname, useRouter } from "next/navigation";
 function NavLinks({ userDetails }: { userDetails: User }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleClickOnLogo = () => {
     router.push("/");
@@ -21,12 +22,14 @@ function NavLinks({ userDetails }: { userDetails: User }) {
   };
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      router.push("/");
-    } catch (error) {
-      const e = error instanceof Error ? error : new Error("Something went wrong");
-      ToastError({ msg: e?.message });
+    // try {
+    const { error } = await logout();
+    router.push("/");
+    if (error) {
+      toast({
+        title: error,
+      });
+      return;
     }
   };
 
