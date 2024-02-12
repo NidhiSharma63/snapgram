@@ -17,7 +17,8 @@ async function addLikeToPost(params: { userId: string; postId: string }) {
     await findPostToUpdate.save();
   } catch (error) {
     console.log("Error in addLike:", error);
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -35,8 +36,8 @@ async function removeLikeFromPost(params: { userId: string; postId: string }) {
     await findPostToUpdate.save();
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
-    console.log("Error in removeLike:", error);
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -67,7 +68,8 @@ async function addLike(values: { userId: string; postId: string }) {
       return { res: JSON.parse(JSON.stringify(createNewLikesObj)) };
     }
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -90,8 +92,8 @@ async function removeLike(values: { userId: string; postId: string }) {
     console.log("path revalidated ");
     return { res: JSON.parse(JSON.stringify(findPostToUpdate)) };
   } catch (error) {
-    console.log("Error in removeLike:", error);
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -104,7 +106,8 @@ async function getAllLikePost(id: string) {
     // revalidatePath("/")
     return { posts: JSON.parse(JSON.stringify(allLikePost)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 

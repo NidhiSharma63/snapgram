@@ -7,6 +7,7 @@ import { addSaves, removeSaves } from "@/src/server/save";
 import { User } from "@/src/types/user";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useToast } from "./ui/use-toast";
 
 function PostStats({
   likes,
@@ -33,7 +34,8 @@ function PostStats({
   } = useUserPostIdForSaveAndLike();
   const [isPostLikeLoading, setIsPostLikeLoading] = useState(false);
   const [isPostSaveLoading, setIsPostSaveLoading] = useState(false);
-  const [totalLikes,setTotalLikes] = useState(totalLike)
+  const [totalLikes, setTotalLikes] = useState(totalLike);
+  const { toast } = useToast();
   // const [userLikedPost, setUserLikedPost] = useState(likes.includes(activeUser._id));
 
   // console.log({ postsWhichUserLiked,likes });
@@ -47,32 +49,47 @@ function PostStats({
 
   const handleAddLikePost = async () => {
     setIsPostLikeLoading(true);
-    await addLike({ userId: activeUser?._id, postId });
+    const { error } = await addLike({ userId: activeUser?._id, postId });
+    if (error) {
+      setIsPostLikeLoading(false);
+      return toast({ title: error });
+    }
     setPostsWhichUserLiked([...postsWhichUserLiked, postId]);
     setIsPostLikeLoading(false);
-    setTotalLikes((prev)=>prev+1)
+    setTotalLikes((prev) => prev + 1);
     // setUserLikedPost(true);
   };
 
   const handleRemoveLikePost = async () => {
     setIsPostLikeLoading(true);
-    await removeLike({ userId: activeUser?._id, postId });
-
+    const { error } = await removeLike({ userId: activeUser?._id, postId });
+    if (error) {
+      setIsPostLikeLoading(false);
+      return toast({ title: error });
+    }
     setPostsWhichUserLiked(postsWhichUserLiked.filter((item) => item !== postId));
     setIsPostLikeLoading(false);
-    setTotalLikes((prev)=>prev-1)
+    setTotalLikes((prev) => prev - 1);
   };
 
   const handleAddSavePost = async () => {
     setIsPostSaveLoading(true);
-    await addSaves({ userId: activeUser?._id, postId });
+    const { error } = await addSaves({ userId: activeUser?._id, postId });
+    if (error) {
+      setIsPostSaveLoading(false);
+      return toast({ title: error });
+    }
     setUserSavePostId([...savePosts, postId]);
     setIsPostSaveLoading(false);
   };
 
   const handleRemoveSavePost = async () => {
     setIsPostSaveLoading(true);
-    await removeSaves({ userId: activeUser?._id, postId });
+    const { error } = await removeSaves({ userId: activeUser?._id, postId });
+    if (error) {
+      setIsPostSaveLoading(false);
+      return toast({ title: error });
+    }
     setUserSavePostId(savePosts.filter((item: string) => item !== postId));
     setIsPostSaveLoading(false);
   };
