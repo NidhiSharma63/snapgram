@@ -7,7 +7,15 @@ import { getActiveUserData } from "@/src/server/user";
 async function page() {
   try {
     const { user } = await getActiveUserData();
-    const { posts } = await getAllSavePost(user?._id || "");
+    const { posts, error } = await getAllSavePost(user?._id || "");
+
+    if (error) {
+      return (
+        <div className="saved-container">
+          <p className="text-light-4">Something went wrong {error}</p>
+        </div>
+      );
+    }
     if (!posts[0])
       return (
         <div className="saved-container">

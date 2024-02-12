@@ -28,8 +28,8 @@ async function addSaves(values: { userId: string; postId: string }) {
     }
     // revalidatePath("/");
   } catch (error) {
-    console.log("Error in savePost:", error);
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -46,11 +46,12 @@ async function removeSaves(values: { userId: string; postId: string }) {
       { new: true }
     );
 
-    console.log({updateLikesInPost})
+    console.log({ updateLikesInPost });
     revalidatePath("/saved");
     return { res: JSON.parse(JSON.stringify(updateLikesInPost)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -61,7 +62,8 @@ async function getAllSavePost(id: string) {
     const allSavePost = await Save.find({ userId: id }).setOptions({ lean: true });
     return { posts: JSON.parse(JSON.stringify(allSavePost)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 

@@ -10,14 +10,14 @@ async function Page() {
     const { users } = await getAllUser();
     const { posts } = await getAllPosts();
     const { user: userDetails } = await getActiveUserData();
-    const { posts: savePosts } = await getAllSavePost(userDetails?._id || "");
+    const { posts: savePosts, error: savedPostError } = await getAllSavePost(userDetails?._id || "");
     const { posts: likePosts, error } = await getAllLikePost(userDetails?._id || "");
     // console.log({ users, posts });
     // console.log({ savePosts }, "From page");
 
     // if (usersError || postError) return <div>{usersError || postError}</div>;
 
-    if (error) {
+    if (error || savedPostError) {
       return (
         <div className="home-container">
           <p className="text-center">Something went wrong {error}</p>

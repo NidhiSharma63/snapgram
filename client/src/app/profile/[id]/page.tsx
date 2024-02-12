@@ -14,7 +14,7 @@ async function page({ params }: { params: { id: string } }) {
     const { user } = await getUserById(params.id || "");
     const { posts } = await getUserPosts(params.id || "");
     const { user: activeUser } = await getActiveUserData();
-    const { posts: savedPost } = await getAllSavePost(activeUser?._id || "");
+    const { posts: savedPost, error: savedPostError } = await getAllSavePost(activeUser?._id || "");
     const { posts: likedPost, error } = await getAllLikePost(params.id || "");
 
     const promises = likedPost[0]?.postId?.map((id: string) => getPostById(id));
@@ -27,10 +27,10 @@ async function page({ params }: { params: { id: string } }) {
 
     // console.log({ likedPost,postss });
 
-    if (error) {
+    if (error || savedPostError) {
       return <div>Something went wrong. Error : {error}</div>;
     }
-    if ((!user || !activeUser || !savedPost || !postss) && !error) return <Loader />;
+    if ((!user || !activeUser || !savedPost || !postss) && !error && !savedPostError) return <Loader />;
 
     return (
       <UserProfile
