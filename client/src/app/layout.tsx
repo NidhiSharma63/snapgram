@@ -15,7 +15,35 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <head>
-        <title content="Todo's"></title>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Snapgram - Share Your Moments</title>
+        <meta
+          name="description"
+          content="Snapgram - A place to capture and share your moments. Join our community and start exploring, sharing, and connecting with friends."
+        />
+        <meta
+          name="keywords"
+          content="Snapgram, social media, photo sharing, video sharing, Instagram clone, connect, moments, memories"
+        />
+        <meta name="author" content="Nidhi Sharma" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://snapgram.example.com/" />
+        <meta property="og:title" content="Snapgram - Share Your Moments" />
+        <meta
+          property="og:description"
+          content="Snapgram - A place to capture and share your moments. Join our community and start exploring, sharing, and connecting with friends."
+        />
+
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://snapgram.example.com/" />
+        <meta property="twitter:title" content="Snapgram - Share Your Moments" />
+        <meta
+          property="twitter:description"
+          content="Snapgram - A place to capture and share your moments. Join our community and start exploring, sharing, and connecting with friends."
+        />
         {/* <metadata /> */}
       </head>
       <body>
