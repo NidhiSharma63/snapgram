@@ -7,13 +7,13 @@ import { User } from "@/src/types/user";
 
 async function Page() {
   try {
-    const { posts } = await getAllPosts();
+    const { posts, error: getAllPostsError } = await getAllPosts();
     const { users, error: getAllUserError } = await getAllUser();
 
-    if (getAllUserError) {
+    if (getAllUserError || getAllPostsError) {
       return (
         <div className="flex-center w-full h-full">
-          <div>Something went wrong. Error : {getAllUserError}</div>
+          <div>Something went wrong. Error : {getAllUserError ?? getAllPostsError}</div>
         </div>
       );
     }

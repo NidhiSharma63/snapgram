@@ -12,7 +12,7 @@ import { User } from "@/src/types/user";
 async function page({ params }: { params: { id: string } }) {
   try {
     const { user, error: getUserByIdError } = await getUserById(params.id || "");
-    const { posts } = await getUserPosts(params.id || "");
+    const { posts, error: getUserPostsError } = await getUserPosts(params.id || "");
     const { user: activeUser, error: getActiveUserError } = await getActiveUserData();
     const { posts: savedPost, error: savedPostError } = await getAllSavePost(activeUser?._id || "");
     const { posts: likedPost, error } = await getAllLikePost(params.id || "");
@@ -27,8 +27,8 @@ async function page({ params }: { params: { id: string } }) {
 
     // console.log({ likedPost,postss });
 
-    if (error || savedPostError || getActiveUserError || getUserByIdError) {
-      const errorMessage = error ?? savedPostError ?? getActiveUserError ?? getUserByIdError;
+    if (error || savedPostError || getActiveUserError || getUserByIdError || getUserPostsError) {
+      const errorMessage = error ?? savedPostError ?? getActiveUserError ?? getUserByIdError ?? getUserPostsError;
       return <div>Something went wrong. Error : {errorMessage}</div>;
     }
 

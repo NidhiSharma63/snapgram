@@ -49,19 +49,42 @@ function SinglePost({
     setIsDeletingPost(true);
     try {
       const storageRef = ref(storage, post.file);
+      const { error } = await deletePost({ _id: post?._id });
+      if (error) {
+        toast({
+          title: error,
+        });
+        setIsDeletingPost(false);
+        return;
+      }
+
       await deleteObject(storageRef);
       if (postsWhichUserLiked.includes(post._id)) {
+        // console.log("postID", post?._id);
+        const { error } = await removeLike({ userId: activeUser?._id, postId: post._id });
+        if (error) {
+          toast({
+            title: error,
+          });
+          setIsDeletingPost(false);
+          return;
+        }
         const updatedPostsWhichUserLiked = postsWhichUserLiked.filter((id) => id !== post._id);
         setPostsWhichUserLiked(updatedPostsWhichUserLiked);
-        // console.log("postID", post?._id);
-        await removeLike({ userId: activeUser?._id, postId: post._id });
       }
-      await deletePost({ _id: post?._id });
+
       setIsDeletingPost(false);
       if (userSavePostId.includes(post._id)) {
+        const { error } = await removeSaves({ userId: activeUser?._id, postId: post._id });
+        if (error) {
+          toast({
+            title: error,
+          });
+          setIsDeletingPost(false);
+          return;
+        }
         const updatedUserSavePostId = userSavePostId.filter((id) => id !== post._id);
         setUserSavePostId(updatedUserSavePostId);
-        await removeSaves({ userId: activeUser?._id, postId: post._id });
       }
 
       router.push("/");

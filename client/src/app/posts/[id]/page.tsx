@@ -10,11 +10,11 @@ async function page({ params }: { params: { id: string } }) {
     const { post } = await getPostById(params.id || "");
     const { user: userWhoCreatedPost, error: getUserByIdError } = await getUserById(post?.userId || "");
     const { user, error: getActiveUserErrorr } = await getActiveUserData();
-    const { posts } = await getAllPosts();
+    const { posts, error: getAllPostsError } = await getAllPosts();
     const { users, error: getAllUserError } = await getAllUser();
 
-    if (getAllUserError || getActiveUserErrorr || getUserByIdError) {
-      const errorMessage = getAllUserError ?? getActiveUserErrorr ?? getUserByIdError;
+    if (getAllUserError || getActiveUserErrorr || getUserByIdError || getAllPostsError) {
+      const errorMessage = getAllUserError ?? getActiveUserErrorr ?? getUserByIdError ?? getAllPostsError;
       return <div>Something went wrong. Error : {errorMessage}</div>;
     }
 

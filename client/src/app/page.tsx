@@ -8,7 +8,7 @@ import { getAllLikePost } from "../server/like";
 async function Page() {
   try {
     const { users, error: getAllUserError } = await getAllUser();
-    const { posts } = await getAllPosts();
+    const { posts, error: getAllPostsError } = await getAllPosts();
     const { user: userDetails, error: getActiveUserError } = await getActiveUserData();
     const { posts: savePosts, error: savedPostError } = await getAllSavePost(userDetails?._id || "");
     const { posts: likePosts, error } = await getAllLikePost(userDetails?._id || "");
@@ -17,8 +17,8 @@ async function Page() {
 
     // if (usersError || postError) return <div>{usersError || postError}</div>;
 
-    if (error || savedPostError || getAllUserError || getActiveUserError) {
-      const errorMessage = getAllUserError ?? error ?? savedPostError ?? getActiveUserError;
+    if (error || savedPostError || getAllUserError || getActiveUserError || getAllPostsError) {
+      const errorMessage = getAllUserError ?? error ?? savedPostError ?? getActiveUserError ?? getAllPostsError;
       return (
         <div className="home-container">
           <p className="text-center">Something went wrong {errorMessage}</p>

@@ -28,7 +28,8 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
   const [isPostUploading, setIsPostUploading] = useState(false);
   const [isPostDeleting, setIsPostDeleting] = useState(false);
   const { toast } = useToast();
-  const {userSavePostId,postsWhichUserLiked,setPostsWhichUserLiked,setUserSavePostId} = useUserPostIdForSaveAndLike()
+  const { userSavePostId, postsWhichUserLiked, setPostsWhichUserLiked, setUserSavePostId } =
+    useUserPostIdForSaveAndLike();
 
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
@@ -55,7 +56,14 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
       if (action === "Update") {
         if (post?._id) {
           const { tags, location, caption } = values;
-          const { post: updatedPost } = await updatePost({ _id: post?._id, tags, location, caption });
+          const { post: updatedPost, error } = await updatePost({ _id: post?._id, tags, location, caption });
+          if (error) {
+            toast({
+              title: error,
+            });
+            setIsPostUploading(false);
+            return;
+          }
           if (updatedPost) {
             router.push("/");
           }
@@ -72,7 +80,14 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
         const snapshot = await uploadBytes(imageRef, file[0]);
         const url = await getDownloadURL(snapshot.ref);
         const updatedPayload = { ...values, file: url };
-        const { post } = await createPost({ ...updatedPayload });
+        const { post, error } = await createPost({ ...updatedPayload });
+        if (error) {
+          toast({
+            title: error,
+          });
+          setIsPostUploading(false);
+          return;
+        }
         if (post) {
           router.push("/");
         }
@@ -92,20 +107,28 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
       const storageRef = ref(storage, post.file);
       try {
         setIsPostDeleting(true);
+
+        const { error } = await deletePost({ _id: post._id });
+        if (error) {
+          toast({
+            title: error,
+          });
+          setIsPostDeleting(false);
+          return;
+        }
         await deleteObject(storageRef);
-        await deletePost({ _id: post._id });
-        if(userSavePostId.includes(post._id)){
-          const updatedUserSavePostId = userSavePostId.filter(id => id !== post._id)
-          setUserSavePostId(updatedUserSavePostId)
-         await removeSaves({userId:userDetails?._id,postId:post._id})
+        if (userSavePostId.includes(post._id)) {
+          await removeSaves({ userId: userDetails?._id, postId: post._id });
+          const updatedUserSavePostId = userSavePostId.filter((id) => id !== post._id);
+          setUserSavePostId(updatedUserSavePostId);
         }
 
-        if(postsWhichUserLiked.includes(post._id)){
-          const updatedPostsWhichUserLiked = postsWhichUserLiked.filter(id => id !== post._id)
-          setPostsWhichUserLiked(updatedPostsWhichUserLiked)
-          await removeLike({userId:userDetails?._id,postId:post._id})
+        if (postsWhichUserLiked.includes(post._id)) {
+          await removeLike({ userId: userDetails?._id, postId: post._id });
+          const updatedPostsWhichUserLiked = postsWhichUserLiked.filter((id) => id !== post._id);
+          setPostsWhichUserLiked(updatedPostsWhichUserLiked);
         }
-        
+
         router.push("/");
       } catch (error) {
         const e = error instanceof Error ? error : new Error("Something went wrong");

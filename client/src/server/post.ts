@@ -28,7 +28,8 @@ async function createPost(values: PostTypeForCreatingPost) {
     revalidatePath("/explore");
     return { post: JSON.parse(JSON.stringify(postCreated)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -38,8 +39,9 @@ async function getAllPosts(): Promise<PostTypeRes> {
     await connectDB();
     const getAllPost = await Post.find().sort({ createdAt: -1 }).setOptions({ lean: true });
     return { posts: JSON.parse(JSON.stringify(getAllPost)) };
-  } catch (err) {
-    return Promise.reject(err);
+  } catch (error) {
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -50,7 +52,8 @@ async function getPostById(id: string) {
     const post = await Post.findOne({ _id: id });
     return { post: JSON.parse(JSON.stringify(post)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -72,7 +75,8 @@ async function updatePost(values: UpdatePostType) {
     revalidatePath("/profile/" + userId);
     return { post: JSON.parse(JSON.stringify(findPostToUpdate[0])) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -85,7 +89,8 @@ async function deletePost(values: { _id: string }) {
     revalidatePath("/explore");
     return { post: JSON.parse(JSON.stringify(deletedPost)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -96,7 +101,9 @@ async function getUserPosts(id: string) {
     const getUserPosts = await Post.find({ userId: id }).sort({ createdAt: -1 }).setOptions({ lean: true });
     return { posts: JSON.parse(JSON.stringify(getUserPosts)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+
+    return { error: e.message };
   }
 }
 export { createPost, deletePost, getAllPosts, getPostById, getUserPosts, updatePost };
