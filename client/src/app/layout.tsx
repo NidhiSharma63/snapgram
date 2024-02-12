@@ -19,6 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>Snapgram - Share Your Moments</title>
+        <link rel="icon" href="assets/icons/favicon.ico"></link>
         <meta
           name="description"
           content="Snapgram - A place to capture and share your moments. Join our community and start exploring, sharing, and connecting with friends."
@@ -30,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="author" content="Nidhi Sharma" />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://snapgram.example.com/" />
+        <meta property="og:url" content="https://snapgram-nextjs-dun.vercel.app/" />
         <meta property="og:title" content="Snapgram - Share Your Moments" />
         <meta
           property="og:description"
@@ -38,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
 
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://snapgram.example.com/" />
+        <meta property="twitter:url" content="https://snapgram-nextjs-dun.vercel.app/" />
         <meta property="twitter:title" content="Snapgram - Share Your Moments" />
         <meta
           property="twitter:description"
