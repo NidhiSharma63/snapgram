@@ -11,12 +11,19 @@ async function Page() {
     const { posts } = await getAllPosts();
     const { user: userDetails } = await getActiveUserData();
     const { posts: savePosts } = await getAllSavePost(userDetails?._id || "");
-    const { posts: likePosts } = await getAllLikePost(userDetails?._id || "");
+    const { posts: likePosts, error } = await getAllLikePost(userDetails?._id || "");
     // console.log({ users, posts });
     // console.log({ savePosts }, "From page");
 
     // if (usersError || postError) return <div>{usersError || postError}</div>;
 
+    if (error) {
+      return (
+        <div className="home-container">
+          <p className="text-center">Something went wrong {error}</p>
+        </div>
+      );
+    }
     return (
       <div className="flex flex-1">
         <div className="home-container">
