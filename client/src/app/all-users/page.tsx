@@ -5,7 +5,11 @@ import { User } from "@/src/types/user";
 
 async function page() {
   try {
-    const { users: creators } = await getAllUser();
+    const { users: creators, error: getAllUserError } = await getAllUser();
+
+    if (getAllUserError) {
+      return <div>Something went wrong Error: {getAllUserError}</div>;
+    }
     return (
       <div className="common-container">
         <div className="user-container">

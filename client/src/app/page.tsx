@@ -7,9 +7,9 @@ import { User } from "@/src/types/user";
 import { getAllLikePost } from "../server/like";
 async function Page() {
   try {
-    const { users } = await getAllUser();
+    const { users, error: getAllUserError } = await getAllUser();
     const { posts } = await getAllPosts();
-    const { user: userDetails } = await getActiveUserData();
+    const { user: userDetails, error: getActiveUserError } = await getActiveUserData();
     const { posts: savePosts, error: savedPostError } = await getAllSavePost(userDetails?._id || "");
     const { posts: likePosts, error } = await getAllLikePost(userDetails?._id || "");
     // console.log({ users, posts });
@@ -17,10 +17,11 @@ async function Page() {
 
     // if (usersError || postError) return <div>{usersError || postError}</div>;
 
-    if (error || savedPostError) {
+    if (error || savedPostError || getAllUserError || getActiveUserError) {
+      const errorMessage = getAllUserError ?? error ?? savedPostError ?? getActiveUserError;
       return (
         <div className="home-container">
-          <p className="text-center">Something went wrong {error}</p>
+          <p className="text-center">Something went wrong {errorMessage}</p>
         </div>
       );
     }

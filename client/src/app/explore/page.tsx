@@ -8,8 +8,15 @@ import { User } from "@/src/types/user";
 async function Page() {
   try {
     const { posts } = await getAllPosts();
-    const { users } = await getAllUser();
+    const { users, error: getAllUserError } = await getAllUser();
 
+    if (getAllUserError) {
+      return (
+        <div className="flex-center w-full h-full">
+          <div>Something went wrong. Error : {getAllUserError}</div>
+        </div>
+      );
+    }
     if (!posts || !users)
       return (
         <div className="flex-center w-full h-full">

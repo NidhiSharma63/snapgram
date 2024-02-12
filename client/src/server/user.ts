@@ -11,8 +11,9 @@ async function getAllUser(): Promise<UserTypeArray> {
     await connectDB();
     const getUsersFromDB = await User.find();
     return { users: JSON.parse(JSON.stringify(getUsersFromDB)) };
-  } catch (err) {
-    return Promise.reject(err);
+  } catch (error) {
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -30,8 +31,9 @@ async function getActiveUserData(): Promise<UserType> {
     }
 
     return { user: JSON.parse(JSON.stringify(getUserDetailsFromDB)) };
-  } catch (err) {
-    return Promise.reject(err);
+  } catch (error) {
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 async function getUserById(_id: string) {
@@ -40,8 +42,9 @@ async function getUserById(_id: string) {
     const getUserDetailsFromDB = await User.findOne({ _id });
     if (!getUserDetailsFromDB) throw new Error("User not found");
     return { user: JSON.parse(JSON.stringify(getUserDetailsFromDB)) };
-  } catch (err) {
-    return Promise.reject(err);
+  } catch (error) {
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 
@@ -68,7 +71,8 @@ async function updateProfile(values: UserUpdateProfileValues) {
     revalidatePath(`/profile/${userId}`);
     return { user: JSON.parse(JSON.stringify(getUser)) };
   } catch (error) {
-    return Promise.reject(error);
+    const e = error instanceof Error ? error : new Error("Something went wrong");
+    return { error: e.message };
   }
 }
 

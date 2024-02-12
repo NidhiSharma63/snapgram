@@ -7,8 +7,11 @@ import { User } from "@/src/types/user";
 async function Page({ params }: { params: { postId: string } }) {
   try {
     const { post } = await getPostById(params.postId || "");
-    const { user } = await getActiveUserData();
+    const { user, error: getActiveUserError } = await getActiveUserData();
 
+    if (getActiveUserError) {
+      return <div className="text-center">something went wrong {getActiveUserError}</div>;
+    }
     if (!post) return <Loader />;
     // If the post was fetched successfully, render the component with the post data
     return (

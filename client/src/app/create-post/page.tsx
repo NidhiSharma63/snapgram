@@ -4,7 +4,11 @@ import { User } from "@/src/types/user";
 
 async function Page() {
   try {
-    const { user } = await getActiveUserData();
+    const { user, error: getActiveUserError } = await getActiveUserData();
+
+    if (getActiveUserError) {
+      return <div className="text-center">something went wrong {getActiveUserError}</div>;
+    }
     return (
       <div className="flex flex-1">
         <div className="common-container">

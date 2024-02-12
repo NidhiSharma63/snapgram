@@ -8,10 +8,15 @@ import { User } from "@/src/types/user";
 async function page({ params }: { params: { id: string } }) {
   try {
     const { post } = await getPostById(params.id || "");
-    const { user: userWhoCreatedPost } = await getUserById(post?.userId || "");
-    const { user } = await getActiveUserData();
+    const { user: userWhoCreatedPost, error: getUserByIdError } = await getUserById(post?.userId || "");
+    const { user, error: getActiveUserErrorr } = await getActiveUserData();
     const { posts } = await getAllPosts();
-    const { users } = await getAllUser();
+    const { users, error: getAllUserError } = await getAllUser();
+
+    if (getAllUserError || getActiveUserErrorr || getUserByIdError) {
+      const errorMessage = getAllUserError ?? getActiveUserErrorr ?? getUserByIdError;
+      return <div>Something went wrong. Error : {errorMessage}</div>;
+    }
 
     return (
       <SinglePost

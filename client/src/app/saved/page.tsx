@@ -6,13 +6,13 @@ import { getActiveUserData } from "@/src/server/user";
 
 async function page() {
   try {
-    const { user } = await getActiveUserData();
+    const { user, error: getActiveUserError } = await getActiveUserData();
     const { posts, error } = await getAllSavePost(user?._id || "");
 
-    if (error) {
+    if (error || getActiveUserError) {
       return (
         <div className="saved-container">
-          <p className="text-light-4">Something went wrong {error}</p>
+          <p className="text-light-4">Something went wrong {error ?? getActiveUserError}</p>
         </div>
       );
     }

@@ -48,7 +48,14 @@ function UpdateProfile({ user }: { user: User }) {
         const storageRefToDelete = ref(storage, user.avatar);
         await deleteObject(storageRefToDelete);
       }
-      await updateProfile(updatedPayload);
+      const { error } = await updateProfile(updatedPayload);
+      if (error) {
+        toast({
+          title: error,
+        });
+        setIsPending(false);
+        return;
+      }
       setIsPending(false);
       router.push(`/profile/${user._id}`);
     } catch (error) {
