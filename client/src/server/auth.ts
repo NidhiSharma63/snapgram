@@ -61,7 +61,7 @@ async function login(values: loginValues) {
       value: foundUser._id.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50000,
+      maxAge: 2592000, // 30 days in seconds,
       secure: true,
       sameSite: "strict",
     });
@@ -70,7 +70,7 @@ async function login(values: loginValues) {
       value: foundUser.tokens[0].token.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50000,
+      maxAge: 2592000, // 30 days in seconds,
       secure: true,
       sameSite: "strict",
     });
@@ -80,7 +80,7 @@ async function login(values: loginValues) {
       value: foundUser.tokens[0].uniqueBrowserId.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50000,
+      maxAge: 2592000, // 30 days in seconds,
       secure: true,
       sameSite: "strict",
     });
@@ -184,7 +184,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser._id.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50000,
+      maxAge: 2592000, // 30 days in seconds,
       secure: true,
       sameSite: "strict",
     });
@@ -193,7 +193,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser.tokens[0].token.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50000,
+      maxAge: 2592000, // 30 days in seconds,
       secure: true,
       sameSite: "strict",
     });
@@ -203,7 +203,7 @@ async function registerUser(values: registerValues): Promise<RegisterResponse> {
       value: createdUser.tokens[0].uniqueBrowserId.toString(),
       httpOnly: true,
       path: "/",
-      maxAge: 50000,
+      maxAge: 2592000, // 30 days in seconds,
       secure: true,
       sameSite: "strict",
     });
