@@ -17,7 +17,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
         <title>Snapgram - Share Your Moments</title>
         <link rel="icon" href="assets/icons/favicon.ico"></link>
         <meta
