@@ -76,6 +76,9 @@ export default function PostCard({
               </div>
               <div style={{ maxWidth: "500px", minWidth: "250px", height: "500px", position: "relative" }}>
                 <Image
+                  // onLoad={() => {
+                  //   return <Loader />;
+                  // }}
                   priority={true}
                   fill
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
