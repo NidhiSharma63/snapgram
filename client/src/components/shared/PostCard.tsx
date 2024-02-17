@@ -31,17 +31,21 @@ export default function PostCard({
             <div className="flex-between">
               <div className="flex items-center gap-3">
                 <Link href={`/profile/${post?.userId}`}>
-                  <Image
-                    width={40}
-                    priority
-                    // className="post-card_img"
-                    height={40}
-                    className="rounded-full object-cover"
-                    alt="creator"
-                    style={{ height: "40px !important" }}
-                    // style={{ objectFit: "cover", height: "20px!important" }}
-                    src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
-                  />
+                  <div style={{ width: "50px", height: "50px", position: "relative" }}>
+                    <Image
+                      // width={40}
+                      priority
+                      // className="post-card_img"
+                      // height={40}
+                      fill
+                      className="rounded-full object-cover"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      alt="creator"
+                      // style={{ height: "40px !important" }}
+                      // style={{ objectFit: "cover", height: "20px!important" }}
+                      src={user?.avatar || "/assets/icons/profile-placeholder.svg"}
+                    />
+                  </div>
                 </Link>
                 <div className="flex flex-col">
                   <p className="base-medium lg:body-bold dark:text-light-1">{user?.username}</p>
@@ -70,15 +74,15 @@ export default function PostCard({
                   })}
                 </ul>
               </div>
-              <Image
-                priority
-                width={500}
-                height={500}
-                // className="post-card_img"
-                style={{ maxHeight: "500px !important", objectFit: "contain" }}
-                alt="post image"
-                src={post?.file || "/assets/icons/profile-placholder.svg"}
-              />
+              <div style={{ maxWidth: "500px", minWidth: "250px", height: "500px", position: "relative" }}>
+                <Image
+                  priority={true}
+                  fill
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  alt="post image"
+                  src={post?.file || "/assets/icons/profile-placholder.svg"}
+                />
+              </div>
             </Link>
 
             <PostStats
