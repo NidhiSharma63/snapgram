@@ -121,6 +121,7 @@ function SinglePost({
               src={post?.file}
               alt="creator"
               fill
+              priority={true}
               style={{
                 objectFit: "contain",
               }}
@@ -130,16 +131,18 @@ function SinglePost({
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link href={`/profile/${post?.userId}`} className="flex items-center gap-3">
-                <Image
-                  width={20}
-                  style={{
-                    objectFit: "contain",
-                  }}
-                  height={20}
-                  src={userWhoCreatedPost?.avatar || "/assets/icons/profile-placeholder.svg"}
-                  alt="creator"
-                  // className="rounded-full object-cover"
-                />
+                <div className="w-[50px] h-[50px] relative">
+                  <Image
+                    // width={20}
+                    fill
+                    className="w-full h-full object-cover rounded-full"
+                    // height={20}
+                    src={userWhoCreatedPost?.avatar || "/assets/icons/profile-placeholder.svg"}
+                    alt="creator"
+                    // className="rounded-full object-cover"
+                  />
+                </div>
+
                 <div className="flex gap-1 flex-col">
                   <p className="base-medium lg:body-bold dark:text-light-1">{userWhoCreatedPost?.username}</p>
                   <div className="flex-center gap-2 text-light-3">
