@@ -9,6 +9,7 @@ async function Page({ params }: { params: { postId: string } }) {
     const { post } = await getPostById(params.postId || "");
     const { user, error: getActiveUserError } = await getActiveUserData();
 
+    // console.log(post, params, params?.postId);
     if (getActiveUserError) {
       return <div className="text-center">something went wrong {getActiveUserError}</div>;
     }
