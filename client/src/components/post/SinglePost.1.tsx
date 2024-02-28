@@ -1,5 +1,4 @@
 "use client";
-
 import { storage } from "@/src/constant/firebase/config";
 import { useUserPostIdForSaveAndLike } from "@/src/context/userSaveAndLikeContext";
 import { multiFormatDateString } from "@/src/lib/utils";
@@ -17,7 +16,8 @@ import GridPostList from "../explore/GridPostList";
 import Loader from "../shared/Loader";
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
-function SinglePost({
+
+export function SinglePost({
   post,
   activeUser,
   userWhoCreatedPost,
@@ -50,6 +50,13 @@ function SinglePost({
     try {
       const storageRef = ref(storage, post.file);
       // const { error } = await deletePost({ _id: post?._id });
+      if (error) {
+        toast({
+          title: error,
+        });
+        setIsDeletingPost(false);
+        return;
+      }
 
       await deleteObject(storageRef);
       if (postsWhichUserLiked.includes(post._id)) {
@@ -81,14 +88,6 @@ function SinglePost({
       }
 
       const { error } = await deletePost({ _id: post?._id });
-      if (error) {
-        toast({
-          title: error,
-        });
-        setIsDeletingPost(false);
-        return;
-      }
-
       router.push("/");
     } catch (error) {
       const e = error instanceof Error ? error : new Error("Something went wrong");
@@ -98,7 +97,6 @@ function SinglePost({
     }
   };
   // console.log({ post });
-
   useEffect(() => {
     setRelatedPost(() => {
       return relatedPost?.filter((item: PostType) => item._id !== post._id);
@@ -141,7 +139,6 @@ function SinglePost({
                     // height={20}
                     src={userWhoCreatedPost?.avatar || "/assets/icons/profile-placeholder.svg"}
                     alt="creator"
-                    // className="rounded-full object-cover"
                   />
                 </div>
 
@@ -206,5 +203,3 @@ function SinglePost({
     </div>
   );
 }
-
-export default SinglePost;

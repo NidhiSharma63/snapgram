@@ -108,14 +108,6 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
       try {
         setIsPostDeleting(true);
 
-        const { error } = await deletePost({ _id: post._id });
-        if (error) {
-          toast({
-            title: error,
-          });
-          setIsPostDeleting(false);
-          return;
-        }
         await deleteObject(storageRef);
         if (userSavePostId.includes(post._id)) {
           await removeSaves({ userId: userDetails?._id, postId: post._id });
@@ -129,6 +121,14 @@ function PostForm({ post, action, userDetails }: PostFormProps) {
           setPostsWhichUserLiked(updatedPostsWhichUserLiked);
         }
 
+        const { error } = await deletePost({ _id: post._id });
+        if (error) {
+          toast({
+            title: error,
+          });
+          setIsPostDeleting(false);
+          return;
+        }
         router.push("/");
       } catch (error) {
         const e = error instanceof Error ? error : new Error("Something went wrong");

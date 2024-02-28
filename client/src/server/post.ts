@@ -87,6 +87,7 @@ async function deletePost(values: { _id: string }) {
     if (!deletedPost) throw new Error("Couldn't found the post");
     revalidatePath("/");
     revalidatePath("/explore");
+    // redirect("/");
     return { post: JSON.parse(JSON.stringify(deletedPost)) };
   } catch (error) {
     const e = error instanceof Error ? error : new Error("Something went wrong");
