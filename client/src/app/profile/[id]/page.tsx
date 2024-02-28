@@ -41,10 +41,11 @@ async function page({ params }: { params: { id: string } }) {
         activeUser={activeUser as User}
         savedPost={savedPost?.[0]?.postId}
         likedPost={postss}
-        likedPostsIds={likedPost[0]?.postId}
+        likedPostsIds={likedPost?.[0]?.postId}
       />
     );
   } catch (error) {
+    console.log({ error });
     const e = error instanceof Error ? error : new Error("Something went wrong");
     return <div>Something went wrong. Error : {e?.message}</div>;
   }
