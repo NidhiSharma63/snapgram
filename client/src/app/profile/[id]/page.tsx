@@ -18,8 +18,8 @@ async function page({ params }: { params: { id: string } }) {
     const { posts: likedPost, error } = await getAllLikePost(params.id || "");
 
     const promises = likedPost[0]?.postId?.map((id: string) => getPostById(id));
-
-    const results = await Promise.allSettled(promises);
+    // console.log(promises, "promises");
+    const results = await Promise.allSettled(promises ?? []);
 
     const postss = results
       ?.map((result) => (result.status === "fulfilled" ? result.value : []))
