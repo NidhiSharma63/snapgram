@@ -155,7 +155,9 @@ function SinglePost({
               </Link>
 
               <div className="flex-center gap-4">
-                <Link href={`/update-post`} className={`${activeUser && activeUser._id !== post?.userId && "hidden"}`}>
+                <Link
+                  href={`/update-post/${post?._id}`}
+                  className={`${activeUser && activeUser._id !== post?.userId && "hidden"}`}>
                   <Image src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
                 </Link>
 
