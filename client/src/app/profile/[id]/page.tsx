@@ -22,7 +22,7 @@ async function page({ params }: { params: { id: string } }) {
     const results = await Promise.allSettled(promises);
 
     const postss = results
-      .map((result) => (result.status === "fulfilled" ? result.value : []))
+      ?.map((result) => (result.status === "fulfilled" ? result.value : []))
       ?.map((elem) => elem?.post);
 
     // console.log({ likedPost,postss });
