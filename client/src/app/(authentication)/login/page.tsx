@@ -58,12 +58,12 @@ function Page() {
 		<div className="w-full h-full border flex justify-between">
 			<div className="flex border flex-1 justify-center items-center flex-col h-screen">
 				{/* <img src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"} /> */}
-				<p className="text-3xl  text-center font-bold md:h2-bold pt-3 sm:pt-2">
+				<p className="text-3xl text-center font-bold md:h2-bold pt-3 sm:pt-2">
 					Login to your Account
 				</p>
-				<p className=" text-light-3 font-medium mt-2 mb-7 text-center">
-					 Please enter your account details
-					 <br/>
+				<p className="text-light-3 font-medium mt-2 mb-7 text-center">
+					Please enter your account details
+					<br/>
 					<strong>
 					Recruiter ho? Chalo, humare pre-filled cred use karo, typing mat karo!
 					</strong>
