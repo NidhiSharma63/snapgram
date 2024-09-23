@@ -76,6 +76,7 @@ function SignUpForm() {
         <p className="text-3xl font-bold md:h2-bold pt-3 sm:pt-2">Create New Account</p>
         <p className=" text-light-3 font-medium mt-2 mb-2 text-center">
           Please enter your account details
+          <br/>
           <strong>Recruiter ho? Login page pe pre-filled creds se login karo!</strong>
         </p>
         <Form {...form}>
