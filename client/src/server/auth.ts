@@ -38,7 +38,7 @@ async function login(values: loginValues) {
 		await connectDB();
 		const { email, password, uniqueBrowserId } = values;
 
-		const foundUser = await User.findOne({ email }) as IUser | null;
+		const foundUser:IUser |null = await User.findOne({ email });
 		if (!foundUser) {
 			throw new Error("Invalid login detail");
 		}
@@ -56,6 +56,7 @@ async function login(values: loginValues) {
 		const updatedUserWithToken = foundUser.tokens.filter(
 			(item) => item.uniqueBrowserId === uniqueBrowserId,
 		);
+		foundUser.tokens = updatedUserWithToken;
 
 		cookies().set({
 			name: "userId",
