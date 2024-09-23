@@ -75,7 +75,8 @@ function SignUpForm() {
         <img src={theme === "dark" ? "/assets/images/logo.svg" : "/assets/images/logo-light.svg"} />
         <p className="text-3xl font-bold md:h2-bold pt-3 sm:pt-2">Create New Account</p>
         <p className=" text-light-3 font-medium mt-2 mb-2 text-center">
-          To use snapgram, Please enter your account details
+          Please enter your account details
+          <strong>Recruiter ho? Login page pe pre-filled creds se login karo!</strong>
         </p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
