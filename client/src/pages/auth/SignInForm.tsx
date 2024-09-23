@@ -71,6 +71,7 @@ function SignInForm() {
         <p className="text-3xl font-bold md:h2-bold pt-3 sm:pt-8">Login to your Account</p>
         <p className=" text-light-3 font-medium mt-2 mb-7 text-center">
            Please enter your account details
+          <br/>
           <strong>Recruiter ho? Chalo, humare pre-filled cred use karo, typing mat karo!</strong>
         </p>
         <Form {...form}>
