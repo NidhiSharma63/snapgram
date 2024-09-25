@@ -34,8 +34,8 @@ function Page() {
 	const form = useForm<z.infer<typeof signInFormSchema>>({
 		resolver: zodResolver(signInFormSchema),
 		defaultValues: {
-			email: "demo@gmail.com@",
-			password: "demo",
+			email: "demo@gmail.com",
+			password: "demo@123",
 			uniqueBrowserId: uuidv4(),
 		},
 	});
