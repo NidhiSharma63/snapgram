@@ -25,8 +25,8 @@ function SignInForm() {
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "demo@gmail.com",
+      password: "demo@123",
       uniqueBrowserId: uuidv4(),
     },
   });
