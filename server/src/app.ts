@@ -1,11 +1,10 @@
+import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
 import errorHandle from "./middleware/errorHandle";
 import router from "./routes/routes";
 import connectDB from "./utils/connectBD";
 dotenv.config();
-
-const cors = require("cors");
 
 const server = express();
 
