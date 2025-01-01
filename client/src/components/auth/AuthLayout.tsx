@@ -8,9 +8,9 @@ import { Navigate, useLocation } from "react-router-dom";
 const AuthLayout = ({ children }: { children: ReactNode }) => {
 	const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
 	const location = useLocation();
-
-	if (storedValue) {
-		const parsedValue = JSON.parse(storedValue);
+	console.log("auth layout")
+	// if (storedValue) {
+		const parsedValue = JSON.parse(storedValue as string);
 		const isAuthenticated =
 			parsedValue?.tokens && parsedValue.tokens[0].token;
 		if (isAuthenticated) {
@@ -18,7 +18,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
 		} 
 			return <Navigate to="/sign-in" replace state={{ from: location }} />;
 		
-	}
+	// }
 };
 
 export default AuthLayout;

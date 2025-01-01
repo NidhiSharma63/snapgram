@@ -24,6 +24,11 @@ export const sidebarLinks = [
     route: "/create-post",
     label: "Create Post",
   },
+  {
+    imgURL:"/assets/images/chat.png",
+    route:"/chat",
+    label:"Chat"
+  }
 ];
 
 export const bottombarLinks = [
@@ -52,4 +57,9 @@ export const bottombarLinks = [
     route: "/create-post",
     label: "Create",
   },
+  {
+    imgURL:"/assets/images/chat.png",
+    route:"/chat",
+    label:"Chat"
+  }
 ];
