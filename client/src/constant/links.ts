@@ -26,13 +26,13 @@ export const sidebarLinks = [
   },
   {
     imgURL:"/assets/images/chat.png",
-    route:"/chat",
-    label:"Chat"
+    route:"/inbox",
+    label:"Inbox"
   }
 ];
 
 export const bottombarLinks = [
-  {
+  {  
     imgURL: "/assets/icons/home.svg",
     route: "/",
     label: "Home",
@@ -59,7 +59,7 @@ export const bottombarLinks = [
   },
   {
     imgURL:"/assets/images/chat.png",
-    route:"/chat",
-    label:"Chat"
+    route:"/inbox",
+    label:"Inbox"
   }
 ];

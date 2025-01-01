@@ -14,6 +14,8 @@ import {
   SignUpForm,
   UpdateProfile,
 } from "@/pages";
+import Chat from "@/pages/Chat";
+import Inbox from "@/pages/Inbox";
 
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -76,6 +78,14 @@ const router = createBrowserRouter([
         path: "/saved",
         element: <SavePost />,
       },
+      {
+        path: "/inbox",
+        element: <Inbox/>
+      },
+      {
+        path:"/inbox/:userId",
+        element:<Chat/>
+      }
     ],
   },
   {
