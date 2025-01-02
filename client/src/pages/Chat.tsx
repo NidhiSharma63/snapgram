@@ -3,55 +3,42 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useSocket } from "@/context/socketProviders";
 import { useUserDetail } from "@/context/userContext";
-import useAuth from "@/hooks/query/useAuth";
-import { useCallback, useEffect, useState } from "react";
+import { type SetStateAction, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+// Todo - fix authentication error issue
 export default function Chat() {
-	const { useGetUserById } = useAuth();
-  const { userDetails: sender } = useUserDetail();
-	const { socket } = useSocket();
-	// get user id from params
+	const { socket, recipient, roomId, isPending, setUserId } = useSocket();
+	const { userDetails: currentUser } = useUserDetail();
+	const [userMessage, setUserMessage] = useState("");
 	const userId = useParams<{ userId: string }>().userId;
-	const { data: recipient, isPending } = useGetUserById(userId ?? "");
-	const [messages, setMessages] = useState([]);
-	const [isMessagesLoading, setIsMessagesLoading] = useState(true);
-	const lastMessageId = messages?.[messages.length - 1]?._id;
 
 	useEffect(() => {
-		if (!recipient || !sender || !socket) return;
-		// join room
-		socket.emit("join-room", {
-			userId,
-			roomId: `${recipient?._id}-${sender?._id}`,
+		// if (recipient) {
+		setUserId(userId);
+		// }
+	}, [userId, setUserId]);
+
+	// handle message change
+	const handleMessageChange = useCallback(
+		(e: { target: { value: SetStateAction<string> } }) => {
+			setUserMessage(e.target.value);
+		},
+		[],
+	);
+
+	// handle send message
+	const handleSendMessage = useCallback(() => {
+		if (!recipient || !currentUser || !socket) return;
+		socket.emit("send-message", {
+			roomId,
+			currentUserId: currentUser?._id,
+			receiverId: recipient?._id,
+			message: userMessage,
+			timestamp: new Date(),
 		});
-
-		// fetch all the message first
-		socket.on("older-messages", (olderMessages) => {
-			console.log(olderMessages, "olderMessages");
-			setIsMessagesLoading(false); // Stop loader when messages are received
-			if (olderMessages.length > 0) {
-				// Update messages in UI
-				setMessages((prevMessages) => [...olderMessages, ...prevMessages]);
-			}
-		});
-
-		fetchOlderMessages();
-		return () => {
-			socket.disconnect(); // Clean up connection on unmount
-		};
-	}, [socket, userId, recipient, sender]);
-
-	// Function to fetch older messages
-	const fetchOlderMessages = useCallback(() => {
-		// if (!lastMessageId) return; // Avoid multiple requests
-
-		setIsMessagesLoading(true); // Start loader
-		socket.emit("fetch-older-messages", {
-			roomId: `${recipient?._id}-${sender?._id}`,
-			lastMessageId,
-		}); // Send request to backend
-	}, [recipient, sender, lastMessageId, socket]);
+		setUserMessage("");
+	}, [recipient, currentUser, userMessage, socket, roomId]);
 
 	if (!recipient && !isPending) {
 		return (
@@ -77,8 +64,12 @@ export default function Chat() {
 				<Textarea
 					className="shad-textarea custom-scrollbar textarea-field-chat"
 					placeholder="Type a message here..."
+					value={userMessage}
+					onChange={handleMessageChange}
 				/>
-				<Button className="btn btn-primary">Send</Button>
+				<Button className="btn btn-primary" onClick={handleSendMessage}>
+					Send
+				</Button>
 			</div>
 		</div>
 	);
