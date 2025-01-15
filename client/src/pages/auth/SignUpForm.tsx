@@ -146,7 +146,7 @@ function SignUpForm() {
               )}
             />
             <Button type="submit" className="form-field">
-              {isPending ? <img src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
+              {isPending ? <img alt="loader" src="/assets/icons/loader.svg" className="w-6" /> : "submit"}
             </Button>
           </form>
         </Form>
