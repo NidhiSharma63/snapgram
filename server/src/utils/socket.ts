@@ -1,6 +1,6 @@
 import type { Server as HTTPServer } from "node:http";
 import { Server as SocketIOServer } from "socket.io";
-import Chat from "../models/messageSchema"; // Assuming chatSchema is in models/chatModel.ts
+import Chat from "../models/messageSchema";
 
 const activeUsers = new Map<string, { userId: string; roomId: string }>(); // Map to track connected users
 
@@ -92,14 +92,22 @@ export const initSocket = (server: HTTPServer) => {
     });
 
 		// Fetch older messages
-		socket.on("fetch-older-messages", async ({ roomId, lastMessageId }) => {
-			const messages = await Chat.find({ roomId, _id: { $lt: lastMessageId } })
-				.sort({ timestamp: -1 })
-				.limit(20) // Fetch the previous 20 messages, for example
-				.lean();
-		
-			socket.emit("older-messages", messages);
-		});
+		// socket.on("fetch-older-messages", async ({ roomId, lastMessageId }) => {
+    //   if(!lastMessageId){
+    //     const messages = await Chat.find({ roomId })
+		// 		.sort({ timestamp: -1 })
+		// 		.limit(20) // Fetch the previous 20 messages, for example
+		// 		.lean();
+		// 	socket.emit("older-messages", messages);
+    //  return;
+    //   }
+		// 	const messages = await Chat.find({ roomId, _id: { $lt: lastMessageId } })
+		// 		.sort({ timestamp: -1 })
+		// 		.limit(20) // Fetch the previous 20 messages, for example
+		// 		.lean();
+    //   console.log(messages);
+		// 	socket.emit("older-messages", messages);
+		// });
 		
   });
 };
