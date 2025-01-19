@@ -27,13 +27,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
 	const lastMessageId = messages?.[messages.length - 1]?._id;
 	const location = useLocation();
+	const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
 			.join("-");
 	}, [currentUser?._id, recipient?._id]); // Join them with a separator
 
-	const { useGetAllMessages } = useMessage(roomId, lastMessageId ?? "");
+	const { useGetAllMessages, useDeleteMessage } = useMessage(
+		roomId,
+		lastMessageId ?? "",
+	);
+	const { mutate: deleteMessage, isPending: isDeletePending } =
+		useDeleteMessage();
 	// const { data, isPending: isMessagesPending } = useGetAllMessages();
 	const {
 		data,
@@ -66,6 +72,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			newSocket.disconnect();
 		};
 	}, []);
+
+// Reset when roomId changes
+	useEffect(() => {
+		if (roomId) {
+			setHasScrolledToBottom(false);
+		}
+	}, [roomId]);
 
 	// only run when data is available
 	useEffect(() => {
@@ -185,6 +198,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				fetchNextPage,
 				hasNextPage,
 				isFetchingNextPage,
+				deleteMessage,
+				isDeletePending,
+				hasScrolledToBottom,
+				setHasScrolledToBottom,
 			}}
 		>
 			{children}
