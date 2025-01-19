@@ -11,7 +11,6 @@ import type { AxiosError } from "axios";
 
 export default function useMessage(roomId:string,messageId:string) {
 	const { toast } = useToast();
-	console.log("roomId",roomId)
 	function useGetAllMessages() {
 		return useQuery({
 			queryKey: [`${QueryKeys.GET_USER_MESSAGES}-${roomId}`],

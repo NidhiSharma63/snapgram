@@ -6,6 +6,7 @@ import useMessage from "@/hooks/query/useMessage";
 import { getValueFromLS } from "@/lib/utils";
 import type React from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { type Socket, io } from "socket.io-client";
 
 // Define the socket URL
@@ -25,6 +26,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [userId, setUserId] = useState<string | null>(null);
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
 	const lastMessageId = messages?.[messages.length - 1]?._id;
+	const location = useLocation();
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -33,9 +35,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	const { useGetAllMessages } = useMessage(roomId, lastMessageId ?? "");
 	const { data, isPending: isMessagesPending } = useGetAllMessages();
-
-	// check if current user is recipient
-	const isRecipient = recipient?._id === currentUser?._id;
 
 	useEffect(() => {
 		const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
@@ -64,12 +63,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	// only run once
 	useEffect(() => {
 		if (data) {
-			setMessages(data);
+			setMessages(data?.reverse());
 		}
 	}, [data]);
 
 	useEffect(() => {
-		// console.log("did i run really", recipient, currentUser, socket);
 		if (!recipient || !currentUser || !socket) return;
 		// Listen for error events
 		socket.on("authentication-error", (error) => {
@@ -82,17 +80,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			userId,
 			roomId,
 		});
-
-		// // fetch all the message first
-		// socket.on("older-messages", (olderMessages) => {
-		// 	// console.log(olderMessages, "olderMessages");
-		// 	setIsMessagesLoading(false); // Stop loader when messages are received
-		// 	console.log("oldermes", olderMessages);
-		// 	if (olderMessages.length > 0) {
-		// 		// Update messages in UI
-		// 		setMessages((prevMessages) => [...olderMessages, ...prevMessages]);
-		// 	}
-		// });
 
 		socket?.on("error", (data) => {
 			toast({ title: data.message });
@@ -112,47 +99,66 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		socket.on("disconnect", () => {
 			console.log("socket disconnected");
 		});
-		// fetchOlderMessages();
 	}, [socket, userId, recipient, currentUser, toast, roomId]);
 
-	/**
-	 * This section handles the logic for sending and receiving messages.
-	 */
-	// listen to new message event if the user is the recipient
-	// if (isRecipient) {
-	// 	socket?.on("receive-message", (data) => {
-	// 		setMessages((prevMessages) => [...prevMessages, data]);
-	// 		console.log("receive-message", data);
-	// 	});
-	// }
 
-	// // listen to send message event if the user is not the recipient
-	// if (!isRecipient) {
-	// 	socket?.on("send-message", (data) => {
-	// 		setMessages((prevMessages) => [...prevMessages, data]);
-	// 		console.log("Sender has send the message", data);
-	// 	});
-	// }
-	/**
-	 * This section handles the logic for managing seen messages.
-	 * It ensures that messages are marked as seen when the chat window is in focus
-	 * and the current user is the receiver of the messages.
-	 * It also listens for seen messages and updates the UI to show that the messages are seen by the receiver.
-	 */
+	const isHasSeenMessage = useMemo(() => {
+		return messages?.[messages.length - 1]?.isSeen === true;
+	}, [messages]);
 
+	const isRecipient = useMemo(() => {
+		return messages?.some((message) => message.senderId !== currentUser?._id);
+	}, [messages, currentUser]);
 	// check if chat window is open and is in focus
 	// if yes then mark messages as seen in the chat window if user is receiver
 	useEffect(() => {
 		if (!socket || !currentUser || !roomId) return;
-		if (document.visibilityState === "visible") {
-			if (isRecipient) {
+		// console.log("Running", location);
+
+		const handleVisibilityChange = () => {
+			if(!location.pathname.includes(`/inbox/${userId}`)){
+				return
+			}
+
+			// Mark messages as seen if user is the receiver
+			// Only check for the latest message if it has not been seen
+			if (isRecipient && !isHasSeenMessage) {
 				socket.emit("mark-as-seen", {
 					roomId,
 					userId: currentUser?._id,
 				});
 			}
-		}
-	}, [socket, roomId, currentUser, isRecipient]);
+			socket.on("messages-seen", (data) => {
+				// Update only the last message's `isSeen` property
+				setMessages((prevMessages) => {
+					if (!prevMessages.length) return prevMessages; // No messages to update
+
+					// Clone the previous messages to avoid direct mutation
+					const updatedMessages = [...prevMessages];
+
+					// Get the last message
+					const lastMessage = updatedMessages[updatedMessages.length - 1];
+
+					// Check if the last message belongs to the roomId and is not already seen
+					if (lastMessage.roomId === data.roomId && !lastMessage.isSeen) {
+						lastMessage.isSeen = true; // Update `isSeen`
+						lastMessage.seenAt = data.timestamp; // Add `seenAt` timestamp
+					}
+
+					return updatedMessages; // Return the updated messages array
+				});
+			});
+		};
+
+		// Add visibility change event listener
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+
+		// Cleanup listener on unmount
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
+	}, [socket, roomId, currentUser, isHasSeenMessage, isRecipient, location,userId]);
+	
 
 	/**
 	 * End of seen messages logic

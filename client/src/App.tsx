@@ -1,18 +1,21 @@
 import AuthLayout from "@/components/auth/AuthLayout";
+import { SocketProvider } from "@/context/socketProviders";
+import { UserDetailsProvider } from "@/context/userContext";
+import { UserPostIdSaveAndLikeProvider } from "@/context/userPostIdForSaveAndLike";
 import {
-  AllUser,
-  CreatePost,
-  EditPost,
-  Explore,
-  Home,
-  Layout,
-  NotFound,
-  Post,
-  Profile,
-  SavePost,
-  SignInForm,
-  SignUpForm,
-  UpdateProfile,
+	AllUser,
+	CreatePost,
+	EditPost,
+	Explore,
+	Home,
+	Layout,
+	NotFound,
+	Post,
+	Profile,
+	SavePost,
+	SignInForm,
+	SignUpForm,
+	UpdateProfile,
 } from "@/pages";
 import Chat from "@/pages/Chat";
 import Inbox from "@/pages/Inbox";
@@ -31,11 +34,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/",
-		element: (
-			<AuthLayout>
-				<Layout />
-			</AuthLayout>
-		),
+		element: wrapProviders(Layout),
 		children: [
 			{
 				index: true,
@@ -89,6 +88,21 @@ const router = createBrowserRouter([
 		element: <NotFound />,
 	},
 ]);
+function wrapProviders(Component) {
+	return (
+		<AuthLayout>
+			<UserDetailsProvider>
+				<SocketProvider>
+					<UserPostIdSaveAndLikeProvider>
+						<Component />
+					</UserPostIdSaveAndLikeProvider>
+				</SocketProvider>
+			</UserDetailsProvider>
+		</AuthLayout>
+	);
+}
+
+
 function App() {
   return <RouterProvider router={router} />;
 }
