@@ -117,7 +117,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			setMessages((prevMessages) => [...prevMessages, data]);
 		});
 
-		socket?.on("delete-message", (data) => {
+		socket?.on("message-deleted", (data) => {
+			// console.log("delete message", data);
 			if (data.senderId === currentUser._id) {
 				/** cause we are using react query to update the state for current user who has deleted the message */
 				return;
@@ -126,7 +127,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			/** but on the receiver side we need to update the state */
 			setMessages((prevMessages) => {
 				return prevMessages.filter((message) => {
-					return message._id !== data._id;
+					return message._id !== data.messageId;
 				});
 			});
 		});
