@@ -62,6 +62,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	// only run once
 	useEffect(() => {
+		console.log("data",data)
 		if (data) {
 			setMessages(data?.reverse());
 		}
@@ -109,11 +110,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const isRecipient = useMemo(() => {
 		return messages?.some((message) => message.senderId !== currentUser?._id);
 	}, [messages, currentUser]);
+
 	// check if chat window is open and is in focus
 	// if yes then mark messages as seen in the chat window if user is receiver
 	useEffect(() => {
 		if (!socket || !currentUser || !roomId) return;
-		// console.log("Running", location);
 
 		const handleVisibilityChange = () => {
 			if(!location.pathname.includes(`/inbox/${userId}`)){

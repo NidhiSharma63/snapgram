@@ -1,11 +1,28 @@
 import { useSocket } from "@/context/socketProviders";
 import { useUserDetail } from "@/context/userContext";
 import { multiFormatDateString } from "@/lib/utils";
-import React from "react";
+import React,{useEffect} from "react";
 
 export default function Message() {
 	const { messages, isMessagesPending } = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
+
+	/**
+	 * scroll to the latest msg when chat window opens
+	 */
+	useEffect(()=>{
+		if(isMessagesPending)return;
+		const lastMsg = messages?.[messages.length-1]?.message;
+		document.querySelectorAll('.user-msg').forEach( (element)=>{
+			console.log("textContent",element.textContent)
+			if (element.textContent == lastMsg) {
+				element.scrollIntoView({
+						behavior: 'smooth'
+				});
+			}
+	})
+	},[messages,isMessagesPending]);
+	
 	return (
 		<div className="common-container w-full h-full !gap-2">
 			{isMessagesPending ? (
@@ -23,7 +40,7 @@ export default function Message() {
 								className={`w-full text-left flex items-center  ${isSender ? "justify-end" : "justify-start"}`}
 							>
 								<p
-									className={`px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "bg-[#f0f5f1]" : "rounded-br-none text-white"} `}
+									className={`user-msg px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "bg-[#f0f5f1]" : "rounded-br-none text-white"} `}
 								>
 									{message.message}
 								</p>
