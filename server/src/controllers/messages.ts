@@ -34,11 +34,12 @@ const deleteMessage = async (
 	res: Response,
 	next: NextFunction,
 ) => {
-	const { messageId, userId } = req.query;
+	const { messageId, userId } = req.body;
 	if (!userId) throw new Error("User id is Missiing");
 	try {
 		// delete the message
-		await Chat.findByIdAndUpdate({ _id: messageId });
+		const message = await Chat.findOneAndDelete({ _id: messageId });
+		res.status(201).json(message);
 	} catch (error) {
 		next(error);
 	}
