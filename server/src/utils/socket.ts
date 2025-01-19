@@ -69,14 +69,23 @@ export const initSocket = (server: HTTPServer) => {
       }
 
       try {
-        // Update all messages in the room as seen by the user
-        await Chat.updateMany(
-          { roomId, receiverId: userId, isSeen: false },
-          { $set: { isSeen: true, seenAt: new Date() } }
-        );
+        const lastMessage = await Chat.findOne({ roomId })
+          .sort({ timestamp: -1 })
+          .lean();
 
-        io.to(roomId).emit("messages-seen", { roomId, userId, timestamp: new Date() });
-        console.log(`[SEEN] Messages in room ${roomId} marked as seen by ${userId}`);
+        // if last msg is seen then return
+        if (!lastMessage || lastMessage.isSeen) return;
+
+        // Check if the last message is not seen, then update its property only
+        if (lastMessage && !lastMessage.isSeen) {
+          await Chat.updateOne(
+            { _id: lastMessage._id },
+            { $set: { isSeen: true, seenAt: new Date() } }
+          );
+
+          io.to(roomId).emit("messages-seen", { roomId, userId, timestamp: new Date() });
+          console.log(`[SEEN] Last message in room ${roomId} marked as seen by ${userId}`);
+        }
       } catch (err) {
         console.error("Error marking messages as seen:", err);
       }

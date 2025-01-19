@@ -7,19 +7,21 @@ const getAllMessages = async (
 	next: NextFunction,
 ) => {
 	const { roomId, lastMessageId, userId } = req.query;
+	// console.log(req.query)
 	if (!userId) throw new Error("User id is Missiing");
 	try {
 		if (!lastMessageId) {
 			const messages = await Chat.find({ roomId })
-				.sort({ timestamp: -1 })
+				.sort({ timestamp: -1 }) // Sort by timestamp in descending order, latest first
 				.limit(20) // Fetch the previous 20 messages, for example
-				.lean();
+				.lean(); // Convert Mongoose documents to plain JavaScript objects
 			res.status(200).json(messages);
 			return;
 		}
+
 		const messages = await Chat.find({ roomId, _id: { $lt: lastMessageId } })
-			.sort({ timestamp: -1 })
-			.limit(20) // Fetch the previous 20 messages, for example
+			.sort({ timestamp: -1 }) // Sort by timestamp in descending order, latest first
+			.limit(20)
 			.lean();
 		res.status(200).json(messages);
 	} catch (error) {
