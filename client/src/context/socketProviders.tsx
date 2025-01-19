@@ -117,6 +117,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			setMessages((prevMessages) => [...prevMessages, data]);
 		});
 
+		socket?.on("delete-message", (data) => {
+			if (data.senderId === currentUser._id) {
+				/** cause we are using react query to update the state for current user who has deleted the message */
+				return;
+			}
+
+			/** but on the receiver side we need to update the state */
+			setMessages((prevMessages) => {
+				return prevMessages.filter((message) => {
+					return message._id !== data._id;
+				});
+			});
+		});
 		socket.on("disconnect", () => {
 			console.log("socket disconnected");
 		});
@@ -142,11 +155,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			if (!location.pathname.includes(`/inbox/${userId}`)) {
 				return;
 			}
-			console.log("Is sent by current user", isSentByCurrentUser);
-			// Mark messages as seen if user is the receiver
-			// Only check for the latest message if it has not been seen
 			if (!isSentByCurrentUser && !isHasSeenMessage) {
-				console.log("Marking messages as seen");
+				// Mark messages as seen if user is the receiver
+				// Only check for the latest message if it has not been seen
 				socket.emit("mark-as-seen", {
 					roomId,
 					userId: currentUser?._id,

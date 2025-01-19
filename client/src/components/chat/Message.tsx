@@ -16,6 +16,8 @@ export default function Message() {
 		isDeletePending,
 		hasScrolledToBottom,
 		setHasScrolledToBottom,
+		socket,
+		roomId,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
@@ -63,8 +65,13 @@ export default function Message() {
 				messageId: event.target.dataset.id,
 			});
 			setDeleteMsgId(event.target.dataset.id);
+			socket.emit("delete-message", {
+				messageId: event.target.dataset.id,
+				roomId,
+				senderId: currentUser?._id,
+			});
 		},
-		[deleteMessage],
+		[deleteMessage, socket, roomId, currentUser],
 	);
 	return (
 		<div
@@ -131,7 +138,7 @@ export default function Message() {
 							</div>
 							{i === messages.length - 1 && isSender && message.isSeen ? (
 								<p className="text-end w-full px-6 text-light-3 text-sm !py-0">
-									seen at {multiFormatDateString(message.timestamp)}
+									seen at {multiFormatDateString(message.seenAt)}
 								</p>
 							) : (
 								""
