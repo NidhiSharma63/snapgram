@@ -32,7 +32,7 @@ export default function Chat() {
 		if (!recipient || !currentUser || !socket) return;
 		socket.emit("send-message", {
 			roomId,
-			currentUserId: currentUser?._id,
+			senderId: currentUser?._id,
 			receiverId: recipient?._id,
 			message: userMessage,
 			timestamp: new Date(),

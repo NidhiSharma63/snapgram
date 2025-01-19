@@ -24,13 +24,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 		{/* <BrowserRouter> */}
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider defaultTheme="light" storageKey="snap-gram-theme">
-				<SocketProvider>
-					<UserDetailsProvider>
+				<UserDetailsProvider>
+					<SocketProvider>
 						<UserPostIdSaveAndLikeProvider>
 							<App />
 						</UserPostIdSaveAndLikeProvider>
-					</UserDetailsProvider>
-				</SocketProvider>
+					</SocketProvider>
+				</UserDetailsProvider>
 				<Toaster />
 			</ThemeProvider>
 		</QueryClientProvider>
