@@ -47,6 +47,8 @@ export default function Chat() {
 			</div>
 		);
 	}
+
+	
 	return (
 		<div className="common-container !gap-0 !p-0 border-2 border-gray-300 border-black rounded-md !overflow-hidden">
 			<header className="flex items-center justify-start p-4 border-b-2 w-full border-gray-300 border-black gap-4 h-[80px]">

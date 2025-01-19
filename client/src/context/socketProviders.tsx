@@ -34,7 +34,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	}, [currentUser?._id, recipient?._id]); // Join them with a separator
 
 	const { useGetAllMessages } = useMessage(roomId, lastMessageId ?? "");
-	const { data, isPending: isMessagesPending } = useGetAllMessages();
+	// const { data, isPending: isMessagesPending } = useGetAllMessages();
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isPending: isMessagesPending,
+	} = useGetAllMessages();
 
 	useEffect(() => {
 		const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
@@ -60,11 +67,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		};
 	}, []);
 
-	// only run once
+	// only run when data is available
 	useEffect(() => {
-		console.log("data",data)
 		if (data) {
-			setMessages(data?.reverse());
+			const messages = data?.pages.flat(1)?.reverse();
+			setMessages(messages);
 		}
 	}, [data]);
 
@@ -175,6 +182,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				messages,
 				setUserId,
 				isPending,
+				fetchNextPage,
+				hasNextPage,
+				isFetchingNextPage,
 			}}
 		>
 			{children}

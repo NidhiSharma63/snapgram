@@ -1,30 +1,52 @@
 import { useSocket } from "@/context/socketProviders";
 import { useUserDetail } from "@/context/userContext";
 import { multiFormatDateString } from "@/lib/utils";
-import React,{useEffect} from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 export default function Message() {
-	const { messages, isMessagesPending } = useSocket();
+	const {
+		messages,
+		isMessagesPending,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
-
+	const containerRef = useRef(null); // Reference to the message container
+	//
 	/**
 	 * scroll to the latest msg when chat window opens
 	 */
-	useEffect(()=>{
-		if(isMessagesPending)return;
-		const lastMsg = messages?.[messages.length-1]?.message;
-		document.querySelectorAll('.user-msg').forEach( (element)=>{
-			console.log("textContent",element.textContent)
-			if (element.textContent == lastMsg) {
+	useEffect(() => {
+		if (isMessagesPending) return;
+		if (messages?.length > 20) return;
+		const lastMsg = messages?.[messages.length - 1]?.message;
+		// biome-ignore lint/complexity/noForEach: <explanation>
+		document.querySelectorAll(".user-msg").forEach((element) => {
+			if (element.textContent === lastMsg) {
 				element.scrollIntoView({
-						behavior: 'smooth'
+					behavior: "smooth",
 				});
 			}
-	})
-	},[messages,isMessagesPending]);
-	
+		});
+	}, [isMessagesPending, messages]);
+
+	const loadMoreMessages = useCallback(() => {
+		if (
+			containerRef?.current?.scrollTop === 0 &&
+			hasNextPage &&
+			!isFetchingNextPage
+		) {
+			fetchNextPage(); // Fetch the next set of messages
+		}
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 	return (
-		<div className="common-container w-full h-full !gap-2">
+		<div
+			className="common-container w-full h-full !gap-2"
+			onScroll={loadMoreMessages}
+			ref={containerRef}
+		>
+			{isFetchingNextPage && "Loading..."}
 			{isMessagesPending ? (
 				"Loading..."
 			) : messages.length === 0 && !isMessagesPending ? (
@@ -40,7 +62,7 @@ export default function Message() {
 								className={`w-full text-left flex items-center  ${isSender ? "justify-end" : "justify-start"}`}
 							>
 								<p
-									className={`user-msg px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "bg-[#f0f5f1]" : "rounded-br-none text-white"} `}
+									className={`user-msg px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "!bg-[#f0f5f1]" : "rounded-br-none text-white"} `}
 								>
 									{message.message}
 								</p>
