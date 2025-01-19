@@ -91,6 +91,22 @@ export const initSocket = (server: HTTPServer) => {
       }
     });
 
+
+    // Delete message
+    socket.on("delete-message", async ({ messageId,roomId,senderId }) => {
+      if (!messageId) {
+        console.error("delete-message: Missing messageId");
+        return;
+      }
+      try {
+        // Delete the message from MongoDB
+        // await Chat.deleteOne({ _id: messageId });
+        io.to(roomId).emit("message-deleted", { messageId ,senderId});
+        console.log(`[DELETE] Message ${messageId} deleted`);
+      } catch (err) {
+        console.error("Error deleting message:", err);
+      }
+    })
     // Handle user disconnect
     socket.on("disconnect", () => {
       const user = activeUsers.get(socket.id);
