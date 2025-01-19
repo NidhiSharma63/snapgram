@@ -9,14 +9,14 @@ import { initSocket } from "./utils/socket";
 // dotenv.config();
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const server: HTTPServer = createServer(app);
 initSocket(server); // Initialize Socket.IO by passing the server instance
 
 // Middleware to parse incoming requests with JSON payloads
-// server.use(express.json());
 
 // Middleware to parse incoming requests with urlencoded payloads
-// server.use(express.urlencoded({ extended: true }));
 
 // use cors
 app.use(cors());
