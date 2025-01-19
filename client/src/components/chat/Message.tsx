@@ -26,17 +26,18 @@ export default function Message() {
 	 */
 	useEffect(() => {
 		if (isMessagesPending || hasScrolledToBottom) return;
-		if (messages?.length > 20) return;
 		const lastMsg = messages?.[messages.length - 1]?.message;
 		// biome-ignore lint/complexity/noForEach: <explanation>
-		document.querySelectorAll(".user-msg").forEach((element) => {
-			if (element.textContent === lastMsg) {
-				element.scrollIntoView({
-					behavior: "smooth",
-				});
-			}
-		});
-		setHasScrolledToBottom(true);
+		document
+			.querySelectorAll(".user-msg")
+			.forEach((element) => {
+				if (element.textContent === lastMsg) {
+					element.scrollIntoView({
+						behavior: "smooth",
+					});
+					setHasScrolledToBottom(true);
+				}
+			});
 	}, [
 		isMessagesPending,
 		messages,
@@ -81,6 +82,7 @@ export default function Message() {
 			) : (
 				messages?.map((message, i) => {
 					const isSender = message.senderId === currentUser?._id;
+					// console.log(message);
 					return (
 						<React.Fragment key={message._id}>
 							<div

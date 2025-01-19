@@ -127,8 +127,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		return messages?.[messages.length - 1]?.isSeen === true;
 	}, [messages]);
 
-	const isRecipient = useMemo(() => {
-		return messages?.some((message) => message.senderId !== currentUser?._id);
+	/** if the last msg is sent by the current user then it should not be receiver but
+	 */
+	const isSentByCurrentUser = useMemo(() => {
+		return messages?.[messages.length - 1]?.senderId === currentUser?._id;
 	}, [messages, currentUser]);
 
 	// check if chat window is open and is in focus
@@ -137,13 +139,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		if (!socket || !currentUser || !roomId) return;
 
 		const handleVisibilityChange = () => {
-			if(!location.pathname.includes(`/inbox/${userId}`)){
-				return
+			if (!location.pathname.includes(`/inbox/${userId}`)) {
+				return;
 			}
-
+			console.log("Is sent by current user", isSentByCurrentUser);
 			// Mark messages as seen if user is the receiver
 			// Only check for the latest message if it has not been seen
-			if (isRecipient && !isHasSeenMessage) {
+			if (!isSentByCurrentUser && !isHasSeenMessage) {
+				console.log("Marking messages as seen");
 				socket.emit("mark-as-seen", {
 					roomId,
 					userId: currentUser?._id,
@@ -178,7 +181,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		return () => {
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
-	}, [socket, roomId, currentUser, isHasSeenMessage, isRecipient, location,userId]);
+	}, [
+		socket,
+		roomId,
+		currentUser,
+		isHasSeenMessage,
+		isSentByCurrentUser,
+		location,
+		userId,
+	]);
 	
 
 	/**
