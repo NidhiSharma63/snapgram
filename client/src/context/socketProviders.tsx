@@ -28,6 +28,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const lastMessageId = messages?.[messages.length - 1]?._id;
 	const location = useLocation();
 	const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+	const [isMsgUploading, setIsMsgUploading] = useState(false);
+	const [isMsgDeleting, setIsMsgDeleting] = useState(false);
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -38,7 +40,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		roomId,
 		lastMessageId ?? "",
 	);
-	const { mutate: deleteMessage, isPending: isDeletePending } =
+	const { mutateAsync: deleteMessage, isPending: isDeletePending } =
 		useDeleteMessage();
 	// const { data, isPending: isMessagesPending } = useGetAllMessages();
 	const {
@@ -49,6 +51,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		isPending: isMessagesPending,
 	} = useGetAllMessages();
 
+	/** setup socket */
 	useEffect(() => {
 		const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
 		const parsedValue = JSON.parse(storedValue as string);
@@ -82,11 +85,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	// only run when data is available
 	useEffect(() => {
+		// console.log("pending state");
+		if (isMessagesPending) return;
 		if (data) {
+			// console.log("The data has changed!", data?.pages.flat(1));
 			const messages = data?.pages.flat(1)?.reverse();
 			setMessages(messages);
 		}
-	}, [data]);
+	}, [data?.pages, isMessagesPending]);
 
 	useEffect(() => {
 		if (!recipient || !currentUser || !socket) return;
@@ -113,7 +119,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		});
 
 		socket?.on("receive-message", (data) => {
-			// console.log("receive-message", data);
 			setMessages((prevMessages) => [...prevMessages, data]);
 		});
 
@@ -225,6 +230,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				isDeletePending,
 				hasScrolledToBottom,
 				setHasScrolledToBottom,
+				isMsgUploading,
+				setIsMsgUploading,
+				isMsgDeleting,
+				setIsMsgDeleting,
 			}}
 		>
 			{children}

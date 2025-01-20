@@ -1,7 +1,9 @@
 import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
+import { storage } from "@/firebase/config";
 import { multiFormatDateString } from "@/lib/utils";
+import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 
@@ -18,6 +20,8 @@ export default function Message() {
 		setHasScrolledToBottom,
 		socket,
 		roomId,
+		setIsMsgDeleting,
+		isMsgDeleting,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
@@ -59,23 +63,41 @@ export default function Message() {
 	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	const handleDeleteMessage = useCallback(
-		(event) => {
-			// console.log("message id", event.target.dataset.id);
-			deleteMessage({
-				messageId: event.target.dataset.id,
+		async (event) => {
+			const text = event.target.dataset.id;
+			setIsMsgDeleting(true);
+			// extract image from message
+			const isImage = text.startsWith("https://firebasestorage.googleapis.com");
+			const messageId = isImage
+				? messages.find((item) => {
+						// console.log("msg", item.message, "text", text);
+						return item.message === text;
+					})?._id
+				: event.target.dataset.id;
+
+			// delete image from firebase
+			if (isImage) {
+				const storageRef = ref(storage, text);
+				await deleteObject(storageRef);
+			}
+			setDeleteMsgId(messageId);
+			await deleteMessage({
+				messageId,
 			});
-			setDeleteMsgId(event.target.dataset.id);
 			socket.emit("delete-message", {
-				messageId: event.target.dataset.id,
+				messageId,
 				roomId,
 				senderId: currentUser?._id,
 			});
+			setIsMsgDeleting(false);
 		},
-		[deleteMessage, socket, roomId, currentUser],
+		[deleteMessage, socket, roomId, currentUser, messages, setIsMsgDeleting],
 	);
+
+	// console.log("messages", messages);
 	return (
 		<div
-			className="common-container w-full h-full !gap-2"
+			className="common-container w-full h-full !gap-2 !py-1"
 			onScroll={loadMoreMessages}
 			ref={containerRef}
 		>
@@ -89,14 +111,19 @@ export default function Message() {
 			) : (
 				messages?.map((message, i) => {
 					const isSender = message.senderId === currentUser?._id;
-					// console.log(message);
+					// if message is a url then create the image otherwise show the text
+					// check if message is a url created by firebase
+					const isImage = message.message.startsWith(
+						"https://firebasestorage.googleapis.com",
+					);
+
 					return (
 						<React.Fragment key={message._id}>
 							<div
 								className={`w-full text-left flex items-center gap-3 ${isSender ? "justify-end" : "justify-start"} group`}
 							>
 								{/* show loader only for that message which is being deleted by user */}
-								{isSender && isDeletePending && deleteMsgId === message._id && (
+								{isSender && isMsgDeleting && deleteMsgId === message._id && (
 									<ColorRing
 										width={24}
 										height={24}
@@ -113,27 +140,34 @@ export default function Message() {
 										}
 									/>
 								)}
-								{isSender &&
-									deleteMsgId !== message._id &&
-									!isDeletePending && (
-										<img
-											data-id={message._id}
-											onClick={handleDeleteMessage}
-											src={"/assets/icons/delete.svg"}
-											alt="delete"
-											width={14}
-											height={14}
-											style={{
-												cursor: "pointer",
-											}}
-											className="hidden group-hover:block cursor-pointer"
-										/>
-									)}
-								<p
-									className={`user-msg px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
-								>
-									{message.message}
-								</p>
+								{isSender && deleteMsgId !== message._id && !isMsgDeleting && (
+									<img
+										data-id={isImage ? message.message : message._id}
+										onClick={handleDeleteMessage}
+										src={"/assets/icons/delete.svg"}
+										alt="delete"
+										width={14}
+										height={14}
+										style={{
+											cursor: "pointer",
+										}}
+										className="hidden group-hover:block cursor-pointer"
+									/>
+								)}
+								{isImage ? (
+									<img
+										src={message.message}
+										alt="message"
+										className="max-w-[500px] max-h-[500px] object-cover rounded-md"
+									/>
+								) : (
+									<p
+										className={`user-msg px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
+									>
+										{message.message}
+									</p>
+								)}
+
 								<br />
 							</div>
 							{i === messages.length - 1 && isSender && message.isSeen ? (

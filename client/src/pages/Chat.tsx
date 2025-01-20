@@ -2,21 +2,42 @@ import Message from "@/components/chat/Message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useSocket } from "@/context/socketProviders";
+import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
-import { type SetStateAction, useCallback, useEffect, useState } from "react";
+import { storage } from "@/firebase/config";
+import { queryClient } from "@/main";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+	type SetStateAction,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { ColorRing } from "react-loader-spinner";
 import { useParams } from "react-router-dom";
+import { v4 } from "uuid";
 
 // Todo - fix authentication error issue
 export default function Chat() {
-	const { socket, recipient, roomId, isPending, setUserId } = useSocket();
+	const {
+		socket,
+		recipient,
+		roomId,
+		isPending,
+		setUserId,
+		setIsMsgUploading,
+		isMsgUploading,
+	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const [userMessage, setUserMessage] = useState("");
 	const userId = useParams<{ userId: string }>().userId;
+	const [file, setFile] = useState<File | null>(null);
+	const inputRef = useRef();
+	const { theme } = useTheme();
 
 	useEffect(() => {
-		// if (recipient) {
 		setUserId(userId);
-		// }
 	}, [userId, setUserId]);
 
 	// handle message change
@@ -28,17 +49,69 @@ export default function Chat() {
 	);
 
 	// handle send message
-	const handleSendMessage = useCallback(() => {
+	const handleSendMessage = useCallback(async () => {
 		if (!recipient || !currentUser || !socket) return;
-		socket.emit("send-message", {
-			roomId,
-			senderId: currentUser?._id,
-			receiverId: recipient?._id,
-			message: userMessage,
-			timestamp: new Date(),
+		setIsMsgUploading(true);
+		// if user has selected the file then send the file to firebase storage on frontend only
+		if (file) {
+			const imageRef = ref(storage, `/images/${file}-${v4()}`);
+			const snapshot = await uploadBytes(imageRef, file);
+			const url = await getDownloadURL(snapshot.ref);
+			socket.emit("send-message", {
+				roomId,
+				senderId: currentUser?._id,
+				receiverId: recipient?._id,
+				message: url,
+				timestamp: new Date(),
+			});
+			setFile(null);
+			if (inputRef.current) {
+				inputRef.current.value = "";
+			}
+		} else {
+			socket.emit("send-message", {
+				roomId,
+				senderId: currentUser?._id,
+				receiverId: recipient?._id,
+				message: userMessage,
+				timestamp: new Date(),
+			});
+		}
+		queryClient.invalidateQueries({
+			queryKey: ["messages", roomId],
 		});
 		setUserMessage("");
-	}, [recipient, currentUser, userMessage, socket, roomId]);
+		setIsMsgUploading(false);
+	}, [
+		recipient,
+		currentUser,
+		userMessage,
+		socket,
+		roomId,
+		file,
+		setIsMsgUploading,
+	]);
+
+	// handle file change
+	const handleFileChange = useCallback((event) => {
+		const selectedFile = event.target.files?.[0];
+		// setFile(event.current.files[0]);
+		if (selectedFile) {
+			setFile(selectedFile);
+		}
+	}, []);
+
+	// handle file delete
+	const handleFileDelete = useCallback(() => {
+		setFile(null); // Clear the file state
+		if (inputRef.current) {
+			inputRef.current.value = ""; // Reset the input value
+		}
+	}, []);
+	// handle click on gallery
+	const handleClickOnGallery = useCallback(() => {
+		inputRef?.current?.click();
+	}, []);
 
 	if (!recipient && !isPending) {
 		return (
@@ -62,16 +135,59 @@ export default function Chat() {
 				</p>
 			</header>
 			<Message />
-			<div className="flex items-center justify-between p-4 h-[60px] w-full gap-4">
-				<Textarea
-					className="shad-textarea custom-scrollbar textarea-field-chat"
-					placeholder="Type a message here..."
-					value={userMessage}
-					onChange={handleMessageChange}
+			<div className="flex items-center justify-between p-4 w-full gap-4">
+				<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
+					{file && (
+						<div className="mt-2 flex items-start gap-2">
+							<img
+								src={URL.createObjectURL(file)}
+								alt="Selected file preview"
+								className="w-20 h-20 object-cover rounded-md"
+							/>
+							<img
+								onClick={handleFileDelete}
+								src={"/assets/icons/delete.svg"}
+								alt="delete"
+								width={24}
+								height={24}
+								style={{
+									cursor: "pointer",
+								}}
+								className="cursor-pointer"
+							/>
+						</div>
+					)}
+					<Textarea
+						className="shad-textarea custom-scrollbar textarea-field-chat h-[60px] !border-0"
+						placeholder="Type a message here..."
+						value={userMessage}
+						onChange={handleMessageChange}
+					/>
+				</div>
+				<input type="file" hidden ref={inputRef} onChange={handleFileChange} />
+				<img
+					src="/assets/icons/gallery-add-blue.svg"
+					className="btn-primary cursor-pointer"
+					alt="photos"
+					onClick={handleClickOnGallery}
 				/>
-				<Button className="btn btn-primary" onClick={handleSendMessage}>
-					Send
-				</Button>
+				{isMsgUploading ? (
+					<Button className="btn btn-primary">
+						<ColorRing
+							width={24}
+							height={24}
+							colors={
+								theme === "dark"
+									? ["#fff", "#fff", "#fff", "#fff", "#fff"]
+									: ["#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de"]
+							}
+						/>
+					</Button>
+				) : (
+					<Button className="btn btn-primary" onClick={handleSendMessage}>
+						Send
+					</Button>
+				)}
 			</div>
 		</div>
 	);
