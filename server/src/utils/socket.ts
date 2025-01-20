@@ -47,13 +47,7 @@ export const initSocket = (server: HTTPServer) => {
         await newMessage.save();
 
         // Emit message to everyone in the room
-        io.to(roomId).emit("receive-message", {
-          roomId,
-          senderId,
-          receiverId,
-          message,
-          timestamp,
-        });
+        io.to(roomId).emit("receive-message", newMessage);
 
         console.log(`[MESSAGE] From ${senderId} to ${receiverId} in room ${roomId}: ${message}`);
       } catch (err) {
