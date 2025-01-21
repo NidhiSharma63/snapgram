@@ -129,7 +129,7 @@ export default function Chat() {
 
 	
 	return (
-		<div className="common-container !gap-0 !p-0  rounded-md !overflow-hidden">
+		<div className="common-container  !gap-0 !p-0  rounded-md !overflow-hidden border-2 border-gray-300 border-black">
 			<header className="flex items-center justify-start p-4  border-b-2 w-full border-gray-300 border-black gap-4 md:h-[80px] h-[60px]">
 				<img
 					src={recipient?.avatar || "/assets/icons/profile-placeholder.svg"}
@@ -141,7 +141,7 @@ export default function Chat() {
 				</p>
 			</header>
 			<Message />
-			<div className="flex items-center justify-between p-4 w-full gap-4">
+			<div className="flex items-center  justify-between lg:p-4 p-2 w-full gap-4">
 				<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
 					{file && (
 						<div className="mt-2 flex items-start gap-2">

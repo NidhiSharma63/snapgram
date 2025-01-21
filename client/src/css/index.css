@@ -143,6 +143,7 @@
 
 
   .common-container {
+    /* border:2px solid red; */
     @apply flex flex-col flex-1 items-center gap-10 overflow-y-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
   }
 
