@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
@@ -106,9 +107,22 @@ export default function Message() {
 				</p>
 			)}
 			{isMessagesPending ? (
-				<p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
-					Loading...
-				</p>
+				// <p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
+				Array(5)
+					.fill("")
+					.map((_, i) => (
+						<div
+							key={i}
+							className={`flex items-center ${i % 2 === 0 ? "justify-end" : "justify-start"} space-x-4 w-full`}
+						>
+							<Skeleton className="h-12 w-12 rounded-full" />
+							<div className="space-y-2">
+								<Skeleton className="h-4 w-[250px]" />
+								<Skeleton className="h-4 w-[200px]" />
+							</div>
+						</div>
+					))
+				// </p>
 			) : messages?.length === 0 && !isMessagesPending ? (
 				<p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
 					Start your conversation with your friend
@@ -162,6 +176,7 @@ export default function Message() {
 								{isImage ? (
 									<img
 										src={message.message}
+										loading="lazy"
 										alt="message"
 										className="lg:max-w-[500px] max-w-[200px] max-h-[200px] lg:max-h-[500px] object-cover rounded-md"
 									/>
