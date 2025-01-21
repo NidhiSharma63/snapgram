@@ -1,6 +1,7 @@
 import Message from "@/components/chat/Message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
 import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
@@ -50,10 +51,14 @@ export default function Chat() {
 
 	// handle send message
 	const handleSendMessage = useCallback(async () => {
-		if (!recipient || !currentUser || !socket) return;
+		if (!currentUser || !socket || socket?.connected === false) {
+			return toast({
+				title: "Something went wrong",
+			});
+		}
 		setIsMsgUploading(true);
-		// if user has selected the file then send the file to firebase storage on frontend only
 		if (file) {
+			// if user has selected the file then send the file to firebase storage on frontend only
 			const imageRef = ref(storage, `/images/${file}-${v4()}`);
 			const snapshot = await uploadBytes(imageRef, file);
 			const url = await getDownloadURL(snapshot.ref);
@@ -68,7 +73,8 @@ export default function Chat() {
 			if (inputRef.current) {
 				inputRef.current.value = "";
 			}
-		} else {
+		}
+		if (userMessage?.trim()) {
 			socket.emit("send-message", {
 				roomId,
 				senderId: currentUser?._id,

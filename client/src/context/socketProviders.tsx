@@ -95,7 +95,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	}, [data?.pages, isMessagesPending]);
 
 	useEffect(() => {
+		socket?.on("connect_error", (err) => {
+			console.error("Connection Error:", err.message);
+			toast({ title: `Connection Error: ${err.message}` });
+		});
 		if (!recipient || !currentUser || !socket) return;
+		// Handle connection errors
 		// Listen for error events
 		socket.on("authentication-error", (error) => {
 			console.log(error, "error");
@@ -119,6 +124,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		});
 
 		socket?.on("receive-message", (data) => {
+			console.log("msg rec");
 			setMessages((prevMessages) => [...prevMessages, data]);
 		});
 
