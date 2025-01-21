@@ -15,13 +15,13 @@ export default function Message() {
 		hasNextPage,
 		isFetchingNextPage,
 		deleteMessage,
-		isDeletePending,
 		hasScrolledToBottom,
 		setHasScrolledToBottom,
 		socket,
 		roomId,
 		setIsMsgDeleting,
 		isMsgDeleting,
+		recipient,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
@@ -199,11 +199,23 @@ export default function Message() {
 										className="lg:max-w-[500px] max-w-[200px] max-h-[200px] lg:max-h-[500px] object-cover rounded-md"
 									/>
 								) : (
-									<p
-										className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
-									>
-										{message.message}
-									</p>
+									<div className="flex gap-2 align-center items-center">
+										{!isSender && (
+											<img
+												className="rounded-full w-8 lg:h-8 object-cover"
+												alt="creator"
+												src={
+													recipient?.avatar ||
+													"/assets/icons/profile-placeholder.svg"
+												}
+											/>
+										)}
+										<p
+											className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
+										>
+											{message.message}
+										</p>
+									</div>
 								)}
 
 								<br />
