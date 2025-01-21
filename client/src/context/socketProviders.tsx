@@ -19,13 +19,12 @@ interface SocketProviderProps {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState(null);
 	const { useGetUserById } = useAuth();
 	const { userDetails: currentUser } = useUserDetail();
 	const { toast } = useToast();
 	const [userId, setUserId] = useState<string | null>(null);
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
-	const lastMessageId = messages?.[messages.length - 1]?._id;
 	const location = useLocation();
 	const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
 	const [isMsgUploading, setIsMsgUploading] = useState(false);
@@ -36,10 +35,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			.join("-");
 	}, [currentUser?._id, recipient?._id]); // Join them with a separator
 
-	const { useGetAllMessages, useDeleteMessage } = useMessage(
-		roomId,
-		lastMessageId ?? "",
-	);
+	const { useGetAllMessages, useDeleteMessage } = useMessage(roomId);
 	const { mutateAsync: deleteMessage, isPending: isDeletePending } =
 		useDeleteMessage();
 	// const { data, isPending: isMessagesPending } = useGetAllMessages();

@@ -94,19 +94,24 @@ export default function Message() {
 		[deleteMessage, socket, roomId, currentUser, messages, setIsMsgDeleting],
 	);
 
-	// console.log("messages", messages);
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
 			onScroll={loadMoreMessages}
 			ref={containerRef}
 		>
-			{isFetchingNextPage && "Loading..."}
+			{isFetchingNextPage && (
+				<p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
+					Loading...
+				</p>
+			)}
 			{isMessagesPending ? (
-				"Loading..."
-			) : messages.length === 0 && !isMessagesPending ? (
-				<p className="base-light dark:text-light lg:text-md text-xs text-center line-clamp-1">
-					No messages
+				<p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
+					Loading...
+				</p>
+			) : messages?.length === 0 && !isMessagesPending ? (
+				<p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
+					Start your conversation with your friend
 				</p>
 			) : (
 				messages?.map((message, i) => {
@@ -162,7 +167,7 @@ export default function Message() {
 									/>
 								) : (
 									<p
-										className={`user-msg lg:text-md text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
+										className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
 									>
 										{message.message}
 									</p>

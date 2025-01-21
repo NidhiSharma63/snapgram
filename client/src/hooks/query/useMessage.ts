@@ -8,7 +8,7 @@ import { queryClient } from "@/main";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-export default function useMessage(roomId:string,messageId:string) {
+export default function useMessage(roomId:string) {
 	const { toast } = useToast();
 	// console.log("roomId",rr)
 	// function useGetAllMessages() {
