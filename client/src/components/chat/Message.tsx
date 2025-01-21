@@ -7,7 +7,6 @@ import { multiFormatDateString } from "@/lib/utils";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
-
 export default function Message() {
 	const {
 		messages,
@@ -28,6 +27,7 @@ export default function Message() {
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
 	const containerRef = useRef(null); // Reference to the message container
+	const [showBackdrop, setShowBackdrop] = useState(false);
 	/**
 	 * scroll to the latest msg when chat window opens
 	 */
@@ -95,12 +95,28 @@ export default function Message() {
 		[deleteMessage, socket, roomId, currentUser, messages, setIsMsgDeleting],
 	);
 
+	const handleClickOnBackDrop = useCallback(() => {
+		setShowBackdrop((prev) => !prev);
+	}, []);
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
 			onScroll={loadMoreMessages}
 			ref={containerRef}
 		>
+			{showBackdrop && (
+				<div className="backDrop lg:flex hidden">
+					<img
+						src="https://firebasestorage.googleapis.com/v0/b/task-master-91de1.appspot.com/o/images%2F%5Bobject%20File%5D-dc7c82ce-be37-4448-a9ff-0e1589b70ec4?alt=media&token=4cbc97c0-d383-4eff-8599-776fbe76f435"
+						alt=""
+						className="lg:max-w-[600px] max-w-[200px] max-h-[200px] lg:max-h-[600px] object-cover rounded-md m-auto z-10 lg:block hidden"
+					/>
+					<div
+						onClick={handleClickOnBackDrop}
+						className="w-full h-full lg:block hidden z-[1] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-zinc-950/50"
+					/>
+				</div>
+			)}
 			{isFetchingNextPage && (
 				<p className="base-light dark:text-light lg:text-lg text-xs text-center line-clamp-1">
 					Loading...
@@ -175,6 +191,8 @@ export default function Message() {
 								)}
 								{isImage ? (
 									<img
+										onClick={handleClickOnBackDrop}
+										data-id={message.message}
 										src={message.message}
 										loading="lazy"
 										alt="message"
