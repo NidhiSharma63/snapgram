@@ -129,14 +129,14 @@ export default function Chat() {
 
 	
 	return (
-		<div className="common-container !gap-0 !p-0 border-2 border-gray-300 border-black rounded-md !overflow-hidden">
-			<header className="flex items-center justify-start p-4 border-b-2 w-full border-gray-300 border-black gap-4 h-[80px]">
+		<div className="common-container !gap-0 !p-0  rounded-md !overflow-hidden">
+			<header className="flex items-center justify-start p-4  border-b-2 w-full border-gray-300 border-black gap-4 md:h-[80px] h-[60px]">
 				<img
 					src={recipient?.avatar || "/assets/icons/profile-placeholder.svg"}
 					alt={recipient?.username}
-					className="rounded-full w-12 h-12 object-cover"
+					className="rounded-full lg:w-12 w-8 lg:h-12 object-cover"
 				/>
-				<p className="base-medium h3-light dark:text-light text-center line-clamp-1">
+				<p className="base-medium lg:h3-light dark:text-light text-center line-clamp-1">
 					{recipient?.username}
 				</p>
 			</header>
@@ -159,12 +159,12 @@ export default function Chat() {
 								style={{
 									cursor: "pointer",
 								}}
-								className="cursor-pointer"
+								className="cursor-pointer lg:w-8 w-4 lg:h-8 h-4"
 							/>
 						</div>
 					)}
 					<Textarea
-						className="shad-textarea custom-scrollbar textarea-field-chat h-[60px] !border-0"
+						className="shad-textarea custom-scrollbar textarea-field-chat !border-0 lg:text-base text-xs"
 						placeholder="Type a message here..."
 						value={userMessage}
 						onChange={handleMessageChange}
@@ -172,8 +172,8 @@ export default function Chat() {
 				</div>
 				<input type="file" hidden ref={inputRef} onChange={handleFileChange} />
 				<img
-					src="/assets/icons/gallery-add-blue.svg"
-					className="btn-primary cursor-pointer"
+					src="/assets/icons/gallery-add.svg"
+					className="btn-primary cursor-pointer lg:w-8 w-4 lg:h-8 h-4"
 					alt="photos"
 					onClick={handleClickOnGallery}
 				/>
@@ -190,9 +190,14 @@ export default function Chat() {
 						/>
 					</Button>
 				) : (
-					<Button className="btn btn-primary" onClick={handleSendMessage}>
-						Send
-					</Button>
+					<div onClick={handleSendMessage}>
+						<Button className="btn hidden lg:block bg-[#877EFF]">Send</Button>
+						<img
+							src="/assets/icons/send.svg"
+							width={24}
+							className="lg:hidden block"
+						/>
+					</div>
 				)}
 			</div>
 		</div>

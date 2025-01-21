@@ -105,7 +105,7 @@ export default function Message() {
 			{isMessagesPending ? (
 				"Loading..."
 			) : messages.length === 0 && !isMessagesPending ? (
-				<p className="base-light dark:text-light text-center line-clamp-1">
+				<p className="base-light dark:text-light lg:text-md text-xs text-center line-clamp-1">
 					No messages
 				</p>
 			) : (
@@ -158,11 +158,11 @@ export default function Message() {
 									<img
 										src={message.message}
 										alt="message"
-										className="max-w-[500px] max-h-[500px] object-cover rounded-md"
+										className="lg:max-w-[500px] max-w-[200px] max-h-[200px] lg:max-h-[500px] object-cover rounded-md"
 									/>
 								) : (
 									<p
-										className={`user-msg px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
+										className={`user-msg lg:text-md text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
 									>
 										{message.message}
 									</p>
@@ -171,7 +171,7 @@ export default function Message() {
 								<br />
 							</div>
 							{i === messages.length - 1 && isSender && message.isSeen ? (
-								<p className="text-end w-full px-6 text-light-3 text-sm !py-0">
+								<p className="text-end w-full px-6 text-light-3  lg:text-md text-xs !py-0">
 									seen at {multiFormatDateString(message.seenAt)}
 								</p>
 							) : (
