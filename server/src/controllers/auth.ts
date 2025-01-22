@@ -158,20 +158,20 @@ const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
  */
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-	const { userId, file, username, bio } = req.body;
+	const { userId, file, bio } = req.body;
 	try {
 		const getUser = await User.findOne({ _id: userId });
 		/**
 		 * check if username is present
 		 */
-		const isUserNamePresent = await User.findOne({ username });
+		// const isUserNamePresent = await User.findOne({ username });
 
-    if(isUserNamePresent) {
-      throw new Error("User name is already exists");
-    }
+    // if(isUserNamePresent) {
+    //   throw new Error("User name is already exists");
+    // }
 		/** update user */
 		if (getUser) {
-			getUser.username = username;
+			// getUser.username = username;
 			getUser.avatar = file;
 			getUser.bio = bio;
 		}
