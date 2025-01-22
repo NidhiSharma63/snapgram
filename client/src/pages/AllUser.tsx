@@ -2,11 +2,13 @@ import Loader from "@/components/shared/Loader";
 import UserCard from "@/components/shared/UserCard";
 import { useToast } from "@/components/ui/use-toast";
 import type { IUser } from "@/constant/interfaces";
+import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 
 const AllUsers = ({ showingOnInbox = false }: { showingOnInbox: boolean }) => {
 	const { toast } = useToast();
 	const { useGetAllUser } = useAuth();
+	const { userDetails } = useUserDetail();
 	const {
 		data: creators,
 		isError: isErrorCreators,
@@ -29,11 +31,14 @@ const AllUsers = ({ showingOnInbox = false }: { showingOnInbox: boolean }) => {
 					<Loader />
 				) : (
 					<ul className="user-grid">
-						{creators?.map((creator: IUser) => (
-							<li key={creator?._id} className="flex-1 w-[300px]  ">
-								<UserCard showingOnInbox={showingOnInbox} user={creator} />
-							</li>
-						))}
+						{creators?.map((creator: IUser) => {
+							if (creator._id === userDetails?._id) return;
+							return (
+								<li key={creator?._id} className="flex-1 w-[300px]  ">
+									<UserCard showingOnInbox={showingOnInbox} user={creator} />
+								</li>
+							);
+						})}
 					</ul>
 				)}
 			</div>
