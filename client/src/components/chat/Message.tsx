@@ -5,7 +5,7 @@ import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import { multiFormatDateString } from "@/lib/utils";
 import { deleteObject, ref } from "firebase/storage";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 export default function Message() {
 	const {
@@ -22,11 +22,11 @@ export default function Message() {
 		setIsMsgDeleting,
 		isMsgDeleting,
 		recipient,
+		containerRef,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
-	const containerRef = useRef(null); // Reference to the message container
 	const [showBackdrop, setShowBackdrop] = useState(false);
 	/**
 	 * scroll to the latest msg when chat window opens
@@ -52,7 +52,6 @@ export default function Message() {
 		setHasScrolledToBottom,
 	]);
 
-	
 	const loadMoreMessages = useCallback(() => {
 		if (
 			containerRef?.current?.scrollTop === 0 &&
@@ -61,7 +60,7 @@ export default function Message() {
 		) {
 			fetchNextPage(); // Fetch the next set of messages
 		}
-	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage, containerRef?.current]);
 
 	const handleDeleteMessage = useCallback(
 		async (event) => {

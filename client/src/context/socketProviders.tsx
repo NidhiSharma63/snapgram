@@ -5,7 +5,14 @@ import useAuth from "@/hooks/query/useAuth";
 import useMessage from "@/hooks/query/useMessage";
 import { getValueFromLS } from "@/lib/utils";
 import type React from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+	createContext,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useLocation } from "react-router-dom";
 import { type Socket, io } from "socket.io-client";
 
@@ -29,6 +36,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
 	const [isMsgUploading, setIsMsgUploading] = useState(false);
 	const [isMsgDeleting, setIsMsgDeleting] = useState(false);
+	const containerRef = useRef(null); // Reference to the message container
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -122,6 +130,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		socket?.on("receive-message", (data) => {
 			console.log("msg rec");
 			setMessages((prevMessages) => [...prevMessages, data]);
+
+			// add delay to make sure the message is added to the state
+			setTimeout(() => {
+				// setMessages((prevMessages) => [...prevMessages, data]);
+				if (containerRef.current) {
+					containerRef.current.scrollTop = containerRef.current.scrollHeight;
+				}
+			}, 200);
 		});
 
 		socket?.on("message-deleted", (data) => {
@@ -141,7 +157,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		socket.on("disconnect", () => {
 			console.log("socket disconnected");
 		});
-	}, [socket, userId, recipient, currentUser, toast, roomId]);
+	}, [
+		socket,
+		userId,
+		recipient,
+		currentUser,
+		toast,
+		roomId,
+		// containerRef.current,
+	]);
 
 
 	const isHasSeenMessage = useMemo(() => {
@@ -236,6 +260,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				setIsMsgUploading,
 				isMsgDeleting,
 				setIsMsgDeleting,
+				containerRef,
 			}}
 		>
 			{children}

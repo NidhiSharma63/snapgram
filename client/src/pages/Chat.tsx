@@ -127,7 +127,6 @@ export default function Chat() {
 		);
 	}
 
-	
 	return (
 		<div className="common-container  !gap-0 !p-0  rounded-md !overflow-hidden border-2 border-gray-300 border-black">
 			<header className="flex items-center justify-start p-4  border-b-2 w-full border-gray-300 border-black gap-4 md:h-[80px] h-[60px]">
@@ -195,7 +194,7 @@ export default function Chat() {
 						<img
 							src="/assets/icons/send.svg"
 							width={24}
-							className="lg:hidden block"
+							className="lg:hidden block cursor-pointer"
 						/>
 					</div>
 				)}
