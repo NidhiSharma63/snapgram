@@ -29,8 +29,6 @@ export default function Message() {
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
-	const [showBackdrop, setShowBackdrop] = useState(false);
-	const [isImageLoaded, setIsImageLoaded] = useState(false);
 	/**
 	 * scroll to the latest msg when chat window opens
 	 */
