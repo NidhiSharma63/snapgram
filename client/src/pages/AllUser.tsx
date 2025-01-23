@@ -5,7 +5,7 @@ import type { IUser } from "@/constant/interfaces";
 import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 
-const AllUsers = ({ showingOnInbox = false }: { showingOnInbox: boolean }) => {
+const AllUsers = ({ showingOnInbox = false }: { showingOnInbox?: boolean }) => {
 	const { toast } = useToast();
 	const { useGetAllUser } = useAuth();
 	const { userDetails } = useUserDetail();

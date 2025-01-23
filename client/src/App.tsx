@@ -19,6 +19,7 @@ import {
 } from "@/pages";
 import Chat from "@/pages/Chat";
 import Inbox from "@/pages/Inbox";
+import type { ComponentType } from "react";
 
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -88,7 +89,7 @@ const router = createBrowserRouter([
 		element: <NotFound />,
 	},
 ]);
-function wrapProviders(Component) {
+function wrapProviders(Component: ComponentType) {
 	return (
 		<AuthLayout>
 			<UserDetailsProvider>
@@ -102,9 +103,8 @@ function wrapProviders(Component) {
 	);
 }
 
-
 function App() {
-  return <RouterProvider router={router} />;
+	return <RouterProvider router={router} />;
 }
 
 export default App;

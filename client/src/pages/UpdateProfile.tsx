@@ -43,9 +43,9 @@ function UpdateProfile() {
 	const form = useForm<z.infer<typeof updateProfileSchema>>({
 		resolver: zodResolver(updateProfileSchema),
 		defaultValues: {
-			bio: post ? post.bio : "",
+			bio: post?.bio || "",
 			file: [],
-			username: post?.username,
+			// username: post?.username || "",
 		},
 	});
 	async function onSubmit(values: z.infer<typeof updateProfileSchema>) {
@@ -114,15 +114,21 @@ function UpdateProfile() {
 						/>
 						<FormField
 							disabled
-							control={form.control}
+							// control={form.control}
 							name="username"
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel className="shad-form_label">UserName</FormLabel>
 									<FormControl>
-										<Input type="text" className="shad-input" {...field} />
+										<Input
+											type="text"
+											className="shad-input"
+											{...field}
+											value={post?.username ?? ""}
+										/>
+										{/* <Input type="text" className="shad-input" {...field} /> */}
 									</FormControl>
-									<FormMessage className="shad-form_message" />
+									{/* <FormMessage className="shad-form_message" /> */}
 								</FormItem>
 							)}
 						/>

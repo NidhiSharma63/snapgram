@@ -17,16 +17,19 @@ export const queryClient = new QueryClient({
 	},
 });
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-	<React.StrictMode>
-		{/* <BrowserRouter> */}
-		<QueryClientProvider client={queryClient}>
-			<ThemeProvider defaultTheme="light" storageKey="snap-gram-theme">
-				<App />
-				<Toaster />
-			</ThemeProvider>
-			{/* <ReactQueryDevtools initialIsOpen={false} /> */}
-		</QueryClientProvider>
-		{/* </BrowserRouter> */}
-	</React.StrictMode>,
-);
+const rootElement = document.getElementById("root");
+
+if (rootElement) {
+	ReactDOM.createRoot(rootElement).render(
+		<React.StrictMode>
+			<QueryClientProvider client={queryClient}>
+				<ThemeProvider defaultTheme="light" storageKey="snap-gram-theme">
+					<App />
+					<Toaster />
+				</ThemeProvider>
+			</QueryClientProvider>
+		</React.StrictMode>,
+	);
+} else {
+	console.error("Root element with id 'root' not found.");
+}

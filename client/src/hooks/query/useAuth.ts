@@ -2,8 +2,8 @@ import { useToast } from "@/components/ui/use-toast";
 import type { ErrorResponse } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import {
-  customAxiosRequestForGet,
-  customAxiosRequestForPost,
+	customAxiosRequestForGet,
+	customAxiosRequestForPost,
 } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -115,7 +115,7 @@ function useAuth() {
 
 	function useUpdateUser() {
 		return useMutation({
-			mutationFn: (payload: { bio: string; username: string; file: string }) =>
+			mutationFn: (payload: { bio: string; file: string }) =>
 				customAxiosRequestForPost("/user", "put", payload),
 			onError: (error: AxiosError<ErrorResponse>) => {
 				console.log(error);
