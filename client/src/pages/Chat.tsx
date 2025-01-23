@@ -34,10 +34,11 @@ export default function Chat() {
 	const [userMessage, setUserMessage] = useState("");
 	const userId = useParams<{ userId: string }>().userId;
 	const [file, setFile] = useState<File | null>(null);
-	const inputRef = useRef();
+	const inputRef = useRef<null | HTMLInputElement>(null);
 	const { theme } = useTheme();
 
 	useEffect(() => {
+		if (!userId) return;
 		setUserId(userId);
 	}, [userId, setUserId]);
 
@@ -99,13 +100,16 @@ export default function Chat() {
 	]);
 
 	// handle file change
-	const handleFileChange = useCallback((event) => {
-		const selectedFile = event.target.files?.[0];
-		// setFile(event.current.files[0]);
-		if (selectedFile) {
-			setFile(selectedFile);
-		}
-	}, []);
+	const handleFileChange = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const selectedFile = event.target.files?.[0];
+			// setFile(event.current.files[0]);
+			if (selectedFile) {
+				setFile(selectedFile);
+			}
+		},
+		[],
+	);
 
 	// handle file delete
 	const handleFileDelete = useCallback(() => {
@@ -133,7 +137,7 @@ export default function Chat() {
 				<img
 					src={recipient?.avatar || "/assets/icons/profile-placeholder.svg"}
 					alt={recipient?.username}
-					className="rounded-full lg:w-12 w-8 lg:h-12 object-cover"
+					className="rounded-full lg:w-12 w-8 lg:h-12 h-8 object-cover"
 				/>
 				<p className="base-medium lg:h3-light dark:text-light text-center line-clamp-1">
 					{recipient?.username}
@@ -149,6 +153,7 @@ export default function Chat() {
 								alt="Selected file preview"
 								className="w-20 h-20 object-cover rounded-md"
 							/>
+							{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 							<img
 								onClick={handleFileDelete}
 								src={"/assets/icons/delete.svg"}
@@ -170,6 +175,7 @@ export default function Chat() {
 					/>
 				</div>
 				<input type="file" hidden ref={inputRef} onChange={handleFileChange} />
+				{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 				<img
 					src="/assets/icons/gallery-add.svg"
 					className="btn-primary cursor-pointer lg:w-8 w-4 lg:h-8 h-4"
@@ -189,12 +195,14 @@ export default function Chat() {
 						/>
 					</Button>
 				) : (
+					// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 					<div onClick={handleSendMessage}>
 						<Button className="btn hidden lg:block bg-[#877EFF]">Send</Button>
 						<img
 							src="/assets/icons/send.svg"
 							width={24}
 							className="lg:hidden block cursor-pointer"
+							alt="send"
 						/>
 					</div>
 				)}

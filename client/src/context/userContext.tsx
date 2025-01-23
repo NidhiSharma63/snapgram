@@ -6,14 +6,14 @@ interface userProviderProps {
   children: React.ReactNode;
 }
 
-interface UserDetails {
-  email: string;
-  password: string;
-  _id: string;
-  username: string;
-  __v: number;
-  tokens: { token: string; uniqueBrowserId: string; _id: string }[];
-  avatar: string;
+export interface UserDetails {
+	email: string;
+	password: string;
+	_id: string;
+	username: string;
+	__v: number;
+	tokens: { token: string; uniqueBrowserId: string; _id: string }[];
+	avatar: string;
 }
 
 interface UserDetailsProviderState {

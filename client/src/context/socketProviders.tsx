@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import { AppConstants } from "@/constant/keys";
-import { useUserDetail } from "@/context/userContext";
+import { type UserDetails, useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import useMessage from "@/hooks/query/useMessage";
 import { getValueFromLS } from "@/lib/utils";
@@ -18,25 +18,85 @@ import { type Socket, io } from "socket.io-client";
 
 // Define the socket URL
 const SOCKET_URL = import.meta.env.VITE_APP_SOCKET_URL;
-const SocketContext = createContext<Socket | null>(null);
 
 interface SocketProviderProps {
 	children: React.ReactNode;
 }
 
+export interface Message {
+	message: string;
+	senderId: string;
+	recipientId: string;
+	roomId: string;
+	__v: number;
+	_id: string;
+	seenAt: string;
+	isSeen: boolean;
+	timeStamp: string;
+	updatedAt: string;
+	createdAt: string;
+}
+interface SocketProviderState {
+	recipient: UserDetails | null;
+	roomId: string;
+	isMessagesPending: boolean;
+	setUserId: (userId: string | null) => void;
+	isPending: boolean;
+	hasNextPage: boolean;
+	isDeletePending: boolean;
+	isMsgUploading: boolean;
+	isMsgDeleting: boolean;
+	setIsMsgDeleting: (val: boolean) => void;
+	setIsMsgUploading: (val: boolean) => void;
+	socket: Socket | null;
+	messages: Message[] | null | undefined;
+	setMessages: (messages: Message[] | undefined) => void;
+	fetchNextPage: () => void;
+	isFetchingNextPage: boolean;
+	hasScrolledToBottom: boolean;
+	setHasScrolledToBottom: (val: boolean) => void;
+	deleteMessage: (params: { messageId: string }) => void;
+	containerRef: React.RefObject<HTMLDivElement> | null;
+}
+
+const initialState: SocketProviderState = {
+	recipient: null,
+	roomId: "",
+	isMessagesPending: false,
+	setUserId: () => {},
+	isPending: false,
+	hasNextPage: false,
+	isDeletePending: false,
+	isMsgUploading: false,
+	setIsMsgDeleting: () => {},
+	setIsMsgUploading: () => {},
+	socket: null,
+	messages: null,
+	setMessages: () => {},
+	fetchNextPage: () => {},
+	isFetchingNextPage: false,
+	hasScrolledToBottom: false,
+	setHasScrolledToBottom: () => {},
+	deleteMessage: () => {},
+	containerRef: null,
+	isMsgDeleting: false,
+};
+
+const SocketContext = createContext<SocketProviderState>(initialState);
+
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
-	const [messages, setMessages] = useState(null);
+	const [messages, setMessages] = useState<Message[] | null | undefined>(null);
 	const { useGetUserById } = useAuth();
 	const { userDetails: currentUser } = useUserDetail();
 	const { toast } = useToast();
-	const [userId, setUserId] = useState<string | null>(null);
+	const [userId, setUserId] = useState<string | null | undefined>(null);
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
 	const location = useLocation();
 	const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
 	const [isMsgUploading, setIsMsgUploading] = useState(false);
 	const [isMsgDeleting, setIsMsgDeleting] = useState(false);
-	const containerRef = useRef(null); // Reference to the message container
+	const containerRef = useRef<HTMLDivElement | null>(null); // Reference to the message container
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -80,7 +140,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		};
 	}, []);
 
-// Reset when roomId changes
+	// Reset when roomId changes
 	useEffect(() => {
 		if (roomId) {
 			setHasScrolledToBottom(false);
@@ -88,15 +148,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	}, [roomId]);
 
 	// only run when data is available
-	useEffect(() => {
-		// console.log("pending state");
-		if (isMessagesPending) return;
-		if (data) {
-			// console.log("The data has changed!", data?.pages.flat(1));
-			const messages = data?.pages.flat(1)?.reverse();
-			setMessages(messages);
-		}
-	}, [data?.pages, isMessagesPending]);
+		// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+		useEffect(() => {
+			if (isMessagesPending) return;
+			if (data) {
+				const messages = data?.pages.flat(1)?.reverse();
+				setMessages(messages);
+			}
+		}, [data?.pages, isMessagesPending]);
 
 	useEffect(() => {
 		socket?.on("connect_error", (err) => {
@@ -128,8 +187,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		});
 
 		socket?.on("receive-message", (data) => {
-			console.log("msg rec");
-			setMessages((prevMessages) => [...prevMessages, data]);
+			setMessages((prevMessages) => {
+				if (!prevMessages) return [data];
+				return [...prevMessages, data];
+			});
 
 			// add delay to make sure the message is added to the state
 			setTimeout(() => {
@@ -149,7 +210,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 			/** but on the receiver side we need to update the state */
 			setMessages((prevMessages) => {
-				return prevMessages.filter((message) => {
+				return prevMessages?.filter((message) => {
 					return message._id !== data.messageId;
 				});
 			});
@@ -166,7 +227,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		roomId,
 		// containerRef.current,
 	]);
-
 
 	const isHasSeenMessage = useMemo(() => {
 		return messages?.[messages.length - 1]?.isSeen === true;
@@ -198,7 +258,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			socket.on("messages-seen", (data) => {
 				// Update only the last message's `isSeen` property
 				setMessages((prevMessages) => {
-					if (!prevMessages.length) return prevMessages; // No messages to update
+					if (!prevMessages?.length) return prevMessages; // No messages to update
 
 					// Clone the previous messages to avoid direct mutation
 					const updatedMessages = [...prevMessages];
@@ -233,7 +293,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		location,
 		userId,
 	]);
-	
 
 	/**
 	 * End of seen messages logic
@@ -252,15 +311,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				fetchNextPage,
 				hasNextPage,
 				isFetchingNextPage,
-				deleteMessage,
 				isDeletePending,
 				hasScrolledToBottom,
+				deleteMessage,
 				setHasScrolledToBottom,
 				isMsgUploading,
 				setIsMsgUploading,
 				isMsgDeleting,
 				setIsMsgDeleting,
 				containerRef,
+				setMessages,
 			}}
 		>
 			{children}

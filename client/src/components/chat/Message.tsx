@@ -64,28 +64,30 @@ export default function Message() {
 	}, [hasNextPage, isFetchingNextPage, fetchNextPage, containerRef?.current]);
 
 	const handleDeleteMessage = useCallback(
-		async (event) => {
-			const text = event.target.dataset.id;
+		async (event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+			const text = event.currentTarget.dataset.id;
 			setIsMsgDeleting(true);
 			// extract image from message
-			const isImage = text.startsWith("https://firebasestorage.googleapis.com");
+			const isImage = text?.startsWith(
+				"https://firebasestorage.googleapis.com",
+			);
 			const messageId = isImage
-				? messages.find((item) => {
+				? messages?.find((item) => {
 						// console.log("msg", item.message, "text", text);
 						return item.message === text;
 					})?._id
-				: event.target.dataset.id;
+				: event.currentTarget.dataset.id;
 
 			// delete image from firebase
 			if (isImage) {
 				const storageRef = ref(storage, text);
 				await deleteObject(storageRef);
 			}
-			setDeleteMsgId(messageId);
+			setDeleteMsgId(messageId ?? "");
 			await deleteMessage({
-				messageId,
+				messageId: messageId ?? "",
 			});
-			socket.emit("delete-message", {
+			socket?.emit("delete-message", {
 				messageId,
 				roomId,
 				senderId: currentUser?._id,
@@ -113,6 +115,7 @@ export default function Message() {
 					.fill("")
 					.map((_, i) => (
 						<div
+							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 							key={i}
 							className={`flex items-center ${i % 2 === 0 ? "justify-end" : "justify-start"} space-x-4 w-full`}
 						>
@@ -161,6 +164,7 @@ export default function Message() {
 									/>
 								)}
 								{isSender && deleteMsgId !== message._id && !isMsgDeleting && (
+									// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 									<img
 										data-id={isImage ? message.message : message._id}
 										onClick={handleDeleteMessage}
@@ -180,7 +184,7 @@ export default function Message() {
 									<div className="flex gap-2 align-center items-center">
 										{!isSender && (
 											<img
-												className="rounded-full w-8 lg:h-8 object-cover"
+												className="rounded-full w-8 h-8 object-cover"
 												alt="creator"
 												src={
 													recipient?.avatar ||
