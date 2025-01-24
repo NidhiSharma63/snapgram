@@ -8,7 +8,7 @@ const activeUsers = new Map<string, { userId: string; roomId: string }>(); // Ma
 export const initSocket = (server: HTTPServer) => {
   const io = new SocketIOServer(server, {
     cors: {
-      origin: process.env.CLIENT_URL, // client's origin
+      origin: "*", // client's origin process.env.CLIENT_URL
       methods: ["GET", "POST"],
       credentials: true,
     },
