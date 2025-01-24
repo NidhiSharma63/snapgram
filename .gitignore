@@ -2,6 +2,7 @@
 /server/package-lock.json
 
 /server/.env
+/server/vercel.json
 *.env
 
 /client/node_modules

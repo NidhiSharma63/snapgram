@@ -23,12 +23,11 @@ import type { z } from "zod";
 
 function SignInForm() {
 	const { theme } = useTheme();
-	const { setUserDetail, userDetails } = useUserDetail();
+	const { setUserDetail } = useUserDetail();
 	const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 	const { useSignIn } = useAuth();
 	const { mutate, isSuccess, data, isPending } = useSignIn();
 	const navigate = useNavigate();
-	console.log(userDetails);
 	const form = useForm<z.infer<typeof signInFormSchema>>({
 		resolver: zodResolver(signInFormSchema),
 		defaultValues: {
@@ -55,11 +54,13 @@ function SignInForm() {
 	 * redirect the user to home page after successfull login
 	 */
 	useEffect(() => {
-		if (isSuccess) {
-			navigate("/", { replace: true });
-			setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data));
-			setUserDetail(data);
+		if (!isSuccess) {
+			return;
 		}
+		setValueToLS(AppConstants.USER_DETAILS, JSON.stringify(data));
+		setUserDetail(data);
+		// console.log(data, "data");
+		navigate("/", { replace: true });
 	}, [isSuccess, navigate, data, setUserDetail]);
 
 	/**
@@ -67,13 +68,13 @@ function SignInForm() {
 	 */
 	useEffect(() => {
 		const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
-		if (storedValue) {
-			const parsedValue = JSON.parse(storedValue);
-			const isAuthenticated =
-				parsedValue && parsedValue.tokens && parsedValue.tokens[0].token;
-			if (isAuthenticated) {
-				navigate("/", { replace: true });
-			}
+		if (!storedValue) {
+			return;
+		}
+		const parsedValue = JSON.parse(storedValue);
+		const isAuthenticated = parsedValue?.tokens?.[0].token;
+		if (isAuthenticated) {
+			navigate("/", { replace: true });
 		}
 	}, [navigate]);
 

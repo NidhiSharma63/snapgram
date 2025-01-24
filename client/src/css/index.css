@@ -143,12 +143,17 @@
 
 
   .common-container {
+    /* border:2px solid red; */
     @apply flex flex-col flex-1 items-center gap-10 overflow-y-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
   }
 
   /* TYPOGRAPHY */
   .h3-bold {
     @apply text-[24px] font-bold leading-[140%] tracking-tighter;
+  }
+
+  .h3-light{
+    @apply text-[24px] font-medium leading-[140%] tracking-tighter;
   }
 
   .h1-bold {
@@ -233,6 +238,7 @@
   delete btn
   */
 
+
   .shad-btn-delete{
     background-color: rgb(146, 6, 6);
   }
@@ -296,5 +302,34 @@
   .saved-container {
     @apply flex flex-col flex-1 items-center gap-10 overflow-y-scroll py-10 px-5 md:p-14 custom-scrollbar;
   }
+  .textarea-field-chat {
+    @apply w-full p-2 rounded-[20px] h-[30px] lg:h-[50px] min-h-[0px] resize-none;
+  }
 
+  /* for width md reduce height
+  */
+ 
+  .textarea-field-chat:focus-visible{
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  .backDrop{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* display: flex; */
+  }
+  .overlay{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(10, 10, 10, 0.589);
+    z-index: 1;
+  }
 }

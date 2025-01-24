@@ -3,8 +3,8 @@ import type { ErrorResponse } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import { useUserPostIdForSaveAndLike } from "@/context/userPostIdForSaveAndLike";
 import {
-  customAxiosRequestForGet,
-  customAxiosRequestForPost,
+	customAxiosRequestForGet,
+	customAxiosRequestForPost,
 } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 export default function useLikePost() {
 	const { toast } = useToast();
 	const { setLikePostId } = useUserPostIdForSaveAndLike();
-  const { id } = useParams();
+	const { id } = useParams();
 
 	function useAddLike() {
 		return useMutation({
@@ -39,9 +39,13 @@ export default function useLikePost() {
 				queryClient.invalidateQueries({
 					queryKey: [QueryKeys.GET_USER_Like_POST],
 				});
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+				queryClient.invalidateQueries({
+					queryKey: [QueryKeys.GET_USER_SAVE_POST],
+				});
 				queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
-        queryClient.invalidateQueries({queryKey: [QueryKeys.GET_POST_BY_ID, id]})
+				queryClient.invalidateQueries({
+					queryKey: [QueryKeys.GET_POST_BY_ID, id],
+				});
 			},
 		});
 	}
@@ -69,14 +73,15 @@ export default function useLikePost() {
 				}
 			},
 			onSettled: () => {
+
 				setLikePostId("");
 				queryClient.invalidateQueries({
 					queryKey: [QueryKeys.GET_USER_Like_POST],
 				});
-        queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_USER_SAVE_POST] });
+        queryClient.invalidateQueries({queryKey: [QueryKeys.GET_USER_SAVE_POST]} );
 				queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_POSTS] });
         queryClient.invalidateQueries({queryKey: [QueryKeys.GET_POST_BY_ID, id]})
-			},
+			}
 		});
 	}
 

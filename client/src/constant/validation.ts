@@ -34,6 +34,6 @@ export const postFormSchema = z.object({
 
 export const updateProfileSchema = z.object({
   bio: z.string(),
-  username: z.string(),
+  // username: z.string().nullable(),
   file: z.custom<File[]>(),
 });

@@ -36,7 +36,7 @@ async function axiosRequest({ ...options }) {
   }
 }
 
-export const customAxiosRequestForGet = async (url: string, id: string | null) => {
+export const customAxiosRequestForGet = async (url: string, params: string | null |Record<string, string>) => {
   const storedData = getValueFromLS(AppConstants.USER_DETAILS);
   const userId = storedData && JSON.parse(storedData)._id;
   let paramsToPass = {};
@@ -48,8 +48,12 @@ export const customAxiosRequestForGet = async (url: string, id: string | null) =
     paramsToPass = { userId };
   }
 
-  if (id) {
-    paramsToPass = { ...paramsToPass, id };
+  if (params && typeof params === "string") {
+    paramsToPass = { ...paramsToPass, id:params };
+  }
+
+  if (params && typeof params === "object") {
+    paramsToPass = { ...paramsToPass, ...params };
   }
 
   // console.log(paramsToPass, ":::params to pass");

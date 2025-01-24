@@ -6,14 +6,14 @@ interface userProviderProps {
   children: React.ReactNode;
 }
 
-interface UserDetails {
-  email: string;
-  password: string;
-  _id: string;
-  username: string;
-  __v: number;
-  tokens: { token: string; uniqueBrowserId: string; _id: string }[];
-  avatar: string;
+export interface UserDetails {
+	email: string;
+	password: string;
+	_id: string;
+	username: string;
+	__v: number;
+	tokens: { token: string; uniqueBrowserId: string; _id: string }[];
+	avatar: string;
 }
 
 interface UserDetailsProviderState {
@@ -29,6 +29,7 @@ const initialState: UserDetailsProviderState = {
 const UserDetailsProviderContext = createContext<UserDetailsProviderState>(initialState);
 
 const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
+
 export function UserDetailsProvider({ children }: userProviderProps) {
   const [userDetails, setUserDetail] = useState<null | UserDetails>(
     (storedUserData && JSON.parse(storedUserData)) || null
