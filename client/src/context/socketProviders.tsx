@@ -121,7 +121,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		const parsedValue = JSON.parse(storedValue as string);
 		// Connect to Socket.io server
 		const newSocket = io(SOCKET_URL, {
-			transports: ["websocket"], // Recommended for production
+			transports: ["websocket", "polling"],
 			autoConnect: false, // Initially disconnect
 			reconnection: true, // Reconnect automatically
 			reconnectionDelay: 1000, // Delay between reconnection attempts
