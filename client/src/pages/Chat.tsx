@@ -6,18 +6,13 @@ import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
+import useMessage from "@/hooks/query/useMessage";
 import { queryClient } from "@/main";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import {
-	type SetStateAction,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type SetStateAction, useCallback, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
-import { useParams } from "react-router-dom";
 import { v4 } from "uuid";
+
 
 // Todo - fix authentication error issue
 export default function Chat() {
@@ -26,21 +21,16 @@ export default function Chat() {
 		recipient,
 		roomId,
 		isPending,
-		setUserId,
 		setIsMsgUploading,
 		isMsgUploading,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const [userMessage, setUserMessage] = useState("");
-	const userId = useParams<{ userId: string }>().userId;
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
 	const { theme } = useTheme();
-
-	useEffect(() => {
-		if (!userId) return;
-		setUserId(userId);
-	}, [userId, setUserId]);
+	const { useSendMessage } = useMessage();
+	const { mutateAsync: sendMessage } = useSendMessage();
 
 	// handle message change
 	const handleMessageChange = useCallback(
@@ -52,7 +42,7 @@ export default function Chat() {
 
 	// handle send message
 	const handleSendMessage = useCallback(async () => {
-		if (!currentUser || !socket || socket?.connected === false) {
+		if (!currentUser || !recipient || !roomId) {
 			return toast({
 				title: "Something went wrong",
 			});
@@ -63,12 +53,19 @@ export default function Chat() {
 			const imageRef = ref(storage, `/images/${file}-${v4()}`);
 			const snapshot = await uploadBytes(imageRef, file);
 			const url = await getDownloadURL(snapshot.ref);
-			socket.emit("send-message", {
+			// socket.emit("send-message", {
+			// 	roomId,
+			// 	senderId: currentUser?._id,
+			// 	receiverId: recipient?._id,
+			// 	message: url,
+			// 	timestamp: new Date(),
+			// });
+			sendMessage({
 				roomId,
 				senderId: currentUser?._id,
-				receiverId: recipient?._id,
+				recipientId: recipient?._id,
 				message: url,
-				timestamp: new Date(),
+				createdAt: new Date(),
 			});
 			setFile(null);
 			if (inputRef.current) {
@@ -76,12 +73,19 @@ export default function Chat() {
 			}
 		}
 		if (userMessage?.trim()) {
-			socket.emit("send-message", {
+			// socket.emit("send-message", {
+			// 	roomId,
+			// 	senderId: currentUser?._id,
+			// 	receiverId: recipient?._id,
+			// 	message: userMessage,
+			// 	timestamp: new Date(),
+			// });
+			sendMessage({
 				roomId,
 				senderId: currentUser?._id,
-				receiverId: recipient?._id,
+				recipientId: recipient?._id,
 				message: userMessage,
-				timestamp: new Date(),
+				createdAt: new Date(),
 			});
 		}
 		queryClient.invalidateQueries({
@@ -93,7 +97,7 @@ export default function Chat() {
 		recipient,
 		currentUser,
 		userMessage,
-		socket,
+		sendMessage,
 		roomId,
 		file,
 		setIsMsgUploading,

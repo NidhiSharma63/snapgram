@@ -4,6 +4,7 @@ import { type UserDetails, useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import useMessage from "@/hooks/query/useMessage";
 import { getValueFromLS } from "@/lib/utils";
+import Pusher from "pusher-js";
 import type React from "react";
 import {
 	createContext,
@@ -13,8 +14,8 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useLocation } from "react-router-dom";
-import { type Socket, io } from "socket.io-client";
+import { useLocation, useParams } from "react-router-dom";
+import type { Socket } from "socket.io-client";
 
 // Define the socket URL
 const SOCKET_URL = import.meta.env.VITE_APP_SOCKET_URL;
@@ -24,23 +25,20 @@ interface SocketProviderProps {
 }
 
 export interface Message {
-	message: string;
-	senderId: string;
-	recipientId: string;
-	roomId: string;
-	__v: number;
-	_id: string;
-	seenAt: string;
-	isSeen: boolean;
-	timeStamp: string;
-	updatedAt: string;
-	createdAt: string;
-}
+		message: string;
+		senderId: string;
+		recipientId: string;
+		roomId: string;
+		__v: number;
+		_id: string;
+		seenAt: string;
+		isSeen: boolean;
+		createdAt: string | Date;
+	}
 interface SocketProviderState {
 	recipient: UserDetails | null;
 	roomId: string;
 	isMessagesPending: boolean;
-	setUserId: (userId: string | null) => void;
 	isPending: boolean;
 	hasNextPage: boolean;
 	isDeletePending: boolean;
@@ -63,7 +61,6 @@ const initialState: SocketProviderState = {
 	recipient: null,
 	roomId: "",
 	isMessagesPending: false,
-	setUserId: () => {},
 	isPending: false,
 	hasNextPage: false,
 	isDeletePending: false,
@@ -84,28 +81,35 @@ const initialState: SocketProviderState = {
 
 const SocketContext = createContext<SocketProviderState>(initialState);
 
+
+// RENAME message recieve = received-message
+// RENAME timpeStamp ate message seen = seentAt
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
+	const userId = useParams<{ userId: string }>().userId;
 	const [messages, setMessages] = useState<Message[] | null | undefined>(null);
 	const { useGetUserById } = useAuth();
 	const { userDetails: currentUser } = useUserDetail();
 	const { toast } = useToast();
-	const [userId, setUserId] = useState<string | null | undefined>(null);
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
 	const location = useLocation();
 	const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
 	const [isMsgUploading, setIsMsgUploading] = useState(false);
 	const [isMsgDeleting, setIsMsgDeleting] = useState(false);
 	const containerRef = useRef<HTMLDivElement | null>(null); // Reference to the message container
+	const [pusherInstance, setPusherInstance] = useState<Pusher | null>(null);
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
 			.join("-");
 	}, [currentUser?._id, recipient?._id]); // Join them with a separator
 
-	const { useGetAllMessages, useDeleteMessage } = useMessage(roomId);
+	const { useGetAllMessages, useDeleteMessage, useMarkMessageAsRead } =
+		useMessage();
 	const { mutateAsync: deleteMessage, isPending: isDeletePending } =
 		useDeleteMessage();
+	const { mutateAsync: markMessageAsRead, isPending: isMessageSeenPending } =
+		useMarkMessageAsRead();
 	// const { data, isPending: isMessagesPending } = useGetAllMessages();
 	const {
 		data,
@@ -115,78 +119,31 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		isPending: isMessagesPending,
 	} = useGetAllMessages();
 
-	/** setup socket */
 	useEffect(() => {
+		// Get user details from local storage
 		const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
 		const parsedValue = JSON.parse(storedValue as string);
-		// Connect to Socket.io server
-		const newSocket = io(SOCKET_URL, {
-			transports: ["websocket", "polling"],
-			autoConnect: false, // Initially disconnect
-			reconnection: true, // Reconnect automatically
-			reconnectionDelay: 1000, // Delay between reconnection attempts
-			reconnectionAttempts: 2, // Number of reconnection attempts before giving up
+
+		// Initialize Pusher
+		const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
+			cluster: import.meta.env.VITE_APP_PUSHER_CLUSTER,
+			authEndpoint: "/pusher/auth", // it is the path to the auth endpoint on the server
 			auth: {
-				token: parsedValue?.tokens?.[0].token,
+				headers: {
+					Authorization: `Bearer ${parsedValue?.tokens?.[0].token}`,
+				},
 			},
 		});
 
-		newSocket.connect();
-		setSocket(newSocket);
+		// Store the Pusher instance
+		setPusherInstance(pusher);
 
-		// // Clean up socket connection on unmount
-		return () => {
-			newSocket.disconnect();
-		};
-	}, []);
+		// Subscribe to the channel
+		const channel = pusher.subscribe(`private-${roomId}`);
 
-	// Reset when roomId changes
-	useEffect(() => {
-		if (roomId) {
-			setHasScrolledToBottom(false);
-		}
-	}, [roomId]);
-
-	// only run when data is available
-		// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-		useEffect(() => {
-			if (isMessagesPending) return;
-			if (data) {
-				const messages = data?.pages.flat(1)?.reverse();
-				setMessages(messages);
-			}
-		}, [data?.pages, isMessagesPending]);
-
-	useEffect(() => {
-		socket?.on("connect_error", (err) => {
-			console.error("Connection Error:", err.message);
-			toast({ title: `Connection Error: ${err.message}` });
-		});
-		if (!recipient || !currentUser || !socket) return;
-		// Handle connection errors
-		// Listen for error events
-		socket.on("authentication-error", (error) => {
-			console.log(error, "error");
-			toast({ title: "Something went wrong." });
-			return;
-		});
-		// join room
-		socket.emit("join-room", {
-			userId,
-			roomId,
-		});
-
-		socket?.on("error", (data) => {
-			toast({ title: data.message });
-			return;
-		});
-
-		socket?.on("authentication-error", (data) => {
-			toast({ title: data.message });
-			return;
-		});
-
-		socket?.on("receive-message", (data) => {
+		// listen to the event
+		// listen for received messages
+		channel.bind("recieved-message", (data: Message) => {
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
@@ -194,68 +151,34 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 			// add delay to make sure the message is added to the state
 			setTimeout(() => {
-				// setMessages((prevMessages) => [...prevMessages, data]);
 				if (containerRef.current) {
 					containerRef.current.scrollTop = containerRef.current.scrollHeight;
 				}
 			}, 200);
 		});
 
-		socket?.on("message-deleted", (data) => {
-			// console.log("delete message", data);
-			if (data.senderId === currentUser._id) {
-				/** cause we are using react query to update the state for current user who has deleted the message */
-				return;
-			}
+		// listen for deleted messages
+		channel?.bind(
+			"message-deleted",
+			(data: { messageId: string; senderId: string }) => {
+				// console.log("delete message", data);
+				if (data.senderId === currentUser?._id) {
+					/** cause we are using react query to update the state for current user who has deleted the message */
+					return;
+				}
 
-			/** but on the receiver side we need to update the state */
-			setMessages((prevMessages) => {
-				return prevMessages?.filter((message) => {
-					return message._id !== data.messageId;
+				/** but on the receiver side we need to update the state */
+				setMessages((prevMessages) => {
+					return prevMessages?.filter((message) => {
+						return message._id !== data.messageId;
+					});
 				});
-			});
-		});
-		socket.on("disconnect", () => {
-			console.log("socket disconnected");
-		});
-	}, [
-		socket,
-		userId,
-		recipient,
-		currentUser,
-		toast,
-		roomId,
-		// containerRef.current,
-	]);
+			},
+		);
 
-	const isHasSeenMessage = useMemo(() => {
-		return messages?.[messages.length - 1]?.isSeen === true;
-	}, [messages]);
-
-	/** if the last msg is sent by the current user then it should not be receiver but
-	 */
-	const isSentByCurrentUser = useMemo(() => {
-		return messages?.[messages.length - 1]?.senderId === currentUser?._id;
-	}, [messages, currentUser]);
-
-	// check if chat window is open and is in focus
-	// if yes then mark messages as seen in the chat window if user is receiver
-	useEffect(() => {
-		if (!socket || !currentUser || !roomId) return;
-
-		const handleVisibilityChange = () => {
-			if (!location.pathname.includes(`/inbox/${userId}`)) {
-				return;
-			}
-			if (!isSentByCurrentUser && !isHasSeenMessage) {
-				// Mark messages as seen if user is the receiver
-				// Only check for the latest message if it has not been seen
-				socket.emit("mark-as-seen", {
-					roomId,
-					userId: currentUser?._id,
-				});
-			}
-			socket.on("messages-seen", (data) => {
+		channel.bind(
+			"messages-seen",
+			(data: { roomId: string; seentAt: string; userId: string }) => {
 				// Update only the last message's `isSeen` property
 				setMessages((prevMessages) => {
 					if (!prevMessages?.length) return prevMessages; // No messages to update
@@ -269,12 +192,164 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 					// Check if the last message belongs to the roomId and is not already seen
 					if (lastMessage.roomId === data.roomId && !lastMessage.isSeen) {
 						lastMessage.isSeen = true; // Update `isSeen`
-						lastMessage.seenAt = data.timestamp; // Add `seenAt` timestamp
+						lastMessage.seenAt = data.seentAt; // Add `seenAt` timestamp
 					}
 
 					return updatedMessages; // Return the updated messages array
 				});
-			});
+			},
+		);
+
+		// Clean up the channel on unmount
+		return () => {
+			channel.unbind_all();
+			channel.unsubscribe();
+			pusher.disconnect();
+		};
+	}, [currentUser, roomId]);
+
+	/** setup socket */
+	// useEffect(() => {
+	// 	const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
+	// 	const parsedValue = JSON.parse(storedValue as string);
+	// 	// Connect to Socket.io server
+	// 	const newSocket = io(SOCKET_URL, {
+	// 		transports: ["websocket", "polling"],
+	// 		autoConnect: false, // Initially disconnect
+	// 		reconnection: true, // Reconnect automatically
+	// 		reconnectionDelay: 1000, // Delay between reconnection attempts
+	// 		reconnectionAttempts: 2, // Number of reconnection attempts before giving up
+	// 		auth: {
+	// 			token: parsedValue?.tokens?.[0].token,
+	// 		},
+	// 	});
+
+	// 	newSocket.connect();
+	// 	setSocket(newSocket);
+
+	// 	// // Clean up socket connection on unmount
+	// 	return () => {
+	// 		newSocket.disconnect();
+	// 	};
+	// }, []);
+
+	// Reset when roomId changes
+
+	useEffect(() => {
+		if (roomId) {
+			setHasScrolledToBottom(false);
+		}
+	}, [roomId]);
+
+	// only run when data is available
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		if (isMessagesPending) return;
+		if (data) {
+			const messages = data?.pages.flat(1)?.reverse();
+			setMessages(messages);
+		}
+	}, [data?.pages, isMessagesPending]);
+
+	// useEffect(() => {
+	// 	socket?.on("connect_error", (err) => {
+	// 		// console.error("Connection Error:", err.message);
+	// 		toast({ title: `Connection Error: ${err.message}` });
+	// 	});
+	// 	if (!recipient || !currentUser || !socket) return;
+	// 	// Handle connection errors
+	// 	// Listen for error events
+	// 	socket.on("authentication-error", (error) => {
+	// 		console.log(error, "error");
+	// 		toast({ title: "Something went wrong." });
+	// 		return;
+	// 	});
+	// 	// join room
+	// 	socket.emit("join-room", {
+	// 		userId,
+	// 		roomId,
+	// 	});
+
+	// 	socket?.on("error", (data) => {
+	// 		toast({ title: data.message });
+	// 		return;
+	// 	});
+
+	// 	socket?.on("authentication-error", (data) => {
+	// 		toast({ title: data.message });
+	// 		return;
+	// 	});
+
+	// 	socket?.on("receive-message", (data) => {
+	// 		setMessages((prevMessages) => {
+	// 			if (!prevMessages) return [data];
+	// 			return [...prevMessages, data];
+	// 		});
+
+	// 		// add delay to make sure the message is added to the state
+	// 		setTimeout(() => {
+	// 			// setMessages((prevMessages) => [...prevMessages, data]);
+	// 			if (containerRef.current) {
+	// 				containerRef.current.scrollTop = containerRef.current.scrollHeight;
+	// 			}
+	// 		}, 200);
+	// 	});
+
+	// 	socket?.on("message-deleted", (data) => {
+	// 		// console.log("delete message", data);
+	// 		if (data.senderId === currentUser._id) {
+	// 			/** cause we are using react query to update the state for current user who has deleted the message */
+	// 			return;
+	// 		}
+
+	// 		/** but on the receiver side we need to update the state */
+	// 		setMessages((prevMessages) => {
+	// 			return prevMessages?.filter((message) => {
+	// 				return message._id !== data.messageId;
+	// 			});
+	// 		});
+	// 	});
+	// 	socket.on("disconnect", () => {
+	// 		console.log("socket disconnected");
+	// 	});
+	// }, [
+	// 	socket,
+	// 	userId,
+	// 	recipient,
+	// 	currentUser,
+	// 	toast,
+	// 	roomId,
+	// 	// containerRef.current,
+	// ]);
+
+	const isHasSeenMessage = useMemo(() => {
+		return messages?.[messages.length - 1]?.isSeen === true;
+	}, [messages]);
+
+	/** if the last msg is sent by the current user then it should not be receiver but
+	 */
+	const isSentByCurrentUser = useMemo(() => {
+		return messages?.[messages.length - 1]?.senderId === currentUser?._id;
+	}, [messages, currentUser]);
+
+	// check if chat window is open and is in focus
+	// if yes then mark messages as seen in the chat window if user is receiver
+
+	useEffect(() => {
+		if (!pusherInstance || !currentUser || !roomId) return;
+
+		const handleVisibilityChange = () => {
+			if (!location.pathname.includes(`/inbox/${userId}`)) {
+				return;
+			}
+			if (!isSentByCurrentUser && !isHasSeenMessage) {
+				// Mark messages as seen if user is the receiver
+				// Only check for the latest message if it has not been seen
+				markMessageAsRead({
+					roomId,
+					userId: currentUser?._id,
+				});
+			}
 		};
 
 		// Add visibility change event listener
@@ -285,13 +360,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
 	}, [
-		socket,
+		markMessageAsRead,
 		roomId,
 		currentUser,
 		isHasSeenMessage,
 		isSentByCurrentUser,
 		location,
 		userId,
+		pusherInstance,
 	]);
 
 	/**
@@ -306,7 +382,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				roomId,
 				isMessagesPending,
 				messages,
-				setUserId,
 				isPending,
 				fetchNextPage,
 				hasNextPage,
