@@ -1,9 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
-import { AppConstants } from "@/constant/keys";
 import { type UserDetails, useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import useMessage from "@/hooks/query/useMessage";
-import { getValueFromLS } from "@/lib/utils";
 import Pusher from "pusher-js";
 import type React from "react";
 import {
@@ -41,19 +39,17 @@ interface SocketProviderState {
 	isMessagesPending: boolean;
 	isPending: boolean;
 	hasNextPage: boolean;
-	isDeletePending: boolean;
 	isMsgUploading: boolean;
 	isMsgDeleting: boolean;
 	setIsMsgDeleting: (val: boolean) => void;
 	setIsMsgUploading: (val: boolean) => void;
 	socket: Socket | null;
-	messages: Message[] | null | undefined;
-	setMessages: (messages: Message[] | undefined) => void;
+	messages: IMessage[] | null | undefined;
+	setMessages: (messages: IMessage[] | undefined) => void;
 	fetchNextPage: () => void;
 	isFetchingNextPage: boolean;
 	hasScrolledToBottom: boolean;
 	setHasScrolledToBottom: (val: boolean) => void;
-	deleteMessage: (params: { messageId: string }) => void;
 	containerRef: React.RefObject<HTMLDivElement> | null;
 }
 
@@ -63,7 +59,6 @@ const initialState: SocketProviderState = {
 	isMessagesPending: false,
 	isPending: false,
 	hasNextPage: false,
-	isDeletePending: false,
 	isMsgUploading: false,
 	setIsMsgDeleting: () => {},
 	setIsMsgUploading: () => {},
@@ -74,7 +69,6 @@ const initialState: SocketProviderState = {
 	isFetchingNextPage: false,
 	hasScrolledToBottom: false,
 	setHasScrolledToBottom: () => {},
-	deleteMessage: () => {},
 	containerRef: null,
 	isMsgDeleting: false,
 };
@@ -103,10 +97,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			.join("-"); // Join them with a separator
 	}, [currentUser?._id, recipient?._id]); 
 
-	const { useGetAllMessages, useDeleteMessage, useMarkMessageAsRead } =
-		useMessage();
-	const { mutateAsync: deleteMessage, isPending: isDeletePending } =
-		useDeleteMessage();
+	const { useGetAllMessages, useMarkMessageAsRead } = useMessage();
 	const { mutateAsync: markMessageAsRead, isPending: isMessageSeenPending } =
 		useMarkMessageAsRead();
 	// const { data, isPending: isMessagesPending } = useGetAllMessages();
@@ -120,8 +111,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		// Get user details from local storage
-		const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
-		const parsedValue = JSON.parse(storedValue as string);
+		// const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
+		// const parsedValue = JSON.parse(storedValue as string);
 
 		// Initialize Pusher
 		const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
@@ -318,9 +309,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				fetchNextPage,
 				hasNextPage,
 				isFetchingNextPage,
-				isDeletePending,
 				hasScrolledToBottom,
-				deleteMessage,
 				setHasScrolledToBottom,
 				isMsgUploading,
 				setIsMsgUploading,

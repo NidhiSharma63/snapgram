@@ -37,7 +37,7 @@ export default function useMessage() {
 				return response;
 			},
 			initialPageParam: null, // Start with no last message ID
-			getNextPageParam: (lastPage: Message[]) => {
+			getNextPageParam: (lastPage: IMessage[]) => {
 				if (lastPage && lastPage.length > 0) {
 					return lastPage[lastPage.length - 1]._id; // Return the last message's ID
 				}
@@ -48,7 +48,7 @@ export default function useMessage() {
 	}
 	function useDeleteMessage() {
 		return useMutation({
-			mutationFn: (payload: {  messageId: string }) =>
+			mutationFn: (payload: {  messageId: string,roomId:string }) =>
 				customAxiosRequestForPost("/message/delete", "delete", payload),
 
 			onError: (error: AxiosError<ErrorResponse>) => {

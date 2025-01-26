@@ -4,6 +4,7 @@ import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
+import useMessage from "@/hooks/query/useMessage";
 import { multiFormatDateString } from "@/lib/utils";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useState } from "react";
@@ -78,7 +79,6 @@ export default function Message({
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
-		deleteMessage,
 		hasScrolledToBottom,
 		setHasScrolledToBottom,
 		socket,
@@ -91,6 +91,18 @@ export default function Message({
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
+	const { useDeleteMessage } = useMessage();
+	const { mutateAsync: deleteMessage, isError } = useDeleteMessage();
+	/**
+	 * on Error reset state
+	 */
+
+	useEffect(() => {
+		if (isError) {
+			setDeleteMsgId("");
+			setIsMsgDeleting(false);
+		}
+	}, [isError, setIsMsgDeleting]);
 	/**
 	 * scroll to the latest msg when chat window opens
 	 */
@@ -146,6 +158,7 @@ export default function Message({
 			setDeleteMsgId(messageId ?? "");
 			await deleteMessage({
 				messageId: messageId ?? "",
+				roomId: roomId ?? "",
 			});
 			socket?.emit("delete-message", {
 				messageId,
