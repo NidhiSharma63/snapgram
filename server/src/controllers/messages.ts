@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
+import { pusher } from "../app";
 import Chat from "../models/messageSchema";
 
+
+/** get All messages */
 const getAllMessages = async (
 	req: Request,
 	res: Response,
@@ -29,6 +32,9 @@ const getAllMessages = async (
 	}
 };
 
+/**
+ * delete message
+ */
 const deleteMessage = async (
 	req: Request,
 	res: Response,
@@ -44,5 +50,35 @@ const deleteMessage = async (
 		next(error);
 	}
 };
-export { deleteMessage, getAllMessages };
+
+/**
+ * add message 
+ */
+const addMessage = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { roomId, message, receiverId ,senderId,createdAt,userId} = req.body;
+		if (!userId) throw new Error("User id is Missing");
+		if(!roomId) throw new Error("Room id is Missing");
+		const newMessage = new Chat({
+			roomId,
+			message,
+			senderId,
+			receiverId,
+			createdAt,
+		});
+		
+		await newMessage.save();
+		await pusher.trigger(`private-${roomId}`, "message-received", {
+      message,
+      senderId,
+      receiverId,
+      createdAt,
+    });
+		res.status(201).json(newMessage);
+	} catch (error) {
+		next(error);
+	}
+
+}
+export { addMessage, deleteMessage, getAllMessages };
 

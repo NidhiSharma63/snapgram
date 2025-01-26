@@ -2,6 +2,7 @@ import cors from "cors";
 import { type Server as HTTPServer, createServer } from "node:http";
 // import * as dotenv from "dotenv";
 import express from "express";
+import Pusher from "pusher";
 import errorHandle from "./middleware/errorHandle";
 import router from "./routes/routes";
 import connectDB from "./utils/connectBD";
@@ -28,10 +29,23 @@ app.use("/api/v1", router);
 
 app.use(errorHandle);
 
+
+// Pusher instance
+export const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID || "",
+  key: process.env.PUSHER_KEY || "",
+  secret: process.env.PUSHER_SECRET || "",
+  cluster: process.env.PUSHER_CLUSTER || "",
+  useTLS: true,  // Ensures encryption
+});
+
 // creating a start function that will connect to database and run the server
 const start = async () => {
 	try {
 		await connectDB(process.env.MONGO_URI || "");
+		console.log("Triggering event...");
+		pusher.trigger("my-channel", "my-event", { message: "hello world" });
+		console.log("Event triggered");
 		server.listen(process.env.PORT ?? 5000, () => {
 			console.log("running at port", process.env.PORT ?? 5000);
 		});
