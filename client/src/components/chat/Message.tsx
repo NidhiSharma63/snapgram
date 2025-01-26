@@ -81,7 +81,6 @@ export default function Message({
 		isFetchingNextPage,
 		hasScrolledToBottom,
 		setHasScrolledToBottom,
-		socket,
 		roomId,
 		setIsMsgDeleting,
 		isMsgDeleting,
@@ -160,14 +159,9 @@ export default function Message({
 				messageId: messageId ?? "",
 				roomId: roomId ?? "",
 			});
-			socket?.emit("delete-message", {
-				messageId,
-				roomId,
-				senderId: currentUser?._id,
-			});
 			setIsMsgDeleting(false);
 		},
-		[deleteMessage, socket, roomId, currentUser, messages, setIsMsgDeleting],
+		[deleteMessage, roomId, messages, setIsMsgDeleting],
 	);
 
 	return (

@@ -12,15 +12,6 @@ import type { AxiosError } from "axios";
 export default function useMessage() {
 	const { toast } = useToast();
 	const { roomId } = useSocket();
-	// console.log("roomId",rr)
-	// function useGetAllMessages() {
-	// 	return useQuery({
-	// 		queryKey: [`${QueryKeys.GET_USER_MESSAGES}-${roomId}`],
-	// 		queryFn: () => customAxiosRequestForGet("/messages",  {roomId,messageId}),
-	//     enabled: !!roomId
-	// 	});
-	// }
-
 	function useGetAllMessages(roomId:string) {
 		return useInfiniteQuery<
 		IMessage[], // The type of each page of data
@@ -98,13 +89,7 @@ export default function useMessage() {
 
 	function useSendMessage() {
 		return useMutation({
-			mutationFn: (payload: {
-				roomId: string;
-				message: string;
-				senderId: string;
-				receiverId: string;
-				createdAt: Date;
-			}) =>
+			mutationFn: (payload: Record<string, string>) =>
 				customAxiosRequestForPost("/message", "post", payload),
 			onError: (error: AxiosError<ErrorResponse>) => {
 				console.log(error);

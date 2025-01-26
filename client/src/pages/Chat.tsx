@@ -2,7 +2,7 @@ import Message from "@/components/chat/Message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { type IMessage, useSocket } from "@/context/socketProviders";
+import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
@@ -56,7 +56,7 @@ export default function Chat() {
 			});
 		}
 		setIsMsgUploading(true);
-		let message = {} as IMessage;
+		let message = {};
 		if (file) {
 			// if user has selected the file then send the file to firebase storage on frontend only
 			const imageRef = ref(storage, `/images/${file}-${v4()}`);

@@ -13,7 +13,6 @@ import {
 	useState,
 } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import type { Socket } from "socket.io-client";
 
 // Define the socket URL
 const SOCKET_URL = import.meta.env.VITE_APP_SOCKET_URL;
@@ -43,7 +42,6 @@ interface SocketProviderState {
 	isMsgDeleting: boolean;
 	setIsMsgDeleting: (val: boolean) => void;
 	setIsMsgUploading: (val: boolean) => void;
-	socket: Socket | null;
 	messages: IMessage[] | null | undefined;
 	setMessages: (messages: IMessage[] | undefined) => void;
 	fetchNextPage: () => void;
@@ -62,7 +60,6 @@ const initialState: SocketProviderState = {
 	isMsgUploading: false,
 	setIsMsgDeleting: () => {},
 	setIsMsgUploading: () => {},
-	socket: null,
 	messages: null,
 	setMessages: () => {},
 	fetchNextPage: () => {},
@@ -78,7 +75,6 @@ const SocketContext = createContext<SocketProviderState>(initialState);
 // RENAME message recieve = received-message
 // RENAME timpeStamp ate message seen = seentAt
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
-	const [socket, setSocket] = useState<Socket | null>(null);
 	const userId = useParams<{ userId: string }>().userId;
 	const [messages, setMessages] = useState<IMessage[] | null | undefined>(null);
 	const { useGetUserById } = useAuth();
@@ -95,7 +91,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
 			.join("-"); // Join them with a separator
-	}, [currentUser?._id, recipient?._id]); 
+	}, [currentUser?._id, recipient?._id]);
 
 	const { useGetAllMessages, useMarkMessageAsRead } = useMessage();
 	const { mutateAsync: markMessageAsRead, isPending: isMessageSeenPending } =
@@ -110,23 +106,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	} = useGetAllMessages(roomId);
 
 	useEffect(() => {
-		// Get user details from local storage
-		// const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
-		// const parsedValue = JSON.parse(storedValue as string);
-
 		// Initialize Pusher
 		const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
 			cluster: import.meta.env.VITE_APP_PUSHER_CLUSTER,
-			// authEndpoint: "/pusher/auth", // it is the path to the auth endpoint on the server
-			// auth: {
-			// 	headers: {
-			// 		Authorization: `Bearer ${parsedValue?.tokens?.[0].token}`,
-			// 	},
-			// },
 		});
 
 		// One reason this connection might fail is if the account being over its' limits
-		pusher.connection.bind("error", (err) => {
+		pusher.connection.bind("error", (err: { data: { code: number } }) => {
 			if (err.data.code === 4004) {
 				toast({
 					title: "Pusher Error",
@@ -148,6 +134,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
 			});
+
+			if (containerRef.current) {
+				containerRef.current.scrollTo(0, containerRef.current.scrollHeight);
+			}
 		});
 
 		// listen for deleted messages
@@ -196,38 +186,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		// Clean up the channel on unmount
 		return () => {
 			// console.warn("Unsubscribing from channel");
-			// channel.unbind_all();
-			// channel.unsubscribe();
-			// pusher.disconnect();
+			channel.unbind_all();
+			channel.unsubscribe();
+			pusher.disconnect();
 		};
 	}, [currentUser, roomId, toast]);
-
-	/** setup socket */
-	// useEffect(() => {
-	// 	const storedValue = getValueFromLS(AppConstants.USER_DETAILS);
-	// 	const parsedValue = JSON.parse(storedValue as string);
-	// 	// Connect to Socket.io server
-	// 	const newSocket = io(SOCKET_URL, {
-	// 		transports: ["websocket", "polling"],
-	// 		autoConnect: false, // Initially disconnect
-	// 		reconnection: true, // Reconnect automatically
-	// 		reconnectionDelay: 1000, // Delay between reconnection attempts
-	// 		reconnectionAttempts: 2, // Number of reconnection attempts before giving up
-	// 		auth: {
-	// 			token: parsedValue?.tokens?.[0].token,
-	// 		},
-	// 	});
-
-	// 	newSocket.connect();
-	// 	setSocket(newSocket);
-
-	// 	// // Clean up socket connection on unmount
-	// 	return () => {
-	// 		newSocket.disconnect();
-	// 	};
-	// }, []);
-
-	// Reset when roomId changes
 
 	useEffect(() => {
 		if (roomId) {
@@ -241,9 +204,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		if (isMessagesPending) return;
 		const messages = data?.pages.flat(1)?.reverse();
 		setMessages(messages);
-		
 	}, [data?.pages, isMessagesPending]);
-
 
 	const isHasSeenMessage = useMemo(() => {
 		return messages?.[messages.length - 1]?.isSeen === true;
@@ -300,7 +261,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	return (
 		<SocketContext.Provider
 			value={{
-				socket,
 				recipient,
 				roomId,
 				isMessagesPending,
