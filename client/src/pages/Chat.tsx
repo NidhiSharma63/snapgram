@@ -63,7 +63,7 @@ export default function Chat() {
 			sendMessage({
 				roomId,
 				senderId: currentUser?._id,
-				recipientId: recipient?._id,
+				receiverId: recipient?._id,
 				message: url,
 				createdAt: new Date(),
 			});
@@ -83,7 +83,7 @@ export default function Chat() {
 			sendMessage({
 				roomId,
 				senderId: currentUser?._id,
-				recipientId: recipient?._id,
+				receiverId: recipient?._id,
 				message: userMessage,
 				createdAt: new Date(),
 			});

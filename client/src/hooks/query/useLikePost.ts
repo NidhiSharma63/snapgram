@@ -92,7 +92,7 @@ export default function useLikePost() {
 	function useGetAllLike() {
 		return useQuery({
 			queryKey: [QueryKeys.GET_USER_Like_POST],
-			queryFn: () => customAxiosRequestForGet("/likes", null),
+			queryFn: () => customAxiosRequestForGet("/likes", {}),
 		});
 	}
 	return {

@@ -94,7 +94,7 @@ function useAuth() {
 		return useQuery({
 			enabled: !!id,
 			queryKey: [QueryKeys.USER_BY_ID, id],
-			queryFn: () => customAxiosRequestForGet("/user", id),
+			queryFn: () => customAxiosRequestForGet("/user", {id}),
 		});
 	}
 
@@ -105,7 +105,7 @@ function useAuth() {
 	function useGetAllUser() {
 		return useQuery({
 			queryKey: [QueryKeys.USERS],
-			queryFn: () => customAxiosRequestForGet("/users", null),
+			queryFn: () => customAxiosRequestForGet("/users", {}),
 		});
 	}
 

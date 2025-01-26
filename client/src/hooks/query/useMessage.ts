@@ -101,7 +101,7 @@ export default function useMessage() {
 				roomId: string;
 				message: string;
 				senderId: string;
-				recipientId: string;
+				receiverId: string;
 				createdAt: Date;
 			}) =>
 				customAxiosRequestForPost("/message", "post", payload),

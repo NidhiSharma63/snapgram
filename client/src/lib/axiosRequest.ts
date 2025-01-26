@@ -22,10 +22,10 @@ const axiosInstance = axios.create({
 
 async function axiosRequest({ ...options }) {
   const storedData = getValueFromLS(AppConstants.USER_DETAILS);
-
+  
   const AUTH_TOKEN = storedData ? JSON.parse(storedData).tokens[0].token : null;
   if (AUTH_TOKEN) {
-    axiosInstance.defaults.headers.Authorization = AUTH_TOKEN;
+    axiosInstance.defaults.headers.Authorization = `Bearer ${AUTH_TOKEN}`;
   }
   try {
     const response = await axiosInstance(options);
@@ -36,31 +36,16 @@ async function axiosRequest({ ...options }) {
   }
 }
 
-export const customAxiosRequestForGet = async (url: string, params: string | null |Record<string, string>) => {
+export const customAxiosRequestForGet = async (url: string, params: Record<string, string>) => {
   const storedData = getValueFromLS(AppConstants.USER_DETAILS);
   const userId = storedData && JSON.parse(storedData)._id;
-  let paramsToPass = {};
-  if (!userId) {
-    throw new Error("User id is not present");
-  }
-
   if (userId) {
-    paramsToPass = { userId };
+    params = {  ...params, userId };
   }
-
-  if (params && typeof params === "string") {
-    paramsToPass = { ...paramsToPass, id:params };
-  }
-
-  if (params && typeof params === "object") {
-    paramsToPass = { ...paramsToPass, ...params };
-  }
-
-  // console.log(paramsToPass, ":::params to pass");
   const response = await axiosRequest({
     url,
     method: "get",
-    params: paramsToPass,
+    params,
   });
   return response;
 };
@@ -69,16 +54,16 @@ export const customAxiosRequestForPost = async (url: string, method = "post", pa
   const storedData = getValueFromLS(AppConstants.USER_DETAILS);
   const userId = storedData && JSON.parse(storedData)?._id;
 
-  let updatedPayload = { ...payload };
+  // let updatedPayload = { ...payload };
   if (userId) {
-    updatedPayload = { ...payload, userId };
+    payload = { ...payload, userId };
   }
 
   try {
     const response = await axiosRequest({
       url,
       method,
-      data: updatedPayload,
+      data: payload,
     });
     return response;
   } catch (error) {

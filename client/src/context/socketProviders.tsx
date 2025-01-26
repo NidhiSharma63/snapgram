@@ -81,7 +81,6 @@ const initialState: SocketProviderState = {
 
 const SocketContext = createContext<SocketProviderState>(initialState);
 
-
 // RENAME message recieve = received-message
 // RENAME timpeStamp ate message seen = seentAt
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
@@ -127,14 +126,23 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		// Initialize Pusher
 		const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
 			cluster: import.meta.env.VITE_APP_PUSHER_CLUSTER,
-			authEndpoint: "/pusher/auth", // it is the path to the auth endpoint on the server
-			auth: {
-				headers: {
-					Authorization: `Bearer ${parsedValue?.tokens?.[0].token}`,
-				},
-			},
+			// authEndpoint: "/pusher/auth", // it is the path to the auth endpoint on the server
+			// auth: {
+			// 	headers: {
+			// 		Authorization: `Bearer ${parsedValue?.tokens?.[0].token}`,
+			// 	},
+			// },
 		});
 
+		// One reason this connection might fail is if the account being over its' limits
+		pusher.connection.bind("error", (err) => {
+			if (err.data.code === 4004) {
+				toast({
+					title: "Pusher Error",
+					description: "Limit Over! please try again after some time",
+				});
+			}
+		});
 		// Store the Pusher instance
 		setPusherInstance(pusher);
 
@@ -143,7 +151,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 		// listen to the event
 		// listen for received messages
-		channel.bind("recieved-message", (data: Message) => {
+		channel.bind("message-received", (data: Message) => {
+			console.log("Message has been received", data);
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
