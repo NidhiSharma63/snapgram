@@ -11,11 +11,12 @@ const getAllMessages = async (
 ) => {
 	const { roomId, lastMessageId, userId } = req.query;
 	// console.log(req.query)
-	if (!userId) throw new Error("User id is Missiing");
+	if (!userId) throw new Error("User id is Missing");
+	if(!roomId) throw new Error("Room id is Missing");
 	try {
 		if (!lastMessageId) {
 			const messages = await Chat.find({ roomId })
-				.sort({ timestamp: -1 }) // Sort by timestamp in descending order, latest first
+				.sort({ createdAt: -1 }) // Sort by timestamp in descending order, latest first
 				.limit(20) // Fetch the previous 20 messages, for example
 				.lean(); // Convert Mongoose documents to plain JavaScript objects
 			res.status(200).json(messages);
@@ -23,7 +24,7 @@ const getAllMessages = async (
 		}
 
 		const messages = await Chat.find({ roomId, _id: { $lt: lastMessageId } })
-			.sort({ timestamp: -1 }) // Sort by timestamp in descending order, latest first
+			.sort({ createdAt: -1 }) // Sort by timestamp in descending order, latest first
 			.limit(20)
 			.lean();
 		res.status(200).json(messages);
@@ -40,11 +41,19 @@ const deleteMessage = async (
 	res: Response,
 	next: NextFunction,
 ) => {
-	const { messageId, userId } = req.body;
-	if (!userId) throw new Error("User id is Missiing");
+	const { messageId, userId ,roomId} = req.body;
+	if (!userId) throw new Error("User id is Missing");
+	if(!roomId) throw new Error("Room id is Missing");
+	if(!messageId) throw new Error("Message id is Missing");
 	try {
 		// delete the message
 		const message = await Chat.findOneAndDelete({ _id: messageId });
+		await pusher.trigger(`public-${roomId}`, "message-deleted", 
+      {
+				messageId,
+				senderId:userId
+			}
+    );
 		res.status(201).json(message);
 	} catch (error) {
 		next(error);
@@ -66,14 +75,10 @@ const addMessage = async (req: Request, res: Response, next: NextFunction) => {
 			receiverId,
 			createdAt,
 		});
-		
 		await newMessage.save();
-		await pusher.trigger(`private-${roomId}`, "message-received", {
-      message,
-      senderId,
-      receiverId,
-      createdAt,
-    });
+		await pusher.trigger(`public-${roomId}`, "message-received", 
+      newMessage
+    );
 		res.status(201).json(newMessage);
 	} catch (error) {
 		next(error);

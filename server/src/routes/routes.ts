@@ -42,7 +42,7 @@ router.route("/save/add").put(checkAuthorization, addSaves);
 router.route("/save/remove").delete(checkAuthorization, removeSaves);
 router.route("/saves").get(checkAuthorization, getAllSavePost);
 router.route("/messages").get(checkAuthorization, getAllMessages);
-router.route("/messages").post(checkAuthorization, addMessage);
+router.route("/message").post(checkAuthorization, addMessage);
 router.route("/message/delete").delete(checkAuthorization,deleteMessage);
 // router.route("/pusher/auth").post(checkAuthorization, (req, res) => {
 //   const socketId = req.body.socket_id;
