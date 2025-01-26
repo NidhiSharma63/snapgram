@@ -24,17 +24,17 @@ interface SocketProviderProps {
 	children: React.ReactNode;
 }
 
-export interface Message {
-		message: string;
-		senderId: string;
-		recipientId: string;
-		roomId: string;
-		__v: number;
-		_id: string;
-		seenAt: string;
-		isSeen: boolean;
-		createdAt: string | Date;
-	}
+export interface IMessage {
+	message: string;
+	senderId: string;
+	recipientId: string;
+	roomId: string;
+	__v: number;
+	_id: string;
+	seenAt: string;
+	isSeen: boolean;
+	createdAt: string | Date;
+}
 interface SocketProviderState {
 	recipient: UserDetails | null;
 	roomId: string;
@@ -86,7 +86,7 @@ const SocketContext = createContext<SocketProviderState>(initialState);
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const userId = useParams<{ userId: string }>().userId;
-	const [messages, setMessages] = useState<Message[] | null | undefined>(null);
+	const [messages, setMessages] = useState<IMessage[] | null | undefined>(null);
 	const { useGetUserById } = useAuth();
 	const { userDetails: currentUser } = useUserDetail();
 	const { toast } = useToast();
@@ -100,8 +100,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
-			.join("-");
-	}, [currentUser?._id, recipient?._id]); // Join them with a separator
+			.join("-"); // Join them with a separator
+	}, [currentUser?._id, recipient?._id]); 
 
 	const { useGetAllMessages, useDeleteMessage, useMarkMessageAsRead } =
 		useMessage();
@@ -116,7 +116,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		hasNextPage,
 		isFetchingNextPage,
 		isPending: isMessagesPending,
-	} = useGetAllMessages();
+	} = useGetAllMessages(roomId);
 
 	useEffect(() => {
 		// Get user details from local storage
@@ -147,23 +147,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		setPusherInstance(pusher);
 
 		// Subscribe to the channel
-		const channel = pusher.subscribe(`private-${roomId}`);
+		const channel = pusher.subscribe(`public-${roomId}`);
 
 		// listen to the event
 		// listen for received messages
-		channel.bind("message-received", (data: Message) => {
-			console.log("Message has been received", data);
+		channel.bind("message-received", (data: IMessage) => {
+			// console.log("Message has been received", data);
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
 			});
-
-			// add delay to make sure the message is added to the state
-			setTimeout(() => {
-				if (containerRef.current) {
-					containerRef.current.scrollTop = containerRef.current.scrollHeight;
-				}
-			}, 200);
 		});
 
 		// listen for deleted messages
@@ -211,11 +204,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 		// Clean up the channel on unmount
 		return () => {
-			channel.unbind_all();
-			channel.unsubscribe();
-			pusher.disconnect();
+			// console.warn("Unsubscribing from channel");
+			// channel.unbind_all();
+			// channel.unsubscribe();
+			// pusher.disconnect();
 		};
-	}, [currentUser, roomId]);
+	}, [currentUser, roomId, toast]);
 
 	/** setup socket */
 	// useEffect(() => {
@@ -254,82 +248,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (isMessagesPending) return;
-		if (data) {
-			const messages = data?.pages.flat(1)?.reverse();
-			setMessages(messages);
-		}
+		const messages = data?.pages.flat(1)?.reverse();
+		setMessages(messages);
+		
 	}, [data?.pages, isMessagesPending]);
 
-	// useEffect(() => {
-	// 	socket?.on("connect_error", (err) => {
-	// 		// console.error("Connection Error:", err.message);
-	// 		toast({ title: `Connection Error: ${err.message}` });
-	// 	});
-	// 	if (!recipient || !currentUser || !socket) return;
-	// 	// Handle connection errors
-	// 	// Listen for error events
-	// 	socket.on("authentication-error", (error) => {
-	// 		console.log(error, "error");
-	// 		toast({ title: "Something went wrong." });
-	// 		return;
-	// 	});
-	// 	// join room
-	// 	socket.emit("join-room", {
-	// 		userId,
-	// 		roomId,
-	// 	});
-
-	// 	socket?.on("error", (data) => {
-	// 		toast({ title: data.message });
-	// 		return;
-	// 	});
-
-	// 	socket?.on("authentication-error", (data) => {
-	// 		toast({ title: data.message });
-	// 		return;
-	// 	});
-
-	// 	socket?.on("receive-message", (data) => {
-	// 		setMessages((prevMessages) => {
-	// 			if (!prevMessages) return [data];
-	// 			return [...prevMessages, data];
-	// 		});
-
-	// 		// add delay to make sure the message is added to the state
-	// 		setTimeout(() => {
-	// 			// setMessages((prevMessages) => [...prevMessages, data]);
-	// 			if (containerRef.current) {
-	// 				containerRef.current.scrollTop = containerRef.current.scrollHeight;
-	// 			}
-	// 		}, 200);
-	// 	});
-
-	// 	socket?.on("message-deleted", (data) => {
-	// 		// console.log("delete message", data);
-	// 		if (data.senderId === currentUser._id) {
-	// 			/** cause we are using react query to update the state for current user who has deleted the message */
-	// 			return;
-	// 		}
-
-	// 		/** but on the receiver side we need to update the state */
-	// 		setMessages((prevMessages) => {
-	// 			return prevMessages?.filter((message) => {
-	// 				return message._id !== data.messageId;
-	// 			});
-	// 		});
-	// 	});
-	// 	socket.on("disconnect", () => {
-	// 		console.log("socket disconnected");
-	// 	});
-	// }, [
-	// 	socket,
-	// 	userId,
-	// 	recipient,
-	// 	currentUser,
-	// 	toast,
-	// 	roomId,
-	// 	// containerRef.current,
-	// ]);
 
 	const isHasSeenMessage = useMemo(() => {
 		return messages?.[messages.length - 1]?.isSeen === true;

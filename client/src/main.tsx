@@ -27,6 +27,7 @@ if (rootElement) {
 					<App />
 					<Toaster />
 				</ThemeProvider>
+				{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 			</QueryClientProvider>
 		</React.StrictMode>,
 	);

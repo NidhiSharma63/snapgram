@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import type { ErrorResponse } from "@/constant/interfaces";
-import { type Message, useSocket } from "@/context/socketProviders";
+import { type IMessage, useSocket } from "@/context/socketProviders";
 import {
 	customAxiosRequestForGet,
 	customAxiosRequestForPost,
@@ -11,7 +11,7 @@ import type { AxiosError } from "axios";
 
 export default function useMessage() {
 	const { toast } = useToast();
-	const {roomId} = useSocket()
+	const { roomId } = useSocket();
 	// console.log("roomId",rr)
 	// function useGetAllMessages() {
 	// 	return useQuery({
@@ -21,9 +21,9 @@ export default function useMessage() {
 	// 	});
 	// }
 
-	function useGetAllMessages() {
+	function useGetAllMessages(roomId:string) {
 		return useInfiniteQuery<
-			Message[], // The type of each page of data
+		IMessage[], // The type of each page of data
 			Error// Error type
 		>({
 			queryKey: ["messages", roomId], // Cache key
@@ -33,6 +33,7 @@ export default function useMessage() {
 					roomId,
 					lastMessageId: pageParam as string,
 				});
+				// console.log("response",response)
 				return response;
 			},
 			initialPageParam: null, // Start with no last message ID
@@ -42,7 +43,7 @@ export default function useMessage() {
 				}
 				return null; // No more pages
 			},
-			enabled: !!roomId, // Only run if roomId is present
+			enabled: roomId != null 
 		});
 	}
 	function useDeleteMessage() {

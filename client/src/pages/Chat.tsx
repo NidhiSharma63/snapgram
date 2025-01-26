@@ -2,7 +2,7 @@ import Message from "@/components/chat/Message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { useSocket } from "@/context/socketProviders";
+import { type IMessage, useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
@@ -13,24 +13,32 @@ import { type SetStateAction, useCallback, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { v4 } from "uuid";
 
-
 // Todo - fix authentication error issue
 export default function Chat() {
 	const {
-		socket,
 		recipient,
 		roomId,
 		isPending,
 		setIsMsgUploading,
 		isMsgUploading,
+		containerRef,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const [userMessage, setUserMessage] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
+	const [usersMessageSentToBE, setUsersMessageSentToBE] = useState<Record<
+		string,
+		string
+	> | null>(null);
 	const { theme } = useTheme();
 	const { useSendMessage } = useMessage();
-	const { mutateAsync: sendMessage } = useSendMessage();
+	
+	const {
+		mutateAsync: sendMessage,
+		isError: isMessageSendingError,
+		isPending: isMessageSendingPending,
+	} = useSendMessage();
 
 	// handle message change
 	const handleMessageChange = useCallback(
@@ -48,51 +56,46 @@ export default function Chat() {
 			});
 		}
 		setIsMsgUploading(true);
+		let message = {} as IMessage;
 		if (file) {
 			// if user has selected the file then send the file to firebase storage on frontend only
 			const imageRef = ref(storage, `/images/${file}-${v4()}`);
 			const snapshot = await uploadBytes(imageRef, file);
 			const url = await getDownloadURL(snapshot.ref);
-			// socket.emit("send-message", {
-			// 	roomId,
-			// 	senderId: currentUser?._id,
-			// 	receiverId: recipient?._id,
-			// 	message: url,
-			// 	timestamp: new Date(),
-			// });
-			sendMessage({
+			message = {
 				roomId,
 				senderId: currentUser?._id,
 				receiverId: recipient?._id,
 				message: url,
 				createdAt: new Date(),
-			});
+			};
+			setUsersMessageSentToBE(message);
+			sendMessage(message);
 			setFile(null);
 			if (inputRef.current) {
 				inputRef.current.value = "";
 			}
 		}
 		if (userMessage?.trim()) {
-			// socket.emit("send-message", {
-			// 	roomId,
-			// 	senderId: currentUser?._id,
-			// 	receiverId: recipient?._id,
-			// 	message: userMessage,
-			// 	timestamp: new Date(),
-			// });
-			sendMessage({
+			message = {
 				roomId,
 				senderId: currentUser?._id,
 				receiverId: recipient?._id,
 				message: userMessage,
 				createdAt: new Date(),
-			});
+			};
+			setUsersMessageSentToBE(message);
+			sendMessage(message);
 		}
 		queryClient.invalidateQueries({
 			queryKey: ["messages", roomId],
 		});
 		setUserMessage("");
 		setIsMsgUploading(false);
+
+		if (containerRef?.current) {
+			containerRef.current.scrollTop = containerRef.current.scrollHeight;
+		}
 	}, [
 		recipient,
 		currentUser,
@@ -101,6 +104,7 @@ export default function Chat() {
 		roomId,
 		file,
 		setIsMsgUploading,
+		containerRef,
 	]);
 
 	// handle file change
@@ -147,7 +151,11 @@ export default function Chat() {
 					{recipient?.username}
 				</p>
 			</header>
-			<Message />
+			<Message
+				isMessageSendingPending={isMessageSendingPending}
+				usersMessageSentToBE={usersMessageSentToBE}
+				isMessageSendingError={isMessageSendingError}
+			/>
 			<div className="flex items-center  justify-between lg:p-4 p-2 w-full gap-4">
 				<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
 					{file && (
