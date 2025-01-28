@@ -79,6 +79,8 @@ const addMessage = async (req: Request, res: Response, next: NextFunction) => {
 		await pusher.trigger(`public-${roomId}`, "message-received",
 			newMessage
 		);
+		await pusher.trigger(`notification-${receiverId}`, "unread-message",
+			newMessage)
 		res.status(201).json(newMessage);
 	} catch (error) {
 		next(error);
