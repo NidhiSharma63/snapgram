@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { pusher } from "../app";
 import Chat from "../models/messageSchema";
+import pusher from "../utils/pusher";
 
 
 /** get All messages */
