@@ -4,22 +4,83 @@ import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
+import useMessage from "@/hooks/query/useMessage";
 import { multiFormatDateString } from "@/lib/utils";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 
-export default function Message() {
+export function UserMessage({
+	usersMessageSentToBE,
+	isMessageSendingError,
+}: {
+	usersMessageSentToBE: Record<string, string> | null;
+	isMessageSendingError: boolean;
+}) {
+	const { theme } = useTheme();
+	const { containerRef } = useSocket();
+
+	useEffect(() => {
+		if (containerRef?.current && usersMessageSentToBE) {
+			containerRef?.current?.scrollTo(0, containerRef?.current?.scrollHeight);
+		}
+	}, [usersMessageSentToBE, containerRef]);
+	return (
+		<div
+			className={"w-full text-left flex items-center gap-3 justify-end group"}
+		>
+			{isMessageSendingError ? (
+				<span
+					style={{ color: "#94070c", fontWeight: "bold", fontSize: "24px" }}
+				>
+					!
+				</span>
+			) : (
+				<ColorRing
+					width={24}
+					height={24}
+					colors={
+						theme === "dark"
+							? ["#fff", "#fff", "#fff", "#fff", "#fff"]
+							: ["#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de"]
+					}
+				/>
+			)}
+			{usersMessageSentToBE?.message?.includes(
+				"https://firebasestorage.googleapis.com",
+			) ? (
+				<ImageComponent src={usersMessageSentToBE.message} />
+			) : (
+				<div className="flex gap-2 align-center items-center">
+					<p
+						className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+					>
+						{usersMessageSentToBE?.message}
+					</p>
+				</div>
+			)}
+		</div>
+	);
+}
+
+export default function Message({
+	isMessageSendingPending,
+	usersMessageSentToBE,
+	isMessageSendingError,
+}: {
+	isMessageSendingPending: boolean;
+	usersMessageSentToBE: Record<string, string> | null;
+	isMessageSendingError: boolean;
+}) {
+	// console.log(usersMessageSentToBE, "from message");
 	const {
 		messages,
 		isMessagesPending,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
-		deleteMessage,
 		hasScrolledToBottom,
 		setHasScrolledToBottom,
-		socket,
 		roomId,
 		setIsMsgDeleting,
 		isMsgDeleting,
@@ -29,6 +90,18 @@ export default function Message() {
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
+	const { useDeleteMessage } = useMessage();
+	const { mutateAsync: deleteMessage, isError } = useDeleteMessage();
+	/**
+	 * on Error reset state
+	 */
+
+	useEffect(() => {
+		if (isError) {
+			setDeleteMsgId("");
+			setIsMsgDeleting(false);
+		}
+	}, [isError, setIsMsgDeleting]);
 	/**
 	 * scroll to the latest msg when chat window opens
 	 */
@@ -36,16 +109,14 @@ export default function Message() {
 		if (isMessagesPending || hasScrolledToBottom) return;
 		const lastMsg = messages?.[messages.length - 1]?.message;
 		// biome-ignore lint/complexity/noForEach: <explanation>
-		document
-			.querySelectorAll(".user-msg")
-			.forEach((element) => {
-				if (element.textContent === lastMsg) {
-					element.scrollIntoView({
-						behavior: "smooth",
-					});
-					setHasScrolledToBottom(true);
-				}
-			});
+		document.querySelectorAll(".user-msg").forEach((element) => {
+			if (element.textContent === lastMsg) {
+				element.scrollIntoView({
+					behavior: "smooth",
+				});
+				setHasScrolledToBottom(true);
+			}
+		});
 	}, [
 		isMessagesPending,
 		messages,
@@ -86,17 +157,12 @@ export default function Message() {
 			setDeleteMsgId(messageId ?? "");
 			await deleteMessage({
 				messageId: messageId ?? "",
-			});
-			socket?.emit("delete-message", {
-				messageId,
-				roomId,
-				senderId: currentUser?._id,
+				roomId: roomId ?? "",
 			});
 			setIsMsgDeleting(false);
 		},
-		[deleteMessage, socket, roomId, currentUser, messages, setIsMsgDeleting],
+		[deleteMessage, roomId, messages, setIsMsgDeleting],
 	);
-
 
 	return (
 		<div
@@ -212,6 +278,13 @@ export default function Message() {
 						</React.Fragment>
 					);
 				})
+			)}
+			{/* show loader only for that message which is being deleted by user */}
+			{(isMessageSendingPending || isMessageSendingError) && (
+				<UserMessage
+					usersMessageSentToBE={usersMessageSentToBE}
+					isMessageSendingError={isMessageSendingError}
+				/>
 			)}
 		</div>
 	);

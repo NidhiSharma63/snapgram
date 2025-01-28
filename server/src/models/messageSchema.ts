@@ -18,7 +18,7 @@ const chatSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    timestamp: {
+    createdAt: {
       type: Date,
       default: Date.now,
     },
@@ -31,7 +31,6 @@ const chatSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt
 );
 
 export default mongoose.model("Chat", chatSchema);

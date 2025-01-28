@@ -1,6 +1,6 @@
 import { AppConstants } from "@/constant/keys";
 import { getValueFromLS } from "@/lib/utils";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface userProviderProps {
   children: React.ReactNode;
@@ -31,19 +31,24 @@ const UserDetailsProviderContext = createContext<UserDetailsProviderState>(initi
 const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
 
 export function UserDetailsProvider({ children }: userProviderProps) {
-  const [userDetails, setUserDetail] = useState<null | UserDetails>(
-    (storedUserData && JSON.parse(storedUserData)) || null
-  );
+  const [userDetails, setUserDetail] = useState<null | UserDetails>(null);
 
-  return (
-    <UserDetailsProviderContext.Provider
-      value={{
-        userDetails,
-        setUserDetail,
-      }}>
-      {children}
-    </UserDetailsProviderContext.Provider>
-  );
+		useEffect(() => {
+			if (storedUserData) {
+				setUserDetail(JSON.parse(storedUserData));
+			}
+		}, []);
+
+		return (
+			<UserDetailsProviderContext.Provider
+				value={{
+					userDetails,
+					setUserDetail,
+				}}
+			>
+				{children}
+			</UserDetailsProviderContext.Provider>
+		);
 }
 
 export const useUserDetail = () => {

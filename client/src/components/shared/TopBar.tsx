@@ -57,10 +57,9 @@ export default function TopBar() {
 							<img
 								alt="profile"
 								src={
-									(userDetails && userDetails?.avatar) ||
-									"/assets/icons/profile-placeholder.svg"
+									userDetails?.avatar || "/assets/icons/profile-placeholder.svg"
 								}
-								className="h-8 w-8 rounded-full"
+								className="h-8 w-8 rounded-full object-cover"
 							/>
 						</Link>
 						<ThemeComponent isDisplayedOnTopBar={true} />

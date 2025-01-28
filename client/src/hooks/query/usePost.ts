@@ -2,8 +2,8 @@ import { useToast } from "@/components/ui/use-toast";
 import type { ErrorResponse, IPost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import {
-  customAxiosRequestForGet,
-  customAxiosRequestForPost,
+	customAxiosRequestForGet,
+	customAxiosRequestForPost,
 } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
@@ -113,21 +113,21 @@ function usePost() {
 	function useGetAllPost() {
 		return useQuery({
 			queryKey: [QueryKeys.GET_ALL_POSTS],
-			queryFn: () => customAxiosRequestForGet("/posts", null),
+			queryFn: () => customAxiosRequestForGet("/posts", {}),
 		});
 	}
 
 	function useGetPostById(id: string) {
 		return useQuery({
 			queryKey: [QueryKeys.GET_POST_BY_ID, id],
-			queryFn: () => customAxiosRequestForGet("/post", id),
+			queryFn: () => customAxiosRequestForGet("/post", {id}),
 		});
 	}
 
 	function useGetUserAllPost(id: string) {
 		return useQuery({
 			queryKey: [QueryKeys.GET_USER_ALL_POSTS, id],
-			queryFn: () => customAxiosRequestForGet("/user/posts", id),
+			queryFn: () => customAxiosRequestForGet("/user/posts", {id}),
 		});
 	}
 
@@ -137,14 +137,14 @@ function usePost() {
 				? ids?.map((id) => {
 						return {
 							queryKey: ["post", id],
-							queryFn: () => customAxiosRequestForGet("/post", id),
+							queryFn: () => customAxiosRequestForGet("/post", {id}),
 						};
 					})
 				: [],
 		});
 
-		let isLoading;
-		let isFetching;
+		let isLoading=false;
+		let isFetching=false;
 		const allPosts = queryResult?.map((item) => {
 			isLoading = item.isLoading;
 			isFetching = item.isFetching;
