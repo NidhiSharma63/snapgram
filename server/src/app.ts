@@ -1,4 +1,3 @@
-import cors from "cors";
 // import * as dotenv from "dotenv";
 import express from "express";
 import Pusher from "pusher";
@@ -18,7 +17,17 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware to parse incoming requests with urlencoded payloads
 
 // use cors
-app.use(cors());
+app.use((req, res, next) => {
+  const allowedOrigin = process.env.CLIENT_URL || "http://localhost:3000";
+  res.header("Access-Control-Allow-Origin", allowedOrigin);
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
+app.options("*", (req, res) => {
+  res.sendStatus(200);
+});
 app.use("/api/v1", router);
 
 /**
