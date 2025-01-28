@@ -14,8 +14,6 @@ import {
 } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
-// Define the socket URL
-const SOCKET_URL = import.meta.env.VITE_APP_SOCKET_URL;
 
 interface SocketProviderProps {
 	children: React.ReactNode;
@@ -94,8 +92,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	}, [currentUser?._id, recipient?._id]);
 
 	const { useGetAllMessages, useMarkMessageAsRead } = useMessage();
-	const { mutateAsync: markMessageAsRead, isPending: isMessageSeenPending } =
-		useMarkMessageAsRead();
+	const { mutateAsync: markMessageAsRead } = useMarkMessageAsRead();
 	// const { data, isPending: isMessagesPending } = useGetAllMessages();
 	const {
 		data,

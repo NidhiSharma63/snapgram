@@ -113,7 +113,7 @@ function usePost() {
 	function useGetAllPost() {
 		return useQuery({
 			queryKey: [QueryKeys.GET_ALL_POSTS],
-			queryFn: () => customAxiosRequestForGet("/posts", null),
+			queryFn: () => customAxiosRequestForGet("/posts", {}),
 		});
 	}
 
@@ -143,8 +143,8 @@ function usePost() {
 				: [],
 		});
 
-		let isLoading;
-		let isFetching;
+		let isLoading=false;
+		let isFetching=false;
 		const allPosts = queryResult?.map((item) => {
 			isLoading = item.isLoading;
 			isFetching = item.isFetching;
