@@ -1,13 +1,12 @@
 import { useToast } from "@/components/ui/use-toast";
 import type { ErrorResponse } from "@/constant/interfaces";
-import { QueryKeys } from "@/constant/keys";
 import { type IMessage, useSocket } from "@/context/socketProviders";
 import {
 	customAxiosRequestForGet,
 	customAxiosRequestForPost,
 } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
 export default function useMessage() {
@@ -107,12 +106,12 @@ export default function useMessage() {
 		});
 	}
 
-	function fetchAllUnSeenMsgs() {
-		return useQuery({
-			queryKey: [QueryKeys.GET_USER_Like_POST],
-			queryFn: () => customAxiosRequestForGet("/unseen-messages", {}),
-		});
-	}
+	// function fetchAllUnSeenMsgs() {
+	// 	return useQuery({
+	// 		queryKey: [QueryKeys.GET_USER_Like_POST],
+	// 		queryFn: () => customAxiosRequestForGet("/unseen-messages", {}),
+	// 	});
+	// }
 	return {
 		useGetAllMessages,
 		useDeleteMessage,
