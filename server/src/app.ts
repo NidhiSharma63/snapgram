@@ -1,19 +1,17 @@
 import cors from "cors";
-import { type Server as HTTPServer, createServer } from "node:http";
 // import * as dotenv from "dotenv";
 import express from "express";
 import Pusher from "pusher";
 import errorHandle from "./middleware/errorHandle";
 import router from "./routes/routes";
 import connectDB from "./utils/connectBD";
-import { initSocket } from "./utils/socket";
 // dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const server: HTTPServer = createServer(app);
-initSocket(server); // Initialize Socket.IO by passing the server instance
+// const server: HTTPServer = createServer(app);
+// initSocket(server); // Initialize Socket.IO by passing the server instance
 
 // Middleware to parse incoming requests with JSON payloads
 
@@ -46,7 +44,7 @@ const start = async () => {
 		console.log("Triggering event...");
 		pusher.trigger("my-channel", "my-event", { message: "hello world" });
 		console.log("Event triggered");
-		server.listen(process.env.PORT ?? 5000, () => {
+		app.listen(process.env.PORT ?? 5000, () => {
 			console.log("running at port", process.env.PORT ?? 5000);
 		});
 	} catch (error) {
