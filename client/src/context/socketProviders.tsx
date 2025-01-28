@@ -34,17 +34,13 @@ export interface IMessage {
 interface SocketProviderState {
 	recipient: UserDetails | null;
 	roomId: string;
-	isMessagesPending: boolean;
 	isPending: boolean;
-	hasNextPage: boolean;
 	isMsgUploading: boolean;
 	isMsgDeleting: boolean;
 	setIsMsgDeleting: (val: boolean) => void;
 	setIsMsgUploading: (val: boolean) => void;
 	messages: IMessage[] | null | undefined;
 	setMessages: (messages: IMessage[] | undefined) => void;
-	fetchNextPage: () => void;
-	isFetchingNextPage: boolean;
 	hasScrolledToBottom: boolean;
 	setHasScrolledToBottom: (val: boolean) => void;
 	containerRef: React.RefObject<HTMLDivElement> | null;
@@ -53,16 +49,12 @@ interface SocketProviderState {
 const initialState: SocketProviderState = {
 	recipient: null,
 	roomId: "",
-	isMessagesPending: false,
 	isPending: false,
-	hasNextPage: false,
 	isMsgUploading: false,
 	setIsMsgDeleting: () => {},
 	setIsMsgUploading: () => {},
 	messages: null,
 	setMessages: () => {},
-	fetchNextPage: () => {},
-	isFetchingNextPage: false,
 	hasScrolledToBottom: false,
 	setHasScrolledToBottom: () => {},
 	containerRef: null,
@@ -91,17 +83,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			.join("-"); // Join them with a separator
 	}, [currentUser?._id, recipient?._id]);
 
-	const { useGetAllMessages, useMarkMessageAsRead } = useMessage();
+	const { useMarkMessageAsRead } = useMessage();
 	const { mutateAsync: markMessageAsRead } = useMarkMessageAsRead();
-	// const { data, isPending: isMessagesPending } = useGetAllMessages();
-	const {
-		data,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		isPending: isMessagesPending,
-	} = useGetAllMessages(roomId);
-
+	
 	// notify
 	const notify = useCallback(
 		(message: IMessage) => {
@@ -161,7 +145,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		const notificationChannel = pusherInstance.subscribe(
 			`notification-${currentUser?._id}`,
 		);
-		console.log("userId", userId);
 
 		/**
 		 * listen for unread notifications
@@ -173,26 +156,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			// check if user has already opened the chat
 			if (userId === data.senderId) return;
 
-			console.log(
-				// "senderID",
-				// data.senderId,
-				// "currentUser",
-				// currentUser?._id,
-				// "location",
-				// location.pathname,
-				// "senderid",
-				// location.pathname.includes(`/inbox/${data.senderId}`),
-				userId,
-				"snderId",
-				data.senderId,
-			);
 			notify(data);
 		});
 		// listen to the event
 		// listen for received messages
 		channel.bind("message-received", (data: IMessage) => {
-			// console.log("msg recieved", data);
-			// console.log("Message has been received", data);
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
@@ -253,7 +221,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			pusherInstance.unsubscribe(`notification-${currentUser?._id}`);
 			channel.unsubscribe();
 		};
-	}, [currentUser, roomId, pusherInstance, location.pathname, notify, userId]);
+	}, [currentUser, roomId, pusherInstance, notify, userId]);
 
 	useEffect(() => {
 		if (roomId) {
@@ -263,11 +231,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (isMessagesPending) return;
-		const messages = data?.pages.flat(1)?.reverse();
-		setMessages(messages);
-	}, [data?.pages, isMessagesPending]);
+	// useEffect(() => {
+	// 	if (isMessagesPending) return;
+	// 	const messages = data?.pages.flat(1)?.reverse();
+	// 	setMessages(messages);
+	// }, [data?.pages, isMessagesPending]);
 
 	const isHasSeenMessage = useMemo(() => {
 		return messages?.[messages.length - 1]?.isSeen === true;
@@ -326,12 +294,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			value={{
 				recipient,
 				roomId,
-				isMessagesPending,
 				messages,
 				isPending,
-				fetchNextPage,
-				hasNextPage,
-				isFetchingNextPage,
 				hasScrolledToBottom,
 				setHasScrolledToBottom,
 				isMsgUploading,

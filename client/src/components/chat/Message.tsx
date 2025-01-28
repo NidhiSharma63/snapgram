@@ -6,6 +6,7 @@ import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useMessage from "@/hooks/query/useMessage";
 import { multiFormatDateString } from "@/lib/utils";
+import { queryClient } from "@/main";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
@@ -75,10 +76,6 @@ export default function Message({
 	// console.log(usersMessageSentToBE, "from message");
 	const {
 		messages,
-		isMessagesPending,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
 		hasScrolledToBottom,
 		setHasScrolledToBottom,
 		roomId,
@@ -86,12 +83,38 @@ export default function Message({
 		isMsgDeleting,
 		recipient,
 		containerRef,
+		setMessages,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
-	const { useDeleteMessage } = useMessage();
+	const { useDeleteMessage, useGetAllMessages } = useMessage();
 	const { mutateAsync: deleteMessage, isError } = useDeleteMessage();
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isPending: isMessagesPending,
+	} = useGetAllMessages(roomId);
+
+	/**
+	 * on umount reset the query
+	 */
+	useEffect(() => {
+		return () => {
+			queryClient.removeQueries({
+				queryKey: ["messages", roomId],
+			});
+		};
+	}, [roomId]);
+	// only run when data is available
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		if (isMessagesPending) return;
+		const messages = data?.pages.flat(1)?.reverse();
+		setMessages(messages);
+	}, [data?.pages, isMessagesPending]);
 	/**
 	 * on Error reset state
 	 */
