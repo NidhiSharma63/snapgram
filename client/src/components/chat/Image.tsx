@@ -9,7 +9,7 @@ export default function ImageComponent({ src }: { src: string }) {
 	}, []);
 
 	const handleClickOnBackDrop = useCallback(() => {
-		console.log("clicked");
+		// console.log("clicked");
 		setShowBackdrop((prev) => !prev);
 	}, []);
 

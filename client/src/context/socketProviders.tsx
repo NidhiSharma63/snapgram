@@ -1,4 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
+import type { IUser } from "@/constant/interfaces";
 import { type UserDetails, useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import useMessage from "@/hooks/query/useMessage";
@@ -6,14 +7,14 @@ import Pusher from "pusher-js";
 import type React from "react";
 import {
 	createContext,
+	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
 	useRef,
 	useState,
 } from "react";
-import { useLocation, useParams } from "react-router-dom";
-
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 interface SocketProviderProps {
 	children: React.ReactNode;
@@ -33,49 +34,45 @@ export interface IMessage {
 interface SocketProviderState {
 	recipient: UserDetails | null;
 	roomId: string;
-	isMessagesPending: boolean;
 	isPending: boolean;
-	hasNextPage: boolean;
 	isMsgUploading: boolean;
 	isMsgDeleting: boolean;
 	setIsMsgDeleting: (val: boolean) => void;
 	setIsMsgUploading: (val: boolean) => void;
 	messages: IMessage[] | null | undefined;
 	setMessages: (messages: IMessage[] | undefined) => void;
-	fetchNextPage: () => void;
-	isFetchingNextPage: boolean;
 	hasScrolledToBottom: boolean;
 	setHasScrolledToBottom: (val: boolean) => void;
 	containerRef: React.RefObject<HTMLDivElement> | null;
+	unSeenMsgs: IMessage[] | [];
+	setUnSeenMsgs: (val: IMessage[]) => void;
 }
 
 const initialState: SocketProviderState = {
 	recipient: null,
 	roomId: "",
-	isMessagesPending: false,
 	isPending: false,
-	hasNextPage: false,
 	isMsgUploading: false,
 	setIsMsgDeleting: () => {},
 	setIsMsgUploading: () => {},
 	messages: null,
 	setMessages: () => {},
-	fetchNextPage: () => {},
-	isFetchingNextPage: false,
 	hasScrolledToBottom: false,
 	setHasScrolledToBottom: () => {},
 	containerRef: null,
 	isMsgDeleting: false,
+	unSeenMsgs: [],
+	setUnSeenMsgs: () => {},
 };
+
 
 const SocketContext = createContext<SocketProviderState>(initialState);
 
-// RENAME message recieve = received-message
-// RENAME timpeStamp ate message seen = seentAt
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const userId = useParams<{ userId: string }>().userId;
 	const [messages, setMessages] = useState<IMessage[] | null | undefined>(null);
-	const { useGetUserById } = useAuth();
+	const { useGetUserById, useGetAllUser } = useAuth();
+	const { data: allUsers } = useGetAllUser();
 	const { userDetails: currentUser } = useUserDetail();
 	const { toast } = useToast();
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
@@ -85,25 +82,55 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [isMsgDeleting, setIsMsgDeleting] = useState(false);
 	const containerRef = useRef<HTMLDivElement | null>(null); // Reference to the message container
 	const [pusherInstance, setPusherInstance] = useState<Pusher | null>(null);
+	const navigate = useNavigate();
+	const [unSeenMsgs, setUnSeenMsgs] = useState<IMessage[]>([]);
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
 			.join("-"); // Join them with a separator
 	}, [currentUser?._id, recipient?._id]);
 
-	const { useGetAllMessages, useMarkMessageAsRead } = useMessage();
+	const { useMarkMessageAsRead } = useMessage();
 	const { mutateAsync: markMessageAsRead } = useMarkMessageAsRead();
-	// const { data, isPending: isMessagesPending } = useGetAllMessages();
-	const {
-		data,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		isPending: isMessagesPending,
-	} = useGetAllMessages(roomId);
+	
+	// notify
+	const notify = useCallback(
+		(message: IMessage) => {
+			/**
+			 * get all users
+			 */
+			const user = allUsers?.find(
+				(user: IUser) => user._id === message.senderId,
+			);
+			// Play sound when notification shows
+			const audio = new Audio("/assets/notify.mp3");
+			// Reset the audio to ensure it plays every time
+			audio.load();
+			audio.play().catch((error) => {
+				// Handle error if audio doesn't play, e.g., due to browser policy
+				console.error("Audio play error: ", error);
+			});
 
+			toast({
+				title: `you have a new message from ${user?.username}`,
+				description: message.message.includes(
+					"https://firebasestorage.googleapis.com",
+				)
+					? "Image"
+					: message.message,
+				onClick: (e) => {
+					e.stopPropagation();
+					navigate(`/inbox/${message?.senderId}`);
+				},
+				style: {
+					cursor: "pointer",
+				},
+			});
+		},
+		[toast, allUsers, navigate],
+	);
+	// Initialize Pusher
 	useEffect(() => {
-		// Initialize Pusher
 		const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
 			cluster: import.meta.env.VITE_APP_PUSHER_CLUSTER,
 		});
@@ -119,14 +146,41 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		});
 		// Store the Pusher instance
 		setPusherInstance(pusher);
+		console.log("pusher connected");
+		// Return the cleanup function to disconnect Pusher when unmounting
+		return () => {
+			pusher.disconnect();
+		};
+	}, [toast]);
+
+	useEffect(() => {
+		if (!pusherInstance) return;
+		/**
+		 * access all channels
+		 */
 
 		// Subscribe to the channel
-		const channel = pusher.subscribe(`public-${roomId}`);
+		const channel = pusherInstance.subscribe(`public-${roomId}`);
+		const notificationChannel = pusherInstance.subscribe(
+			`notification-${currentUser?._id}`,
+		);
 
+		/**
+		 * listen for unread notifications
+		 */
+		notificationChannel.bind("unread-message", (data: IMessage) => {
+			// check if user is the sender
+			if (data.senderId === currentUser?._id) return;
+
+			// check if user has already opened the chat
+			if (userId === data.senderId) return;
+
+			notify(data);
+			setUnSeenMsgs((prev) => [...prev, data]);
+		});
 		// listen to the event
 		// listen for received messages
 		channel.bind("message-received", (data: IMessage) => {
-			// console.log("Message has been received", data);
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
@@ -184,10 +238,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		return () => {
 			// console.warn("Unsubscribing from channel");
 			channel.unbind_all();
+			pusherInstance.unsubscribe(`notification-${currentUser?._id}`);
 			channel.unsubscribe();
-			pusher.disconnect();
 		};
-	}, [currentUser, roomId, toast]);
+	}, [currentUser, roomId, pusherInstance, notify, userId]);
 
 	useEffect(() => {
 		if (roomId) {
@@ -197,11 +251,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (isMessagesPending) return;
-		const messages = data?.pages.flat(1)?.reverse();
-		setMessages(messages);
-	}, [data?.pages, isMessagesPending]);
+	// useEffect(() => {
+	// 	if (isMessagesPending) return;
+	// 	const messages = data?.pages.flat(1)?.reverse();
+	// 	setMessages(messages);
+	// }, [data?.pages, isMessagesPending]);
 
 	const isHasSeenMessage = useMemo(() => {
 		return messages?.[messages.length - 1]?.isSeen === true;
@@ -230,6 +284,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 					roomId,
 					userId: currentUser?._id,
 				});
+				setUnSeenMsgs([]);
 			}
 		};
 
@@ -258,14 +313,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	return (
 		<SocketContext.Provider
 			value={{
+				unSeenMsgs,
 				recipient,
 				roomId,
-				isMessagesPending,
 				messages,
 				isPending,
-				fetchNextPage,
-				hasNextPage,
-				isFetchingNextPage,
 				hasScrolledToBottom,
 				setHasScrolledToBottom,
 				isMsgUploading,
@@ -274,6 +326,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				setIsMsgDeleting,
 				containerRef,
 				setMessages,
+				setUnSeenMsgs,
 			}}
 		>
 			{children}
