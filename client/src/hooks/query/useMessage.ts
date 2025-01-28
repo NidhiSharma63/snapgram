@@ -107,12 +107,12 @@ export default function useMessage() {
 		});
 	}
 
-	function fetchAllUnSeenMsgs() {
-		return useQuery({
-			queryKey: [QueryKeys.GET_USER_Like_POST],
-			queryFn: () => customAxiosRequestForGet("/unseen-messages", {}),
-		});
-	}
+	// function fetchAllUnSeenMsgs() {
+	// 	return useQuery({
+	// 		queryKey: [QueryKeys.GET_USER_Like_POST],
+	// 		queryFn: () => customAxiosRequestForGet("/unseen-messages", {}),
+	// 	});
+	// }
 	return {
 		useGetAllMessages,
 		useDeleteMessage,
