@@ -1,4 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
+import type { IUser } from "@/constant/interfaces";
 import { type UserDetails, useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
 import useMessage from "@/hooks/query/useMessage";
@@ -6,6 +7,7 @@ import Pusher from "pusher-js";
 import type React from "react";
 import {
 	createContext,
+	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
@@ -13,7 +15,6 @@ import {
 	useState,
 } from "react";
 import { useLocation, useParams } from "react-router-dom";
-
 
 interface SocketProviderProps {
 	children: React.ReactNode;
@@ -70,12 +71,11 @@ const initialState: SocketProviderState = {
 
 const SocketContext = createContext<SocketProviderState>(initialState);
 
-// RENAME message recieve = received-message
-// RENAME timpeStamp ate message seen = seentAt
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const userId = useParams<{ userId: string }>().userId;
 	const [messages, setMessages] = useState<IMessage[] | null | undefined>(null);
-	const { useGetUserById } = useAuth();
+	const { useGetUserById, useGetAllUser } = useAuth();
+	const { data: allUsers } = useGetAllUser();
 	const { userDetails: currentUser } = useUserDetail();
 	const { toast } = useToast();
 	const { data: recipient, isPending } = useGetUserById(userId ?? "");
@@ -102,8 +102,32 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		isPending: isMessagesPending,
 	} = useGetAllMessages(roomId);
 
+	// notify
+	const notify = useCallback(
+		(message: IMessage) => {
+			/**
+			 * get all users
+			 */
+			const user = allUsers?.find(
+				(user: IUser) => user._id === message.senderId,
+			);
+			// Play sound when notification shows
+			const audio = new Audio("/assets/notify.mp3");
+			audio.play();
+
+			toast({
+				title: `you have a new message from ${user?.username}`,
+				description: message.message.includes(
+					"https://firebasestorage.googleapis.com",
+				)
+					? "Image"
+					: message.message,
+			});
+		},
+		[toast, allUsers],
+	);
+	// Initialize Pusher
 	useEffect(() => {
-		// Initialize Pusher
 		const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
 			cluster: import.meta.env.VITE_APP_PUSHER_CLUSTER,
 		});
@@ -119,13 +143,55 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		});
 		// Store the Pusher instance
 		setPusherInstance(pusher);
+		console.log("pusher connected");
+		// Return the cleanup function to disconnect Pusher when unmounting
+		return () => {
+			pusher.disconnect();
+		};
+	}, [toast]);
+
+	useEffect(() => {
+		if (!pusherInstance) return;
+		/**
+		 * access all channels
+		 */
 
 		// Subscribe to the channel
-		const channel = pusher.subscribe(`public-${roomId}`);
+		const channel = pusherInstance.subscribe(`public-${roomId}`);
+		const notificationChannel = pusherInstance.subscribe(
+			`notification-${currentUser?._id}`,
+		);
+		console.log("userId", userId);
 
+		/**
+		 * listen for unread notifications
+		 */
+		notificationChannel.bind("unread-message", (data: IMessage) => {
+			// check if user is the sender
+			if (data.senderId === currentUser?._id) return;
+
+			// check if user has already opened the chat
+			if (userId === data.senderId) return;
+
+			console.log(
+				// "senderID",
+				// data.senderId,
+				// "currentUser",
+				// currentUser?._id,
+				// "location",
+				// location.pathname,
+				// "senderid",
+				// location.pathname.includes(`/inbox/${data.senderId}`),
+				userId,
+				"snderId",
+				data.senderId,
+			);
+			notify(data);
+		});
 		// listen to the event
 		// listen for received messages
 		channel.bind("message-received", (data: IMessage) => {
+			// console.log("msg recieved", data);
 			// console.log("Message has been received", data);
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
@@ -184,10 +250,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		return () => {
 			// console.warn("Unsubscribing from channel");
 			channel.unbind_all();
+			pusherInstance.unsubscribe(`notification-${currentUser?._id}`);
 			channel.unsubscribe();
-			pusher.disconnect();
 		};
-	}, [currentUser, roomId, toast]);
+	}, [currentUser, roomId, pusherInstance, location.pathname, notify, userId]);
 
 	useEffect(() => {
 		if (roomId) {
