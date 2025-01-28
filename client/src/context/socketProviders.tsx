@@ -14,7 +14,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 interface SocketProviderProps {
 	children: React.ReactNode;
@@ -44,6 +44,8 @@ interface SocketProviderState {
 	hasScrolledToBottom: boolean;
 	setHasScrolledToBottom: (val: boolean) => void;
 	containerRef: React.RefObject<HTMLDivElement> | null;
+	unSeenMsgs: IMessage[] | [];
+	setUnSeenMsgs: (val: IMessage[]) => void;
 }
 
 const initialState: SocketProviderState = {
@@ -59,7 +61,10 @@ const initialState: SocketProviderState = {
 	setHasScrolledToBottom: () => {},
 	containerRef: null,
 	isMsgDeleting: false,
+	unSeenMsgs: [],
+	setUnSeenMsgs: () => {},
 };
+
 
 const SocketContext = createContext<SocketProviderState>(initialState);
 
@@ -77,6 +82,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [isMsgDeleting, setIsMsgDeleting] = useState(false);
 	const containerRef = useRef<HTMLDivElement | null>(null); // Reference to the message container
 	const [pusherInstance, setPusherInstance] = useState<Pusher | null>(null);
+	const navigate = useNavigate();
+	const [unSeenMsgs, setUnSeenMsgs] = useState<IMessage[]>([]);
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -97,7 +104,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			);
 			// Play sound when notification shows
 			const audio = new Audio("/assets/notify.mp3");
-			audio.play();
+			// Reset the audio to ensure it plays every time
+			audio.load();
+			audio.play().catch((error) => {
+				// Handle error if audio doesn't play, e.g., due to browser policy
+				console.error("Audio play error: ", error);
+			});
 
 			toast({
 				title: `you have a new message from ${user?.username}`,
@@ -106,9 +118,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				)
 					? "Image"
 					: message.message,
+				onClick: (e) => {
+					e.stopPropagation();
+					navigate(`/inbox/${message?.senderId}`);
+				},
+				style: {
+					cursor: "pointer",
+				},
 			});
 		},
-		[toast, allUsers],
+		[toast, allUsers, navigate],
 	);
 	// Initialize Pusher
 	useEffect(() => {
@@ -157,6 +176,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			if (userId === data.senderId) return;
 
 			notify(data);
+			setUnSeenMsgs((prev) => [...prev, data]);
 		});
 		// listen to the event
 		// listen for received messages
@@ -264,6 +284,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 					roomId,
 					userId: currentUser?._id,
 				});
+				setUnSeenMsgs([]);
 			}
 		};
 
@@ -292,6 +313,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	return (
 		<SocketContext.Provider
 			value={{
+				unSeenMsgs,
 				recipient,
 				roomId,
 				messages,
@@ -304,6 +326,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				setIsMsgDeleting,
 				containerRef,
 				setMessages,
+				setUnSeenMsgs,
 			}}
 		>
 			{children}

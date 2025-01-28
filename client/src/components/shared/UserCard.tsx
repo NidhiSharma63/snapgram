@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import type { IUser } from "@/constant/interfaces";
-import { useCallback } from "react";
+import { type IMessage, useSocket } from "@/context/socketProviders";
+import { useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const UserCard = ({
@@ -8,6 +9,7 @@ const UserCard = ({
 	showingOnInbox,
 }: { user: IUser; showingOnInbox: boolean }) => {
 	const navigate = useNavigate();
+	const { unSeenMsgs } = useSocket();
 
 	const handleClickOnMSG = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -18,6 +20,17 @@ const UserCard = ({
 		},
 		[navigate, user],
 	);
+
+	/**
+	 * filter all unseen msgs for the active user
+	 */
+	const allUnSeenMsgs = useMemo(() => {
+		return unSeenMsgs?.filter(
+			(msg: IMessage) => msg.senderId === user._id && msg.isSeen === false,
+		);
+	}, [unSeenMsgs, user]);
+	console.log(unSeenMsgs, user?._id, allUnSeenMsgs);
+	
 	return (
 		<Link to={`/profile/${user._id}`} className="user-card">
 			<img
@@ -42,7 +55,7 @@ const UserCard = ({
 					className="shad-button_primary px-5"
 					onClick={handleClickOnMSG}
 				>
-					Message
+					Message {allUnSeenMsgs?.length > 0 && `(${allUnSeenMsgs?.length})`}
 				</Button>
 			) : (
 				<Button type="button" size="sm" className="shad-button_primary px-5">
