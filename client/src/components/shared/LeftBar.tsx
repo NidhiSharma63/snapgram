@@ -16,7 +16,7 @@ export default function LeftBar() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-
+	console.log("userDetails", userDetails);
   const handleClick = () => {
     if (!userDetails) return;
     mutate({
