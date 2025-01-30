@@ -9,6 +9,7 @@ import { storage } from "@/firebase/config";
 import useMessage from "@/hooks/query/useMessage";
 import EmojiPicker from "emoji-picker-react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import type React from "react";
 import { type SetStateAction, useCallback, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { v4 } from "uuid";
@@ -27,12 +28,13 @@ export default function Chat() {
 	const [userMessage, setUserMessage] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
-	const [usersMessageSentToBE, setUsersMessageSentToBE] =
-		useState<{ [key: string]: string }[]>([]);
-		const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
+	const [usersMessageSentToBE, setUsersMessageSentToBE] = useState<
+		{ [key: string]: string }[]
+	>([]);
+	const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
 	const { theme } = useTheme();
 	const { useSendMessage } = useMessage();
-	
+
 	const {
 		mutateAsync: sendMessage,
 		isError: isMessageSendingError,
@@ -69,7 +71,9 @@ export default function Chat() {
 				createdAt: new Date(),
 			};
 			setUsersMessageSentToBE([message]);
-			sendMessage(message);
+			sendMessage(message).then(() => {
+				setUsersMessageSentToBE([]);
+			});
 			setFile(null);
 			if (inputRef.current) {
 				inputRef.current.value = "";
@@ -103,7 +107,6 @@ export default function Chat() {
 		setIsMsgUploading,
 		containerRef,
 	]);
-	
 
 	// handle file change
 	const handleFileChange = useCallback(
@@ -129,10 +132,9 @@ export default function Chat() {
 		inputRef?.current?.click();
 	}, []);
 
-
 	// handle click on emoji button
 	const handleClickOnEmojiButton = useCallback(
-		(event) => {
+		(event: React.MouseEvent) => {
 			event.stopPropagation();
 			setOpenEmojiPicker(!openEmojiPicker);
 		},
@@ -140,7 +142,7 @@ export default function Chat() {
 	);
 
 	// handle click on emoji
-	const handleClickOnEmoji = useCallback((event) => {
+	const handleClickOnEmoji = useCallback((event: { emoji: string }) => {
 		setUserMessage((prev) => prev + event.emoji);
 	}, []);
 
@@ -154,6 +156,7 @@ export default function Chat() {
 
 	return (
 		<>
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<div
 				className="common-container !gap-0 !p-0 !z-[1]  rounded-md !overflow-hidden border-2 border-gray-300 border-black bg-red-50"
 				onClick={() => setOpenEmojiPicker(false)}
