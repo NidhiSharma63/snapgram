@@ -93,9 +93,7 @@ function SignUpForm() {
 				<p className=" text-light-3 font-medium mt-2 mb-2 text-center">
 					Please enter your account details
 					<br />
-					<strong>
-						Recruiter ho? Login page pe pre-filled creds se login karo!
-					</strong>
+					<strong>Recruiter ? Get free creds on login page</strong>
 				</p>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
