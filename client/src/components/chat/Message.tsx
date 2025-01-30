@@ -52,7 +52,9 @@ export function UserMessage({
 				<div className="flex items-end gap-2 flex-col">
 					{replyText && (
 						<div
-							className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl bg-[#877EFF]`}
+							className={
+								"user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl bg-[#877EFF]"
+							}
 						>
 							{replyText}
 						</div>

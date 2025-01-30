@@ -21,16 +21,17 @@ interface SocketProviderProps {
 }
 
 export interface IMessage {
-	message: string;
-	senderId: string;
-	recipientId: string;
-	roomId: string;
-	__v: number;
-	_id: string;
-	seenAt: string;
-	isSeen: boolean;
-	createdAt: string | Date;
-}
+		message: string;
+		senderId: string;
+		recipientId: string;
+		roomId: string;
+		__v: number;
+		_id: string;
+		seenAt: string;
+		isSeen: boolean;
+		createdAt: string | Date;
+		replyText?: string;
+	}
 interface SocketProviderState {
 	recipient: UserDetails | null;
 	roomId: string;
