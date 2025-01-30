@@ -7,7 +7,6 @@ import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useMessage from "@/hooks/query/useMessage";
-import { queryClient } from "@/main";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { type SetStateAction, useCallback, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
@@ -27,10 +26,9 @@ export default function Chat() {
 	const [userMessage, setUserMessage] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
-	const [usersMessageSentToBE, setUsersMessageSentToBE] = useState<Record<
-		string,
-		string
-	> | null>(null);
+	const [usersMessageSentToBE, setUsersMessageSentToBE] = useState<
+		{ [key: string]: string }[]
+	>([]);
 	const { theme } = useTheme();
 	const { useSendMessage } = useMessage();
 	
@@ -69,7 +67,7 @@ export default function Chat() {
 				message: url,
 				createdAt: new Date(),
 			};
-			setUsersMessageSentToBE(message);
+			setUsersMessageSentToBE([message]);
 			sendMessage(message);
 			setFile(null);
 			if (inputRef.current) {
@@ -84,15 +82,13 @@ export default function Chat() {
 				message: userMessage,
 				createdAt: new Date(),
 			};
-			setUsersMessageSentToBE(message);
-			sendMessage(message);
+			setUsersMessageSentToBE((prev) => [...prev, message]);
+			sendMessage(message).then(() => {
+				setUsersMessageSentToBE([]);
+			});
 		}
-		queryClient.invalidateQueries({
-			queryKey: ["messages", roomId],
-		});
 		setUserMessage("");
 		setIsMsgUploading(false);
-
 		if (containerRef?.current) {
 			containerRef.current.scrollTop = containerRef.current.scrollHeight;
 		}
@@ -106,6 +102,7 @@ export default function Chat() {
 		setIsMsgUploading,
 		containerRef,
 	]);
+	
 
 	// handle file change
 	const handleFileChange = useCallback(

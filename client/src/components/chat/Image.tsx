@@ -14,10 +14,10 @@ export default function ImageComponent({ src }: { src: string }) {
 	}, []);
 
 	return (
-		<div className="relative">
+		<div className="relative ">
 			{/* Skeleton jab tak image load nahi hoti */}
 			{!isImageLoaded && (
-				<Skeleton className="lg:w-[500px] w-[200px] h-[200px] lg:h-[500px] inset-0" />
+				<Skeleton className="lg:w-[500px] w-[200px] h-[200px] lg:h-[500px] inset-0 block" />
 			)}
 
 			{showBackdrop && (

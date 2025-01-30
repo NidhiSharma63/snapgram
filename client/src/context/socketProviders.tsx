@@ -185,7 +185,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				if (!prevMessages) return [data];
 				return [...prevMessages, data];
 			});
-
+			// console.log("Msg Received dude");
 			if (containerRef.current) {
 				containerRef.current.scrollTo(0, containerRef.current.scrollHeight);
 			}

@@ -103,6 +103,12 @@ export default function useMessage() {
 					});
 				}
 			},
+			// onSettled: () => {
+			// 	console.log("Query invalidated");
+			// 	queryClient.invalidateQueries({
+			// 		queryKey: ["messages", roomId],
+			// 	});
+			// }
 		});
 	}
 
