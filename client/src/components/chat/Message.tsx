@@ -361,13 +361,21 @@ export default function Message({
 												}
 											/>
 										)}
-										<div className="flex flex-col gap-1">
-											{isSender && message.replyText && (
-												<div
-													className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "rounded-br-none text-white" : theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
-												>
-													{message.replyText}
-												</div>
+										<div className="flex flex-col gap-1 items-end">
+											{message.replyText && (
+												<>
+													{message.replyText?.includes(
+														"https://firebasestorage.googleapis.com",
+													) ? (
+														<ImageComponent src={message.replyText} />
+													) : (
+														<div
+															className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "rounded-br-none text-white" : theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+														>
+															{message.replyText}
+														</div>
+													)}
+												</>
 											)}
 											<p
 												className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
