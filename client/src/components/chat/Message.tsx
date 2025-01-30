@@ -28,7 +28,7 @@ export function UserMessage({
 		}, [usersMessageSentToBE, containerRef]);
 		return (
 			<div
-				className={"w-full text-left flex items-center gap-3 justify-end group"}
+				className={"w-full text-left flex items-end gap-3 justify-end group"}
 			>
 				{isMessageSendingError ? (
 					<span
@@ -48,27 +48,29 @@ export function UserMessage({
 					/>
 				)}
 
-				{usersMessageSentToBE?.map((data) => {
-					return data?.message?.includes(
-						"https://firebasestorage.googleapis.com",
-					) ? (
-						<ImageComponent
-							src={data.message}
-							key={new Date().getTime() + Math.random()} // if user add two msg at same time like img and text then time will be same so to avoid this we use random number
-						/>
-					) : (
-						<div
-							className="flex gap-2 align-center items-center"
-							key={new Date().getTime() + Math.random()}
-						>
-							<p
-								className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+				<div className="flex items-end gap-3 flex-col">
+					{usersMessageSentToBE?.map((data) => {
+						return data?.message?.includes(
+							"https://firebasestorage.googleapis.com",
+						) ? (
+							<ImageComponent
+								src={data.message}
+								key={new Date().getTime() + Math.random()} // if user add two msg at same time like img and text then time will be same so to avoid this we use random number
+							/>
+						) : (
+							<div
+								className="flex gap-2 align-center items-center"
+								key={new Date().getTime() + Math.random()}
 							>
-								{data?.message}
-							</p>
-						</div>
-					);
-				})}
+								<p
+									className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+								>
+									{data?.message}
+								</p>
+							</div>
+						);
+					})}
+				</div>
 			</div>
 		);
 	}
@@ -120,16 +122,6 @@ export default function Message({
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		// if (isMessagesPending) return;
-		// console.log("data", data?.pages, "params", data?.pageParams);
-		// const messages = data?.pages.flat(1)?.reverse();
-		// if (!messages) return;
-		// // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		// setMessages((prev) => [...messages, ...prev]);
-
-		// return;
-
-		console.log("data", data?.pages, "params", data?.pageParams);
 		const pages = data?.pages;
 		let newMessages: IMessage[] = [];
 		if (pages?.length === 1) {
@@ -143,6 +135,7 @@ export default function Message({
 		if (!newMessages.length) return;
 
 		// Filter out messages that are already present
+		// @ts-ignore
 		setMessages((prev) => {
 			// Make sure prev is handled as IMessage[] or undefined
 			const existingIds = new Set(prev?.map((msg: IMessage) => msg._id) || []); // Handle prev being possibly undefined

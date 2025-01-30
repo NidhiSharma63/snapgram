@@ -26,9 +26,8 @@ export default function Chat() {
 	const [userMessage, setUserMessage] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
-	const [usersMessageSentToBE, setUsersMessageSentToBE] = useState<
-		{ [key: string]: string }[]
-	>([]);
+	const [usersMessageSentToBE, setUsersMessageSentToBE] =
+		useState<{ [key: string]: string }[]>([]);
 	const { theme } = useTheme();
 	const { useSendMessage } = useMessage();
 	
