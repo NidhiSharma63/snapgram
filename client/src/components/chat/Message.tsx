@@ -1,6 +1,6 @@
 import ImageComponent from "@/components/chat/Image";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSocket } from "@/context/socketProviders";
+import { type IMessage, useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
@@ -120,9 +120,39 @@ export default function Message({
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		if (isMessagesPending) return;
-		const messages = data?.pages.flat(1)?.reverse();
-		setMessages(messages);
+		// if (isMessagesPending) return;
+		// console.log("data", data?.pages, "params", data?.pageParams);
+		// const messages = data?.pages.flat(1)?.reverse();
+		// if (!messages) return;
+		// // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// setMessages((prev) => [...messages, ...prev]);
+
+		// return;
+
+		console.log("data", data?.pages, "params", data?.pageParams);
+		const pages = data?.pages;
+		let newMessages: IMessage[] = [];
+		if (pages?.length === 1) {
+			// If only one page is present then get all msgs
+			newMessages = pages?.at(0) ?? [];
+		} else if (pages && pages?.length > 1) {
+			// But if more then one page is present the get the
+			// data from last one cause its the latest and other have already been fetched and added in the state
+			newMessages = pages?.slice(-1).flat() ?? [];
+		}
+		if (!newMessages.length) return;
+
+		// Filter out messages that are already present
+		setMessages((prev) => {
+			// Make sure prev is handled as IMessage[] or undefined
+			const existingIds = new Set(prev?.map((msg: IMessage) => msg._id) || []); // Handle prev being possibly undefined
+			const filteredNewMessages = newMessages.filter(
+				(msg) => !existingIds.has(msg._id),
+			);
+
+			// Return the updated array with new messages at the top and previous ones below
+			return [...filteredNewMessages.reverse(), ...(prev || [])];
+		});
 	}, [data?.pages, isMessagesPending]);
 	/**
 	 * on Error reset state

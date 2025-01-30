@@ -70,7 +70,7 @@ const SocketContext = createContext<SocketProviderState>(initialState);
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const userId = useParams<{ userId: string }>().userId;
-	const [messages, setMessages] = useState<IMessage[] | null | undefined>(null);
+	const [messages, setMessages] = useState<IMessage[] | undefined>([]);
 	const { useGetUserById, useGetAllUser } = useAuth();
 	const { data: allUsers } = useGetAllUser();
 	const { userDetails: currentUser } = useUserDetail();
