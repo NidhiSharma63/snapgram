@@ -6,7 +6,6 @@ import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useMessage from "@/hooks/query/useMessage";
 import { multiFormatDateString } from "@/lib/utils";
-import { queryClient } from "@/main";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
@@ -19,13 +18,15 @@ export function UserMessage({
 		isMessageSendingError: boolean;
 	}) {
 		const { theme } = useTheme();
-		const { containerRef } = useSocket();
+		const { containerRef, replyText } = useSocket();
+		console.log(usersMessageSentToBE);
 		// console.log(usersMessageSentToBE);
 		useEffect(() => {
 			if (containerRef?.current && usersMessageSentToBE) {
 				containerRef?.current?.scrollTo(0, containerRef?.current?.scrollHeight);
 			}
 		}, [usersMessageSentToBE, containerRef]);
+
 		return (
 			<div
 				className={"w-full text-left flex items-end gap-3 justify-end group"}
@@ -48,7 +49,14 @@ export function UserMessage({
 					/>
 				)}
 
-				<div className="flex items-end gap-3 flex-col">
+				<div className="flex items-end gap-2 flex-col">
+					{replyText && (
+						<div
+							className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl bg-[#877EFF]`}
+						>
+							{replyText}
+						</div>
+					)}
 					{usersMessageSentToBE?.map((data) => {
 						return data?.message?.includes(
 							"https://firebasestorage.googleapis.com",
@@ -102,7 +110,7 @@ export default function Message({
 	const [deleteMsgId, setDeleteMsgId] = useState("");
 	const { useDeleteMessage, useGetAllMessages } = useMessage();
 	const { mutateAsync: deleteMessage, isError } = useDeleteMessage();
-	
+
 	const {
 		data,
 		fetchNextPage,
@@ -114,13 +122,13 @@ export default function Message({
 	/**
 	 * on umount reset the query
 	 */
-	useEffect(() => {
-		return () => {
-			queryClient.removeQueries({
-				queryKey: ["messages", roomId],
-			});
-		};
-	}, [roomId]);
+	// useEffect(() => {
+	// 	return () => {
+	// 		queryClient.removeQueries({
+	// 			queryKey: ["messages", roomId],
+	// 		});
+	// 	};
+	// }, [roomId]);
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -326,9 +334,10 @@ export default function Message({
 									/>
 								)}
 								{isSender && deleteMsgId !== message._id && !isMsgDeleting && (
+									// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 									<img
 										data-id={isImage ? message.message : message._id}
-										onClick={handleDeleteMessage}
+										onClick={handleClickOnReply}
 										src={"/assets/icons/reply-arrow.svg"}
 										alt="reply"
 										width={14}
@@ -350,14 +359,24 @@ export default function Message({
 												}
 											/>
 										)}
-										<p
-											className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
-										>
-											{message.message}
-										</p>
+										<div className="flex flex-col gap-1">
+											{isSender && message.replyText && (
+												<div
+													className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? "rounded-br-none text-white" : theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+												>
+													{message.replyText}
+												</div>
+											)}
+											<p
+												className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
+											>
+												{message.message}
+											</p>
+										</div>
 									</div>
 								)}
 								{!isSender && (
+									// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 									<img
 										data-id={isImage ? message.message : message._id}
 										onClick={handleClickOnReply}

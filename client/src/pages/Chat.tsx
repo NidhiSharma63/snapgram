@@ -71,10 +71,12 @@ export default function Chat() {
 				receiverId: recipient?._id,
 				message: url,
 				createdAt: new Date(),
+				replyText,
 			};
 			setUsersMessageSentToBE([message]);
 			sendMessage(message).then(() => {
 				setUsersMessageSentToBE([]);
+				setReplyText("");
 			});
 			setFile(null);
 			if (inputRef.current) {
@@ -88,13 +90,15 @@ export default function Chat() {
 				receiverId: recipient?._id,
 				message: userMessage,
 				createdAt: new Date(),
+				replyText,
 			};
 			setUsersMessageSentToBE((prev) => [...prev, message]);
 			sendMessage(message).then(() => {
 				setUsersMessageSentToBE([]);
+				setReplyText("");
 			});
+			setUserMessage("");
 		}
-		setUserMessage("");
 		setIsMsgUploading(false);
 		if (containerRef?.current) {
 			containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -108,6 +112,8 @@ export default function Chat() {
 		file,
 		setIsMsgUploading,
 		containerRef,
+		replyText,
+		setReplyText,
 	]);
 
 	// handle file change
@@ -151,7 +157,7 @@ export default function Chat() {
 	// reset reply text
 	const resetReplyText = useCallback(() => {
 		setReplyText("");
-	}, []);
+	}, [setReplyText]);
 
 	if (!recipient && !isPending) {
 		return (
@@ -185,7 +191,7 @@ export default function Chat() {
 				/>
 				<div className="flex items-center  justify-between lg:p-4 p-2 w-full gap-4">
 					<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
-						{replyText && (
+						{replyText && !isMessageSendingPending && (
 							<div className="flex items-center justify-between gap-2 p-2 border-b-2 border-gray-300 border-black">
 								{replyText?.includes(
 									"https://firebasestorage.googleapis.com",
