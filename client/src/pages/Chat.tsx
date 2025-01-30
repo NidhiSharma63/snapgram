@@ -205,7 +205,6 @@ export default function Chat() {
 							value={userMessage}
 							onChange={handleMessageChange}
 						/>
-						<Button onClick={handleClickOnEmojiButton}>Add Emoji</Button>
 					</div>
 
 					<input
@@ -213,6 +212,13 @@ export default function Chat() {
 						hidden
 						ref={inputRef}
 						onChange={handleFileChange}
+					/>
+					{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+					<img
+						src="/assets/icons/emoji.svg"
+						alt="emoji"
+						className="lg:w-8 w-4 lg:h-8 h-4 cursor-pointer"
+						onClick={handleClickOnEmojiButton}
 					/>
 					{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 					<img
