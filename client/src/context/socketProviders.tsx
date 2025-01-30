@@ -46,6 +46,8 @@ interface SocketProviderState {
 	containerRef: React.RefObject<HTMLDivElement> | null;
 	unSeenMsgs: IMessage[] | [];
 	setUnSeenMsgs: (val: IMessage[]) => void;
+	replyText: string;
+	setReplyText: (val: string) => void;
 }
 
 const initialState: SocketProviderState = {
@@ -63,6 +65,8 @@ const initialState: SocketProviderState = {
 	isMsgDeleting: false,
 	unSeenMsgs: [],
 	setUnSeenMsgs: () => {},
+	replyText: "",
+	setReplyText: () => {},
 };
 
 
@@ -84,6 +88,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [pusherInstance, setPusherInstance] = useState<Pusher | null>(null);
 	const navigate = useNavigate();
 	const [unSeenMsgs, setUnSeenMsgs] = useState<IMessage[]>([]);
+	const [replyText, setReplyText] = useState("");
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -327,6 +332,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				containerRef,
 				setMessages,
 				setUnSeenMsgs,
+				replyText,
+				setReplyText,
 			}}
 		>
 			{children}

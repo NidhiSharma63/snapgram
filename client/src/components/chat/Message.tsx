@@ -95,12 +95,14 @@ export default function Message({
 		recipient,
 		containerRef,
 		setMessages,
+		setReplyText,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
 	const { useDeleteMessage, useGetAllMessages } = useMessage();
 	const { mutateAsync: deleteMessage, isError } = useDeleteMessage();
+	
 	const {
 		data,
 		fetchNextPage,
@@ -219,6 +221,33 @@ export default function Message({
 		[deleteMessage, roomId, messages, setIsMsgDeleting],
 	);
 
+	/**
+	 * handle Click On Reply
+	 */
+	const handleClickOnReply = useCallback(
+		(event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+			const text = event.currentTarget.dataset.id;
+			// // extract image from message
+			const isImage = text?.startsWith(
+				"https://firebasestorage.googleapis.com",
+			);
+			const message = isImage
+				? messages?.find((item) => {
+						return item.message === text;
+					})?.message
+				: messages?.find((item) => {
+						return item._id === text;
+					})?.message;
+			setReplyText(message ?? "");
+
+			// move container to bottom
+			containerRef?.current?.scroll({
+				top: containerRef?.current?.scrollHeight,
+			});
+		},
+		[messages, setReplyText, containerRef?.current],
+	);
+
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
@@ -293,9 +322,17 @@ export default function Message({
 										alt="delete"
 										width={14}
 										height={14}
-										style={{
-											cursor: "pointer",
-										}}
+										className="hidden group-hover:block cursor-pointer"
+									/>
+								)}
+								{isSender && deleteMsgId !== message._id && !isMsgDeleting && (
+									<img
+										data-id={isImage ? message.message : message._id}
+										onClick={handleDeleteMessage}
+										src={"/assets/icons/reply-arrow.svg"}
+										alt="reply"
+										width={14}
+										height={14}
 										className="hidden group-hover:block cursor-pointer"
 									/>
 								)}
@@ -320,7 +357,17 @@ export default function Message({
 										</p>
 									</div>
 								)}
-
+								{!isSender && (
+									<img
+										data-id={isImage ? message.message : message._id}
+										onClick={handleClickOnReply}
+										src={"/assets/icons/reply-arrow.svg"}
+										alt="reply"
+										width={14}
+										height={14}
+										className="hidden group-hover:block cursor-pointer rotate-180"
+									/>
+								)}
 								<br />
 							</div>
 							{i === messages.length - 1 && isSender && message.isSeen ? (

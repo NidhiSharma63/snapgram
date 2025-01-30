@@ -23,6 +23,8 @@ export default function Chat() {
 		setIsMsgUploading,
 		isMsgUploading,
 		containerRef,
+		replyText,
+		setReplyText,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const [userMessage, setUserMessage] = useState("");
@@ -146,6 +148,11 @@ export default function Chat() {
 		setUserMessage((prev) => prev + event.emoji);
 	}, []);
 
+	// reset reply text
+	const resetReplyText = useCallback(() => {
+		setReplyText("");
+	}, []);
+
 	if (!recipient && !isPending) {
 		return (
 			<div className="common-container !p-0 border-2 border-gray-300 border-black rounded-md">
@@ -178,6 +185,28 @@ export default function Chat() {
 				/>
 				<div className="flex items-center  justify-between lg:p-4 p-2 w-full gap-4">
 					<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
+						{replyText && (
+							<div className="flex items-center justify-between gap-2 p-2 border-b-2 border-gray-300 border-black">
+								{replyText?.includes(
+									"https://firebasestorage.googleapis.com",
+								) ? (
+									<img
+										src={replyText}
+										alt="Selected file preview"
+										className="w-20 h-20 object-cover rounded-md"
+									/>
+								) : (
+									replyText
+								)}
+								{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+								<img
+									onClick={resetReplyText}
+									src={"/assets/icons/delete.svg"}
+									alt="delete"
+									className="cursor-pointer lg:w-4 w-3 lg:h-4 h-3"
+								/>
+							</div>
+						)}
 						{file && (
 							<div className="mt-2 flex items-start gap-2">
 								<img
@@ -190,11 +219,6 @@ export default function Chat() {
 									onClick={handleFileDelete}
 									src={"/assets/icons/delete.svg"}
 									alt="delete"
-									width={24}
-									height={24}
-									style={{
-										cursor: "pointer",
-									}}
 									className="cursor-pointer lg:w-8 w-4 lg:h-8 h-4"
 								/>
 							</div>
