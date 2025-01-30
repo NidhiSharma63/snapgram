@@ -16,15 +16,15 @@ export default function LeftBar() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-
-  const handleClick = () => {
-    if (!userDetails) return;
-    mutate({
-      userId: userDetails._id,
-      token: userDetails.tokens[0].token,
-    });
-    setUserDetail(null);
-  };
+	// console.log("userDetails", userDetails);
+		const handleClick = () => {
+			if (!userDetails) return;
+			mutate({
+				userId: userDetails._id,
+				token: userDetails.tokens[0].token,
+			});
+			setUserDetail(null);
+		};
 
   useEffect(() => {
     if (isSuccess) {

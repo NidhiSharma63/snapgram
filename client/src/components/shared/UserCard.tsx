@@ -29,8 +29,8 @@ const UserCard = ({
 			(msg: IMessage) => msg.senderId === user._id && msg.isSeen === false,
 		);
 	}, [unSeenMsgs, user]);
-	console.log(unSeenMsgs, user?._id, allUnSeenMsgs);
-	
+	// console.log(unSeenMsgs, user?._id, allUnSeenMsgs);
+
 	return (
 		<Link to={`/profile/${user._id}`} className="user-card">
 			<img

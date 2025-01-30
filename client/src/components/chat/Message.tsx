@@ -12,57 +12,66 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 
 export function UserMessage({
-	usersMessageSentToBE,
-	isMessageSendingError,
-}: {
-	usersMessageSentToBE: Record<string, string> | null;
-	isMessageSendingError: boolean;
-}) {
-	const { theme } = useTheme();
-	const { containerRef } = useSocket();
-
-	useEffect(() => {
-		if (containerRef?.current && usersMessageSentToBE) {
-			containerRef?.current?.scrollTo(0, containerRef?.current?.scrollHeight);
-		}
-	}, [usersMessageSentToBE, containerRef]);
-	return (
-		<div
-			className={"w-full text-left flex items-center gap-3 justify-end group"}
-		>
-			{isMessageSendingError ? (
-				<span
-					style={{ color: "#94070c", fontWeight: "bold", fontSize: "24px" }}
-				>
-					!
-				</span>
-			) : (
-				<ColorRing
-					width={24}
-					height={24}
-					colors={
-						theme === "dark"
-							? ["#fff", "#fff", "#fff", "#fff", "#fff"]
-							: ["#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de"]
-					}
-				/>
-			)}
-			{usersMessageSentToBE?.message?.includes(
-				"https://firebasestorage.googleapis.com",
-			) ? (
-				<ImageComponent src={usersMessageSentToBE.message} />
-			) : (
-				<div className="flex gap-2 align-center items-center">
-					<p
-						className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+		usersMessageSentToBE,
+		isMessageSendingError,
+	}: {
+		usersMessageSentToBE: { [key: string]: string }[];
+		isMessageSendingError: boolean;
+	}) {
+		const { theme } = useTheme();
+		const { containerRef } = useSocket();
+		// console.log(usersMessageSentToBE);
+		useEffect(() => {
+			if (containerRef?.current && usersMessageSentToBE) {
+				containerRef?.current?.scrollTo(0, containerRef?.current?.scrollHeight);
+			}
+		}, [usersMessageSentToBE, containerRef]);
+		return (
+			<div
+				className={"w-full text-left flex items-center gap-3 justify-end group"}
+			>
+				{isMessageSendingError ? (
+					<span
+						style={{ color: "#94070c", fontWeight: "bold", fontSize: "24px" }}
 					>
-						{usersMessageSentToBE?.message}
-					</p>
-				</div>
-			)}
-		</div>
-	);
-}
+						!
+					</span>
+				) : (
+					<ColorRing
+						width={24}
+						height={24}
+						colors={
+							theme === "dark"
+								? ["#fff", "#fff", "#fff", "#fff", "#fff"]
+								: ["#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de"]
+						}
+					/>
+				)}
+
+				{usersMessageSentToBE?.map((data) => {
+					return data?.message?.includes(
+						"https://firebasestorage.googleapis.com",
+					) ? (
+						<ImageComponent
+							src={data.message}
+							key={new Date().getTime() + Math.random()} // if user add two msg at same time like img and text then time will be same so to avoid this we use random number
+						/>
+					) : (
+						<div
+							className="flex gap-2 align-center items-center"
+							key={new Date().getTime() + Math.random()}
+						>
+							<p
+								className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
+							>
+								{data?.message}
+							</p>
+						</div>
+					);
+				})}
+			</div>
+		);
+	}
 
 export default function Message({
 	isMessageSendingPending,
@@ -70,7 +79,7 @@ export default function Message({
 	isMessageSendingError,
 }: {
 	isMessageSendingPending: boolean;
-	usersMessageSentToBE: Record<string, string> | null;
+	usersMessageSentToBE: { [key: string]: string }[];
 	isMessageSendingError: boolean;
 }) {
 	// console.log(usersMessageSentToBE, "from message");
@@ -97,7 +106,7 @@ export default function Message({
 		isFetchingNextPage,
 		isPending: isMessagesPending,
 	} = useGetAllMessages(roomId);
-
+	// console.log("Message : Final output", messages);
 	/**
 	 * on umount reset the query
 	 */
