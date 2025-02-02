@@ -12,6 +12,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type React from "react";
 import { type SetStateAction, useCallback, useRef, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
 
 // Todo - fix authentication error issue
@@ -36,6 +37,7 @@ export default function Chat() {
 	const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
 	const { theme } = useTheme();
 	const { useSendMessage } = useMessage();
+	const navigate = useNavigate();
 
 	const {
 		mutateAsync: sendMessage,
@@ -159,6 +161,11 @@ export default function Chat() {
 		setReplyText("");
 	}, [setReplyText]);
 
+	// go back
+	const goBack = useCallback(() => {
+		navigate(-1);
+	}, [navigate]);
+
 	if (!recipient && !isPending) {
 		return (
 			<div className="common-container !p-0 border-2 border-gray-300 border-black rounded-md">
@@ -175,6 +182,13 @@ export default function Chat() {
 				onClick={() => setOpenEmojiPicker(false)}
 			>
 				<header className="flex items-center justify-start p-4  border-b-2 w-full border-gray-300 border-black gap-4 md:h-[80px] h-[60px]">
+					{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+					<img
+						src={"/assets/icons/back.svg"}
+						alt={"back"}
+						className="rounded-full lg:w-8 w-4 lg:h-8 h-4 object-cover"
+						onClick={goBack}
+					/>
 					<img
 						src={recipient?.avatar || "/assets/icons/profile-placeholder.svg"}
 						alt={recipient?.username}
