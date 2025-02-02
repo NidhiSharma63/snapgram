@@ -30,6 +30,10 @@ const chatSchema = new mongoose.Schema(
       type: Date, // Tracks the exact time when the message was seen
       default: null,
     },
+    replyText:{
+      type: String,
+      default: "",
+    }
   },
 );
 

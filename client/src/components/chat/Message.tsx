@@ -1,88 +1,16 @@
-import ImageComponent from "@/components/chat/Image";
+import UserMsg from "@/components/chat/UserMsg";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSocket } from "@/context/socketProviders";
+import { type IMessage, useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
 import useMessage from "@/hooks/query/useMessage";
 import { multiFormatDateString } from "@/lib/utils";
-import { queryClient } from "@/main";
 import { deleteObject, ref } from "firebase/storage";
 import React, { useCallback, useEffect, useState } from "react";
-import { ColorRing } from "react-loader-spinner";
 
-export function UserMessage({
-		usersMessageSentToBE,
-		isMessageSendingError,
-	}: {
-		usersMessageSentToBE: { [key: string]: string }[];
-		isMessageSendingError: boolean;
-	}) {
-		const { theme } = useTheme();
-		const { containerRef } = useSocket();
-		// console.log(usersMessageSentToBE);
-		useEffect(() => {
-			if (containerRef?.current && usersMessageSentToBE) {
-				containerRef?.current?.scrollTo(0, containerRef?.current?.scrollHeight);
-			}
-		}, [usersMessageSentToBE, containerRef]);
-		return (
-			<div
-				className={"w-full text-left flex items-center gap-3 justify-end group"}
-			>
-				{isMessageSendingError ? (
-					<span
-						style={{ color: "#94070c", fontWeight: "bold", fontSize: "24px" }}
-					>
-						!
-					</span>
-				) : (
-					<ColorRing
-						width={24}
-						height={24}
-						colors={
-							theme === "dark"
-								? ["#fff", "#fff", "#fff", "#fff", "#fff"]
-								: ["#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de", "#e3e2de"]
-						}
-					/>
-				)}
 
-				{usersMessageSentToBE?.map((data) => {
-					return data?.message?.includes(
-						"https://firebasestorage.googleapis.com",
-					) ? (
-						<ImageComponent
-							src={data.message}
-							key={new Date().getTime() + Math.random()} // if user add two msg at same time like img and text then time will be same so to avoid this we use random number
-						/>
-					) : (
-						<div
-							className="flex gap-2 align-center items-center"
-							key={new Date().getTime() + Math.random()}
-						>
-							<p
-								className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]"} `}
-							>
-								{data?.message}
-							</p>
-						</div>
-					);
-				})}
-			</div>
-		);
-	}
-
-export default function Message({
-	isMessageSendingPending,
-	usersMessageSentToBE,
-	isMessageSendingError,
-}: {
-	isMessageSendingPending: boolean;
-	usersMessageSentToBE: { [key: string]: string }[];
-	isMessageSendingError: boolean;
-}) {
-	// console.log(usersMessageSentToBE, "from message");
+export default function Message() {
 	const {
 		messages,
 		hasScrolledToBottom,
@@ -90,15 +18,16 @@ export default function Message({
 		roomId,
 		setIsMsgDeleting,
 		isMsgDeleting,
-		recipient,
 		containerRef,
 		setMessages,
+		setReplyText,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const { theme } = useTheme();
 	const [deleteMsgId, setDeleteMsgId] = useState("");
 	const { useDeleteMessage, useGetAllMessages } = useMessage();
 	const { mutateAsync: deleteMessage, isError } = useDeleteMessage();
+
 	const {
 		data,
 		fetchNextPage,
@@ -106,23 +35,33 @@ export default function Message({
 		isFetchingNextPage,
 		isPending: isMessagesPending,
 	} = useGetAllMessages(roomId);
-	// console.log("Message : Final output", messages);
-	/**
-	 * on umount reset the query
-	 */
-	useEffect(() => {
-		return () => {
-			queryClient.removeQueries({
-				queryKey: ["messages", roomId],
-			});
-		};
-	}, [roomId]);
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		if (isMessagesPending) return;
-		const messages = data?.pages.flat(1)?.reverse();
-		setMessages(messages);
+		const pages = data?.pages;
+		let newMessages: IMessage[] = [];
+		if (pages?.length === 1) {
+			// If only one page is present then get all msgs
+			newMessages = pages?.at(0) ?? [];
+		} else if (pages && pages?.length > 1) {
+			// But if more then one page is present the get the
+			// data from last one cause its the latest and other have already been fetched and added in the state
+			newMessages = pages?.slice(-1).flat() ?? [];
+		}
+		if (!newMessages.length) return;
+
+		// Filter out messages that are already present
+		// @ts-ignore
+		setMessages((prev) => {
+			// Make sure prev is handled as IMessage[] or undefined
+			const existingIds = new Set(prev?.map((msg: IMessage) => msg._id) || []); // Handle prev being possibly undefined
+			const filteredNewMessages = newMessages.filter(
+				(msg) => !existingIds.has(msg._id),
+			);
+
+			// Return the updated array with new messages at the top and previous ones below
+			return [...filteredNewMessages.reverse(), ...(prev || [])];
+		});
 	}, [data?.pages, isMessagesPending]);
 	/**
 	 * on Error reset state
@@ -176,7 +115,6 @@ export default function Message({
 			);
 			const messageId = isImage
 				? messages?.find((item) => {
-						// console.log("msg", item.message, "text", text);
 						return item.message === text;
 					})?._id
 				: event.currentTarget.dataset.id;
@@ -196,6 +134,32 @@ export default function Message({
 		[deleteMessage, roomId, messages, setIsMsgDeleting],
 	);
 
+	/**
+	 * handle Click On Reply
+	 */
+	const handleClickOnReply = useCallback(
+		(event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+			const text = event.currentTarget.dataset.id;
+			// // extract image from message
+			const isImage = text?.startsWith(
+				"https://firebasestorage.googleapis.com",
+			);
+			const message = isImage
+				? messages?.find((item) => {
+						return item.message === text;
+					})?.message
+				: messages?.find((item) => {
+						return item._id === text;
+					})?.message;
+			setReplyText(message ?? "");
+
+			// move container to bottom
+			containerRef?.current?.scroll({
+				top: containerRef?.current?.scrollHeight,
+			});
+		},
+		[messages, setReplyText, containerRef?.current],
+	);
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
@@ -243,62 +207,16 @@ export default function Message({
 							<div
 								className={`w-full text-left flex items-center gap-3 ${isSender ? "justify-end" : "justify-start"} group`}
 							>
-								{/* show loader only for that message which is being deleted by user */}
-								{isSender && isMsgDeleting && deleteMsgId === message._id && (
-									<ColorRing
-										width={24}
-										height={24}
-										colors={
-											theme === "dark"
-												? ["#fff", "#fff", "#fff", "#fff", "#fff"]
-												: [
-														"#e3e2de",
-														"#e3e2de",
-														"#e3e2de",
-														"#e3e2de",
-														"#e3e2de",
-													]
-										}
-									/>
-								)}
-								{isSender && deleteMsgId !== message._id && !isMsgDeleting && (
-									// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-									<img
-										data-id={isImage ? message.message : message._id}
-										onClick={handleDeleteMessage}
-										src={"/assets/icons/delete.svg"}
-										alt="delete"
-										width={14}
-										height={14}
-										style={{
-											cursor: "pointer",
-										}}
-										className="hidden group-hover:block cursor-pointer"
-									/>
-								)}
-								{isImage ? (
-									<ImageComponent src={message.message} />
-								) : (
-									<div className="flex gap-2 align-center items-center">
-										{!isSender && (
-											<img
-												className="rounded-full w-8 h-8 object-cover"
-												alt="creator"
-												src={
-													recipient?.avatar ||
-													"/assets/icons/profile-placeholder.svg"
-												}
-											/>
-										)}
-										<p
-											className={`user-msg lg:text-lg text-xs px-6 py-3 bg-primary-500 w-fit rounded-xl ${isSender ? (theme === "dark" ? "!bg-[#1f1f1f]" : "!bg-[#f0f5f1]") : "rounded-br-none text-white"} `}
-										>
-											{message.message}
-										</p>
-									</div>
-								)}
-
-								<br />
+								<UserMsg
+									isSender={isSender}
+									isMsgDeleting={isMsgDeleting}
+									deleteMsgId={deleteMsgId}
+									message={message}
+									isImage={isImage}
+									theme={theme}
+									handleDeleteMessage={handleDeleteMessage}
+									handleClickOnReply={handleClickOnReply}
+								/>
 							</div>
 							{i === messages.length - 1 && isSender && message.isSeen ? (
 								<p className="text-end w-full px-6 text-light-3  lg:text-md text-xs !py-0">
@@ -310,13 +228,6 @@ export default function Message({
 						</React.Fragment>
 					);
 				})
-			)}
-			{/* show loader only for that message which is being deleted by user */}
-			{(isMessageSendingPending || isMessageSendingError) && (
-				<UserMessage
-					usersMessageSentToBE={usersMessageSentToBE}
-					isMessageSendingError={isMessageSendingError}
-				/>
 			)}
 		</div>
 	);

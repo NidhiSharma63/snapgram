@@ -65,7 +65,7 @@ const deleteMessage = async (
  */
 const addMessage = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const { roomId, message, receiverId, senderId, createdAt, userId } = req.body;
+		const { roomId, message, receiverId, senderId, createdAt, userId, replyText } = req.body;
 		if (!userId) throw new Error("User id is Missing");
 		if (!roomId) throw new Error("Room id is Missing");
 		const newMessage = new Chat({
@@ -74,6 +74,7 @@ const addMessage = async (req: Request, res: Response, next: NextFunction) => {
 			senderId,
 			receiverId,
 			createdAt,
+			replyText
 		});
 		await newMessage.save();
 		await pusher.trigger(`public-${roomId}`, "message-received",

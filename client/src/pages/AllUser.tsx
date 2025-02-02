@@ -27,12 +27,25 @@ const AllUsers = ({ showingOnInbox = false }: { showingOnInbox?: boolean }) => {
 				<h2 className="h3-bold md:h2-bold text-left w-full">
 					{showingOnInbox ? "People" : "All Users"}
 				</h2>
+				{showingOnInbox &&
+					userDetails?.followers?.length === 0 &&
+					userDetails?.followings?.length === 0 && (
+						<p className="subtle-semibold text-center w-full">
+							Follow people to start messaging
+						</p>
+					)}
 				{isLoading && !creators ? (
 					<Loader />
 				) : (
 					<ul className="user-grid">
 						{creators?.map((creator: IUser) => {
-							if (creator._id === userDetails?._id) return;
+							if (
+								creator._id === userDetails?._id ||
+								(!userDetails?.followers?.includes(creator._id) &&
+									!userDetails?.followings?.includes(creator._id) &&
+									showingOnInbox)
+							)
+								return;
 							return (
 								<li key={creator?._id} className="flex-1 w-[300px]  ">
 									<UserCard showingOnInbox={showingOnInbox} user={creator} />

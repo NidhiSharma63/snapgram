@@ -18,7 +18,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
-
+router.options("/message/mark-as-read", cors()); // possible fix for having cors error only for this route
 app.options("*", (req, res) => {
   res.sendStatus(200);
 });

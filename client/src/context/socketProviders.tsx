@@ -21,16 +21,18 @@ interface SocketProviderProps {
 }
 
 export interface IMessage {
-	message: string;
-	senderId: string;
-	recipientId: string;
-	roomId: string;
-	__v: number;
-	_id: string;
-	seenAt: string;
-	isSeen: boolean;
-	createdAt: string | Date;
-}
+		message: string;
+		senderId: string;
+		receiverId: string;
+		roomId: string;
+		__v: number;
+		_id: string;
+		seenAt: string;
+		isSeen: boolean;
+		createdAt: string | Date;
+		replyText?: string;
+		isDummy?: boolean;
+	}
 interface SocketProviderState {
 	recipient: UserDetails | null;
 	roomId: string;
@@ -46,6 +48,8 @@ interface SocketProviderState {
 	containerRef: React.RefObject<HTMLDivElement> | null;
 	unSeenMsgs: IMessage[] | [];
 	setUnSeenMsgs: (val: IMessage[]) => void;
+	replyText: string;
+	setReplyText: (val: string) => void;
 }
 
 const initialState: SocketProviderState = {
@@ -63,14 +67,15 @@ const initialState: SocketProviderState = {
 	isMsgDeleting: false,
 	unSeenMsgs: [],
 	setUnSeenMsgs: () => {},
+	replyText: "",
+	setReplyText: () => {},
 };
-
 
 const SocketContext = createContext<SocketProviderState>(initialState);
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const userId = useParams<{ userId: string }>().userId;
-	const [messages, setMessages] = useState<IMessage[] | null | undefined>(null);
+	const [messages, setMessages] = useState<IMessage[] | undefined>([]);
 	const { useGetUserById, useGetAllUser } = useAuth();
 	const { data: allUsers } = useGetAllUser();
 	const { userDetails: currentUser } = useUserDetail();
@@ -84,6 +89,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const [pusherInstance, setPusherInstance] = useState<Pusher | null>(null);
 	const navigate = useNavigate();
 	const [unSeenMsgs, setUnSeenMsgs] = useState<IMessage[]>([]);
+	const [replyText, setReplyText] = useState("");
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -92,7 +98,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	const { useMarkMessageAsRead } = useMessage();
 	const { mutateAsync: markMessageAsRead } = useMarkMessageAsRead();
-	
+
 	// notify
 	const notify = useCallback(
 		(message: IMessage) => {
@@ -183,10 +189,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		channel.bind("message-received", (data: IMessage) => {
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
-				return [...prevMessages, data];
+
+				/**
+				 * remove the dummy msg if exists which was added while sending the msg
+				 */
+				const removeDummy = prevMessages.find(
+					(msg: IMessage) => msg.isDummy === true,
+				)
+					? prevMessages.filter((msg: IMessage) => msg.isDummy !== true)
+					: prevMessages;
+				return [...removeDummy, data];
 			});
-			// console.log("Msg Received dude");
 			if (containerRef.current) {
+				// console.log("Msg Received dude");
 				containerRef.current.scrollTo(0, containerRef.current.scrollHeight);
 			}
 		});
@@ -196,10 +211,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			"message-deleted",
 			(data: { messageId: string; senderId: string }) => {
 				// console.log("delete message", data);
-				if (data.senderId === currentUser?._id) {
-					/** cause we are using react query to update the state for current user who has deleted the message */
-					return;
-				}
+				// if (data.senderId === currentUser?._id) {
+				// 	/** cause we are using react query to update the state for current user who has deleted the message */
+				// 	return;
+				// }
 
 				/** but on the receiver side we need to update the state */
 				setMessages((prevMessages) => {
@@ -327,6 +342,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				containerRef,
 				setMessages,
 				setUnSeenMsgs,
+				replyText,
+				setReplyText,
 			}}
 		>
 			{children}
