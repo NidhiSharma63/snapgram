@@ -82,31 +82,48 @@ const UserCard = ({
 				</p>
 			</div>
 
-			{userDetails?.followers?.includes(user._id) ? (
-				isUnFollowingUserPending ? (
-					<Loader />
+			{userDetails?.followers?.includes(user._id) && showingOnInbox && (
+				<Button
+					onClick={handleClickOnMSG}
+					type="button"
+					size="sm"
+					className="shad-button_primary px-5"
+				>
+					Message {allUnSeenMsgs?.length > 0 && `(${allUnSeenMsgs?.length})`}
+				</Button>
+			)}
+
+			{!showingOnInbox &&
+				(userDetails?.followers?.includes(user._id) ? (
+					isUnFollowingUserPending ? (
+						<Button className="shad-button_primary whitespace-nowrap">
+							<Loader />
+						</Button>
+					) : (
+						<Button
+							size="sm"
+							className="shad-button_primary px-5 whitespace-nowrap"
+							disabled={isUnFollowingUserPending}
+							onClick={handleClickOnUnFollow}
+						>
+							Unfollow
+						</Button>
+					)
+				) : isFollowingUserPending ? (
+					<Button className="shad-button_primary whitespace-nowrap">
+						<Loader />
+					</Button>
 				) : (
 					<Button
 						size="sm"
 						className="shad-button_primary px-5 whitespace-nowrap"
-						disabled={isUnFollowingUserPending}
-						onClick={handleClickOnUnFollow}
+						disabled={isFollowingUserPending}
+						onClick={handleClickOnFollow}
 					>
-						Unfollow
+						Follow
 					</Button>
-				)
-			) : isFollowingUserPending ? (
-				<Loader />
-			) : (
-				<Button
-					size="sm"
-					className="shad-button_primary px-5 whitespace-nowrap"
-					disabled={isFollowingUserPending}
-					onClick={handleClickOnFollow}
-				>
-					Follow
-				</Button>
-			)}
+				))}
+
 			{/* {showingOnInbox ? (
 				<Button
 					type="button"

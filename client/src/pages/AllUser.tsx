@@ -32,7 +32,12 @@ const AllUsers = ({ showingOnInbox = false }: { showingOnInbox?: boolean }) => {
 				) : (
 					<ul className="user-grid">
 						{creators?.map((creator: IUser) => {
-							if (creator._id === userDetails?._id) return;
+							if (
+								creator._id === userDetails?._id ||
+								(!userDetails?.followers?.includes(creator._id) &&
+									showingOnInbox)
+							)
+								return;
 							return (
 								<li key={creator?._id} className="flex-1 w-[300px]  ">
 									<UserCard showingOnInbox={showingOnInbox} user={creator} />
