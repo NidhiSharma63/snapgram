@@ -24,6 +24,8 @@ export interface IUser {
   username: string;
   __v: number;
   _id: string;
+  followers:string[],
+  followings:string[]
 }
 
 export interface ErrorResponse {
