@@ -361,7 +361,9 @@ export default function Message({
 												}
 											/>
 										)}
-										<div className="flex flex-col gap-1 items-end">
+										<div
+											className={`flex flex-col gap-1 ${isSender ? "items-end" : "items-start"}`}
+										>
 											{message.replyText && (
 												<>
 													{message.replyText?.includes(
