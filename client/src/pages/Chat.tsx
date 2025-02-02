@@ -186,7 +186,7 @@ export default function Chat() {
 					<img
 						src={"/assets/icons/back.svg"}
 						alt={"back"}
-						className="rounded-full lg:w-8 w-4 lg:h-8 h-4 object-cover"
+						className="rounded-full lg:w-8 w-4 lg:h-8 h-4 object-cover cursor-pointer"
 						onClick={goBack}
 					/>
 					<img
