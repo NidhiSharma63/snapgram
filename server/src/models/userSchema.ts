@@ -12,6 +12,8 @@ interface IUser extends Document {
 	tokens: { token: string; uniqueBrowserId: string }[];
 	bio: string;
 	generateAuthToken: (uniqueBrowserId: string) => Promise<string>;
+	followers: mongoose.Schema.Types.ObjectId[],
+	followings:mongoose.Schema.Types.ObjectId[],
 }
 
 // creating schema
@@ -41,6 +43,18 @@ const userSchema = new mongoose.Schema<IUser>({
 				required: true,
 			},
 		},
+	],
+	followers: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+		}
+	],
+	followings:[
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+		}
 	],
 	avatar: String,
 	bio: String,
