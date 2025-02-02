@@ -28,8 +28,8 @@ const AllUsers = ({ showingOnInbox = false }: { showingOnInbox?: boolean }) => {
 					{showingOnInbox ? "People" : "All Users"}
 				</h2>
 				{showingOnInbox &&
-					(userDetails?.followers?.length === 0 ||
-						userDetails?.followings?.length === 0) && (
+					userDetails?.followers?.length === 0 &&
+					userDetails?.followings?.length === 0 && (
 						<p className="subtle-semibold text-center w-full">
 							Follow people to start messaging
 						</p>
@@ -42,6 +42,7 @@ const AllUsers = ({ showingOnInbox = false }: { showingOnInbox?: boolean }) => {
 							if (
 								creator._id === userDetails?._id ||
 								(!userDetails?.followers?.includes(creator._id) &&
+									!userDetails?.followings?.includes(creator._id) &&
 									showingOnInbox)
 							)
 								return;
