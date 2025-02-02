@@ -1,3 +1,4 @@
+import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import type { IUser } from "@/constant/interfaces";
 import { type IMessage, useSocket } from "@/context/socketProviders";
@@ -19,7 +20,6 @@ const UserCard = ({
 		removeFollower();
 	const { userDetails } = useUserDetail();
 
-	console.log("userDetails", userDetails);
 	const handleClickOnMSG = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement>) => {
 			// stopPropagation
@@ -64,7 +64,7 @@ const UserCard = ({
 		},
 		[unfollowToUser, user],
 	);
-	console.log(userDetails);
+
 	return (
 		<Link to={`/profile/${user._id}`} className="user-card">
 			<img
@@ -83,20 +83,24 @@ const UserCard = ({
 			</div>
 
 			{userDetails?.followers?.includes(user._id) ? (
-				<Button
-					type="button"
-					size="sm"
-					className="shad-button_primary px-5"
-					disabled={isUnFollowingUserPending}
-					onClick={handleClickOnUnFollow}
-				>
-					unFollow
-				</Button>
+				isUnFollowingUserPending ? (
+					<Loader />
+				) : (
+					<Button
+						size="sm"
+						className="shad-button_primary px-5 whitespace-nowrap"
+						disabled={isUnFollowingUserPending}
+						onClick={handleClickOnUnFollow}
+					>
+						Unfollow
+					</Button>
+				)
+			) : isFollowingUserPending ? (
+				<Loader />
 			) : (
 				<Button
-					type="button"
 					size="sm"
-					className="shad-button_primary px-5"
+					className="shad-button_primary px-5 whitespace-nowrap"
 					disabled={isFollowingUserPending}
 					onClick={handleClickOnFollow}
 				>

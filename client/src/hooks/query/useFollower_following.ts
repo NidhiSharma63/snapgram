@@ -8,7 +8,6 @@ import type { AxiosError } from "axios";
 
 export default function useFollowerFollowing() {
 	function addFollower() {
-		console.log("add follower");
 		return useMutation({
 			mutationFn: (payload: { followerId: string;}) =>
 				customAxiosRequestForPost("/followers", "post", payload),
