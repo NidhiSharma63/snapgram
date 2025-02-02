@@ -64,6 +64,7 @@ const UserCard = ({
 		},
 		[unfollowToUser, user],
 	);
+	console.log(userDetails);
 
 	return (
 		<Link to={`/profile/${user._id}`} className="user-card">

@@ -27,6 +27,13 @@ const AllUsers = ({ showingOnInbox = false }: { showingOnInbox?: boolean }) => {
 				<h2 className="h3-bold md:h2-bold text-left w-full">
 					{showingOnInbox ? "People" : "All Users"}
 				</h2>
+				{showingOnInbox &&
+					(userDetails?.followers?.length === 0 ||
+						userDetails?.followings?.length === 0) && (
+						<p className="subtle-semibold text-center w-full">
+							Follow people to start messaging
+						</p>
+					)}
 				{isLoading && !creators ? (
 					<Loader />
 				) : (
