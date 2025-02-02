@@ -23,7 +23,7 @@ interface SocketProviderProps {
 export interface IMessage {
 		message: string;
 		senderId: string;
-		recipientId: string;
+		receiverId: string;
 		roomId: string;
 		__v: number;
 		_id: string;
@@ -31,6 +31,7 @@ export interface IMessage {
 		isSeen: boolean;
 		createdAt: string | Date;
 		replyText?: string;
+		isDummy?: boolean;
 	}
 interface SocketProviderState {
 	recipient: UserDetails | null;
@@ -70,7 +71,6 @@ const initialState: SocketProviderState = {
 	setReplyText: () => {},
 };
 
-
 const SocketContext = createContext<SocketProviderState>(initialState);
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
@@ -98,7 +98,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
 	const { useMarkMessageAsRead } = useMessage();
 	const { mutateAsync: markMessageAsRead } = useMarkMessageAsRead();
-	
+
 	// notify
 	const notify = useCallback(
 		(message: IMessage) => {
@@ -189,10 +189,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		channel.bind("message-received", (data: IMessage) => {
 			setMessages((prevMessages) => {
 				if (!prevMessages) return [data];
-				return [...prevMessages, data];
+
+				/**
+				 * remove the dummy msg if exists which was added while sending the msg
+				 */
+				const removeDummy = prevMessages.find(
+					(msg: IMessage) => msg.isDummy === true,
+				)
+					? prevMessages.filter((msg: IMessage) => msg.isDummy !== true)
+					: prevMessages;
+				return [...removeDummy, data];
 			});
-			// console.log("Msg Received dude");
 			if (containerRef.current) {
+				// console.log("Msg Received dude");
 				containerRef.current.scrollTo(0, containerRef.current.scrollHeight);
 			}
 		});

@@ -2,7 +2,7 @@ import Message from "@/components/chat/Message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { useSocket } from "@/context/socketProviders";
+import { type IMessage, useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import { storage } from "@/firebase/config";
@@ -26,24 +26,19 @@ export default function Chat() {
 		containerRef,
 		replyText,
 		setReplyText,
+		setMessages,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
 	const [userMessage, setUserMessage] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
-	const [usersMessageSentToBE, setUsersMessageSentToBE] = useState<
-		{ [key: string]: string }[]
-	>([]);
 	const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
 	const { theme } = useTheme();
 	const { useSendMessage } = useMessage();
 	const navigate = useNavigate();
 
-	const {
-		mutateAsync: sendMessage,
-		isError: isMessageSendingError,
-		isPending: isMessageSendingPending,
-	} = useSendMessage();
+	const { mutateAsync: sendMessage, isPending: isMessageSendingPending } =
+		useSendMessage();
 
 	// handle message change
 	const handleMessageChange = useCallback(
@@ -62,11 +57,13 @@ export default function Chat() {
 		}
 		setIsMsgUploading(true);
 		let message = {};
+
 		if (file) {
 			// if user has selected the file then send the file to firebase storage on frontend only
 			const imageRef = ref(storage, `/images/${file}-${v4()}`);
 			const snapshot = await uploadBytes(imageRef, file);
 			const url = await getDownloadURL(snapshot.ref);
+
 			message = {
 				roomId,
 				senderId: currentUser?._id,
@@ -75,9 +72,21 @@ export default function Chat() {
 				createdAt: new Date(),
 				replyText,
 			};
-			setUsersMessageSentToBE([message]);
-			sendMessage(message).then(() => {
-				setUsersMessageSentToBE([]);
+			const exrtaPropsForTsWarning: IMessage = {
+				_id: v4(),
+				seenAt: "",
+				isSeen: false,
+				__v: 0,
+				isDummy: true,
+				...message,
+			} as IMessage;
+			// @ts-ignore
+			setMessages((prevMessages) => {
+				if (!prevMessages) return [exrtaPropsForTsWarning];
+				return [...prevMessages, exrtaPropsForTsWarning];
+			});
+
+			await sendMessage(message).then(() => {
 				setReplyText("");
 			});
 			setFile(null);
@@ -94,9 +103,21 @@ export default function Chat() {
 				createdAt: new Date(),
 				replyText,
 			};
-			setUsersMessageSentToBE((prev) => [...prev, message]);
-			sendMessage(message).then(() => {
-				setUsersMessageSentToBE([]);
+			const exrtaPropsForTsWarning: IMessage = {
+				_id: v4(),
+				seenAt: "",
+				isSeen: false,
+				__v: 0,
+				isDummy: true,
+				...message,
+			} as IMessage;
+			// @ts-ignore
+			setMessages((prevMessages) => {
+				if (!prevMessages) return [exrtaPropsForTsWarning];
+				return [...prevMessages, exrtaPropsForTsWarning];
+			});
+
+			await sendMessage(message).then(() => {
 				setReplyText("");
 			});
 			setUserMessage("");
@@ -106,6 +127,7 @@ export default function Chat() {
 			containerRef.current.scrollTop = containerRef.current.scrollHeight;
 		}
 	}, [
+		setMessages,
 		recipient,
 		currentUser,
 		userMessage,
@@ -198,11 +220,7 @@ export default function Chat() {
 						{recipient?.username}
 					</p>
 				</header>
-				<Message
-					isMessageSendingPending={isMessageSendingPending}
-					usersMessageSentToBE={usersMessageSentToBE}
-					isMessageSendingError={isMessageSendingError}
-				/>
+				<Message />
 				<div className="flex items-center  justify-between lg:p-4 p-2 w-full gap-4">
 					<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
 						{replyText && !isMessageSendingPending && (
