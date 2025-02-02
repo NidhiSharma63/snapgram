@@ -48,7 +48,6 @@ export default function UserMsg({
 		!isMsgDeleting &&
 		!message.isDummy;
 
-	// console.log(message, "message");
 	return (
 		<>
 			{/* show loader only for that message which is being deleted by user */}

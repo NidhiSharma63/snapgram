@@ -11,7 +11,6 @@ import React, { useCallback, useEffect, useState } from "react";
 
 
 export default function Message() {
-	// console.log(usersMessageSentToBE, "from message");
 	const {
 		messages,
 		hasScrolledToBottom,
@@ -36,17 +35,6 @@ export default function Message() {
 		isFetchingNextPage,
 		isPending: isMessagesPending,
 	} = useGetAllMessages(roomId);
-	// console.log("Message : Final output", messages);
-	/**
-	 * on umount reset the query
-	 */
-	// useEffect(() => {
-	// 	return () => {
-	// 		queryClient.removeQueries({
-	// 			queryKey: ["messages", roomId],
-	// 		});
-	// 	};
-	// }, [roomId]);
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -127,7 +115,6 @@ export default function Message() {
 			);
 			const messageId = isImage
 				? messages?.find((item) => {
-						// console.log("msg", item.message, "text", text);
 						return item.message === text;
 					})?._id
 				: event.currentTarget.dataset.id;
@@ -173,7 +160,6 @@ export default function Message() {
 		},
 		[messages, setReplyText, containerRef?.current],
 	);
-	console.log(messages);
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
