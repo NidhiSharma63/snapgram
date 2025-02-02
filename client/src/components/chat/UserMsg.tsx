@@ -50,6 +50,7 @@ export default function UserMsg({
 
 	return (
 		<>
+			{message?.isDummy && <Loader />}
 			{/* show loader only for that message which is being deleted by user */}
 			{isSender && isMsgDeleting && deleteMsgId === message._id && <Loader />}
 			{showDeleteBtn && (

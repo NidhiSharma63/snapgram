@@ -55,10 +55,10 @@ export default function Chat() {
 				title: "Something went wrong",
 			});
 		}
-		setIsMsgUploading(true);
 		let message = {};
-
+		
 		if (file) {
+			setIsMsgUploading(true);
 			// if user has selected the file then send the file to firebase storage on frontend only
 			const imageRef = ref(storage, `/images/${file}-${v4()}`);
 			const snapshot = await uploadBytes(imageRef, file);
@@ -89,6 +89,7 @@ export default function Chat() {
 			await sendMessage(message).then(() => {
 				setReplyText("");
 			});
+			setIsMsgUploading(false);
 			setFile(null);
 			if (inputRef.current) {
 				inputRef.current.value = "";
@@ -116,13 +117,11 @@ export default function Chat() {
 				if (!prevMessages) return [exrtaPropsForTsWarning];
 				return [...prevMessages, exrtaPropsForTsWarning];
 			});
-
-			await sendMessage(message).then(() => {
-				setReplyText("");
-			});
+			setReplyText("");
 			setUserMessage("");
+			sendMessage(message);
 		}
-		setIsMsgUploading(false);
+		
 		if (containerRef?.current) {
 			containerRef.current.scrollTop = containerRef.current.scrollHeight;
 		}
