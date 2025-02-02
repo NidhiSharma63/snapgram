@@ -82,16 +82,18 @@ const UserCard = ({
 				</p>
 			</div>
 
-			{userDetails?.followers?.includes(user._id) && showingOnInbox && (
-				<Button
-					onClick={handleClickOnMSG}
-					type="button"
-					size="sm"
-					className="shad-button_primary px-5"
-				>
-					Message {allUnSeenMsgs?.length > 0 && `(${allUnSeenMsgs?.length})`}
-				</Button>
-			)}
+			{(userDetails?.followers?.includes(user._id) ||
+				userDetails?.followings?.includes(user._id)) &&
+				showingOnInbox && (
+					<Button
+						onClick={handleClickOnMSG}
+						type="button"
+						size="sm"
+						className="shad-button_primary px-5"
+					>
+						Message {allUnSeenMsgs?.length > 0 && `(${allUnSeenMsgs?.length})`}
+					</Button>
+				)}
 
 			{!showingOnInbox &&
 				(userDetails?.followers?.includes(user._id) ? (
