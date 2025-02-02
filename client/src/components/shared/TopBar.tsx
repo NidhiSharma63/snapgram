@@ -31,16 +31,7 @@ export default function TopBar() {
 			<section className="topbar">
 				<div className="flex justify-between py-4 px-5">
 					<Link to="/" className="flex gap-3 items-center">
-						<img
-							src={
-								theme === "dark"
-									? "/assets/images/logo.svg"
-									: "/assets/images/logo-light.svg"
-							}
-							alt="logo"
-							width={130}
-							height={325}
-						/>
+						<img src={"/assets/icons/small-logo.svg"} alt="logo" width={30} />
 					</Link>
 					<div className="flex gap-4 relative items-center justify-center">
 						<Button

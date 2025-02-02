@@ -41,8 +41,8 @@ export default function LeftBar() {
 						<img
 							src={
 								theme === "dark"
-									? "/assets/images/logo.svg"
-									: "/assets/images/logo-light.svg"
+									? "/assets/icons/logo.svg"
+									: "/assets/icons/logo-light.svg"
 							}
 							alt="logo"
 							width={170}
