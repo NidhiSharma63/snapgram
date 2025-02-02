@@ -121,7 +121,7 @@ const Profile = () => {
 						) : allPostOfUser.length === 0 &&
 							userDetails &&
 							userDetails._id !== data?._id ? (
-							data?.username + " haven't posted anything"
+							`${data?.username} haven't posted anything`
 						) : (
 							<GridPostList posts={allPostOfUser} showUser={false} />
 						)}

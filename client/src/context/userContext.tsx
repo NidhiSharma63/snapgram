@@ -1,4 +1,5 @@
 import { AppConstants } from "@/constant/keys";
+import useAuth from "@/hooks/query/useAuth";
 import { getValueFromLS } from "@/lib/utils";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -7,14 +8,16 @@ interface userProviderProps {
 }
 
 export interface UserDetails {
-	email: string;
-	password: string;
-	_id: string;
-	username: string;
-	__v: number;
-	tokens: { token: string; uniqueBrowserId: string; _id: string }[];
-	avatar: string;
-}
+		email: string;
+		password: string;
+		_id: string;
+		username: string;
+		__v: number;
+		tokens: { token: string; uniqueBrowserId: string; _id: string }[];
+		avatar: string;
+		followers: string[];
+		followings: string[];
+	}
 
 interface UserDetailsProviderState {
   userDetails: UserDetails | null;
@@ -28,16 +31,29 @@ const initialState: UserDetailsProviderState = {
 
 const UserDetailsProviderContext = createContext<UserDetailsProviderState>(initialState);
 
-const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
 
 export function UserDetailsProvider({ children }: userProviderProps) {
-  const [userDetails, setUserDetail] = useState<null | UserDetails>(null);
+	const [userDetails, setUserDetail] = useState<null | UserDetails>(null);
+	const [userId, setUserId] = useState<string | null>(null);
+	const storedUserData = getValueFromLS(AppConstants.USER_DETAILS);
+	const { useGetUserById } = useAuth();
+	const { data } = useGetUserById(userId || "");
 
-		useEffect(() => {
-			if (storedUserData) {
-				setUserDetail(JSON.parse(storedUserData));
-			}
-		}, []);
+	/**
+	 * on load re-fetch user details form DB
+	 */
+	useEffect(() => {
+		setUserDetail(data);
+	}, [data]);
+
+	/**
+	 * set User id from local storage to state
+	 */
+	useEffect(() => {
+		if (storedUserData) {
+			setUserId(JSON.parse(storedUserData)?._id);
+		}
+	}, [storedUserData]);
 
 		return (
 			<UserDetailsProviderContext.Provider
