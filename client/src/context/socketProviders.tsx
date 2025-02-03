@@ -50,6 +50,11 @@ interface SocketProviderState {
 	setUnSeenMsgs: (val: IMessage[]) => void;
 	replyText: string;
 	setReplyText: (val: string) => void;
+	pusherInstance: Pusher | null;
+	isTyping: boolean;
+	setIsTyping: (val: boolean) => void;
+	setUserWhoIsNotTyping: (val: string) => void;
+	userWhoIsNotTyping: string | null;
 }
 
 const initialState: SocketProviderState = {
@@ -69,6 +74,11 @@ const initialState: SocketProviderState = {
 	setUnSeenMsgs: () => {},
 	replyText: "",
 	setReplyText: () => {},
+	pusherInstance: null,
+	isTyping: false,
+	setIsTyping: () => {},
+	setUserWhoIsNotTyping: () => {},
+	userWhoIsNotTyping: "",
 };
 
 const SocketContext = createContext<SocketProviderState>(initialState);
@@ -90,6 +100,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 	const navigate = useNavigate();
 	const [unSeenMsgs, setUnSeenMsgs] = useState<IMessage[]>([]);
 	const [replyText, setReplyText] = useState("");
+	const [userWhoIsNotTyping, setUserWhoIsNotTyping] = useState<string | null>(
+		"",
+	);
+	const [isTyping, setIsTyping] = useState(false);
+	
 	const roomId = useMemo(() => {
 		return [currentUser?._id, recipient?._id]
 			.sort() // Sort the IDs alphabetically
@@ -249,6 +264,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 			},
 		);
 
+		// isten to typing indicator
+		channel.bind(
+			"typing-indicator",
+			(data: { roomId: string; isTyping: boolean; receiverId: string }) => {
+				setIsTyping(data.isTyping);
+				setUserWhoIsNotTyping(data?.receiverId);
+			},
+		);
 		// Clean up the channel on unmount
 		return () => {
 			// console.warn("Unsubscribing from channel");
@@ -264,13 +287,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 		}
 	}, [roomId]);
 
-	// only run when data is available
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	// useEffect(() => {
-	// 	if (isMessagesPending) return;
-	// 	const messages = data?.pages.flat(1)?.reverse();
-	// 	setMessages(messages);
-	// }, [data?.pages, isMessagesPending]);
 
 	const isHasSeenMessage = useMemo(() => {
 		return messages?.[messages.length - 1]?.isSeen === true;
@@ -344,6 +360,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 				setUnSeenMsgs,
 				replyText,
 				setReplyText,
+				pusherInstance,
+				isTyping,
+				setIsTyping,
+				userWhoIsNotTyping,
+				setUserWhoIsNotTyping,
 			}}
 		>
 			{children}
