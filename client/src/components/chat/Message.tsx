@@ -161,12 +161,6 @@ export default function Message() {
 		[messages, setReplyText, containerRef?.current],
 	);
 
-	/**
-	 * handle onchange
-	 */
-	const handleOnChange = useCallback(() => {
-		
-	}, []);
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
