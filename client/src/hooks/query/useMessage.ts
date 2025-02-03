@@ -112,16 +112,50 @@ export default function useMessage() {
 		});
 	}
 
-	// function fetchAllUnSeenMsgs() {
-	// 	return useQuery({
-	// 		queryKey: [QueryKeys.GET_USER_Like_POST],
-	// 		queryFn: () => customAxiosRequestForGet("/unseen-messages", {}),
-	// 	});
-	// }
+	function useAddTypingIndicator(){
+		return useMutation({
+			mutationFn: (payload: { roomId: string,receiverId:string }) =>
+				customAxiosRequestForPost("typing-indicator", "post", payload),
+			onError: (error: AxiosError<ErrorResponse>) => {
+				console.log(error);
+				if (error.response?.data.status === 400) {
+					toast({
+						title: error.response.data.error,
+					});
+				} else {
+					toast({
+						title: "Something went wrong",
+					});
+				}
+			},
+			
+		})
+	}
+
+	function useRemoveTypingIndicator(){
+		return useMutation({
+			mutationFn: (payload: { roomId: string }) =>
+				customAxiosRequestForPost("typing-indicator", "delete", payload),
+			onError: (error: AxiosError<ErrorResponse>) => {
+				console.log(error);
+				if (error.response?.data.status === 400) {
+					toast({
+						title: error.response.data.error,
+					});
+				} else {
+					toast({
+						title: "Something went wrong",
+					});
+				}
+			},
+		})
+	}
 	return {
 		useGetAllMessages,
 		useDeleteMessage,
 		useMarkMessageAsRead,
-		useSendMessage
+		useSendMessage,
+		useAddTypingIndicator,
+		useRemoveTypingIndicator
 	};
 }

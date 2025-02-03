@@ -89,7 +89,6 @@ const addMessage = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
-
 /**
  * Mark Message Read
  */
@@ -119,5 +118,37 @@ const markMessageRead = async (req: Request, res: Response, next: NextFunction) 
 		next(error);
 	}
 }
-export { addMessage, deleteMessage, getAllMessages, markMessageRead };
+
+/**
+ * Add typing indicator
+ */
+const addTypingIndicator = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { roomId,receiverId } = req.body;
+		await pusher.trigger(`public-${roomId}`, "typing-indicator",
+			{ roomId,isTyping: true,receiverId } // userId who is typing
+		);
+		return res.status(200).json({ message: "User is typing" });
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+/**
+ * Remove typing indicator
+ */
+const removeTypingIndicator = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { roomId } = req.body;
+		await pusher.trigger(`public-${roomId}`, "typing-indicator",
+			{ roomId,isTyping: false}
+		);
+		return res.status(200).json({ message: "User is not typing" });
+
+	} catch (error) {
+		next(error)
+	}
+}
+export { addMessage, addTypingIndicator, deleteMessage, getAllMessages, markMessageRead, removeTypingIndicator };
 

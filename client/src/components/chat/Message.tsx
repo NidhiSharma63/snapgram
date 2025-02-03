@@ -160,6 +160,7 @@ export default function Message() {
 		},
 		[messages, setReplyText, containerRef?.current],
 	);
+
 	return (
 		<div
 			className="common-container w-full h-full !gap-2 !py-1"
@@ -205,7 +206,7 @@ export default function Message() {
 					return (
 						<React.Fragment key={message._id}>
 							<div
-								className={`w-full text-left flex items-center gap-3 ${isSender ? "justify-end" : "justify-start"} group`}
+								className={`w-full text-left flex  gap-3 ${isSender ? "justify-end" : "justify-start"} group`}
 							>
 								<UserMsg
 									isSender={isSender}

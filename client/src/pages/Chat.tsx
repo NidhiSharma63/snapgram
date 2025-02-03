@@ -10,10 +10,36 @@ import useMessage from "@/hooks/query/useMessage";
 import EmojiPicker from "emoji-picker-react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type React from "react";
-import { type SetStateAction, useCallback, useRef, useState } from "react";
-import { ColorRing } from "react-loader-spinner";
+import {
+	type SetStateAction,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { ColorRing, ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
+
+const TypingIndicator = () => {
+	return (
+		<div className="w-full px-5 md:px-8  flex align-center justify-start">
+			<div className="bg-[#f0f5f1] w-[80px] h-[30px] rounded-xl flex align-center justify-center">
+				<ThreeDots
+					visible={true}
+					height="30"
+					width="40"
+					// color="#fff"
+					color="#877EFF"
+					radius="9"
+					ariaLabel="three-dots-loading"
+					wrapperStyle={{}}
+					wrapperClass=""
+				/>
+			</div>
+		</div>
+	);
+};
 
 // Todo - fix authentication error issue
 export default function Chat() {
@@ -27,18 +53,57 @@ export default function Chat() {
 		replyText,
 		setReplyText,
 		setMessages,
+		pusherInstance,
+		isTyping,
+		setIsTyping,
+		setUserWhoIsNotTyping,
+		userWhoIsNotTyping,
 	} = useSocket();
 	const { userDetails: currentUser } = useUserDetail();
+	// const [isTyping, setIsTyping] = useState(false);
 	const [userMessage, setUserMessage] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const inputRef = useRef<null | HTMLInputElement>(null);
 	const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
 	const { theme } = useTheme();
-	const { useSendMessage } = useMessage();
+	const { useSendMessage, useAddTypingIndicator, useRemoveTypingIndicator } =
+		useMessage();
+	const { mutate: addTypingIndicator } = useAddTypingIndicator();
+	const { mutate: removeTypingIndicator } = useRemoveTypingIndicator();
 	const navigate = useNavigate();
+	// const [userWhoIsNotTyping, setUserWhoIsNotTyping] = useState<string | null>("");
 
 	const { mutateAsync: sendMessage, isPending: isMessageSendingPending } =
 		useSendMessage();
+
+	// listen to typing indicator
+	useEffect(() => {
+		pusherInstance
+			?.channel(`public-${roomId}`)
+			?.bind(
+				"typing-indicator",
+				(data: { roomId: string; isTyping: boolean; receiverId: string }) => {
+					setIsTyping(data.isTyping);
+					setUserWhoIsNotTyping(data?.receiverId);
+				},
+			);
+	}, [pusherInstance, roomId, setIsTyping, setUserWhoIsNotTyping]);
+
+	// handle input change
+	const handleAddTypingIndicator = useCallback(async () => {
+		if (isTyping && userMessage?.trim()) return;
+		addTypingIndicator({
+			roomId,
+			receiverId: recipient?._id ?? "",
+		});
+	}, [roomId, addTypingIndicator, isTyping, userMessage, recipient]);
+
+	// handle remove typing indicator
+	const handleRemoveTypingIndicator = useCallback(() => {
+		removeTypingIndicator({
+			roomId,
+		});
+	}, [removeTypingIndicator, roomId]);
 
 	// handle message change
 	const handleMessageChange = useCallback(
@@ -56,7 +121,6 @@ export default function Chat() {
 			});
 		}
 		let message = {};
-		
 		if (file) {
 			setIsMsgUploading(true);
 			// if user has selected the file then send the file to firebase storage on frontend only
@@ -121,7 +185,7 @@ export default function Chat() {
 			setUserMessage("");
 			sendMessage(message);
 		}
-		
+
 		if (containerRef?.current) {
 			containerRef.current.scrollTop = containerRef.current.scrollHeight;
 		}
@@ -158,6 +222,7 @@ export default function Chat() {
 			inputRef.current.value = ""; // Reset the input value
 		}
 	}, []);
+
 	// handle click on gallery
 	const handleClickOnGallery = useCallback(() => {
 		inputRef?.current?.click();
@@ -220,6 +285,9 @@ export default function Chat() {
 					</p>
 				</header>
 				<Message />
+				{isTyping && currentUser?._id === userWhoIsNotTyping && (
+					<TypingIndicator />
+				)}
 				<div className="flex items-center  justify-between lg:p-4 p-2 w-full gap-4">
 					<div className="flex flex-col w-full border-2 border-gray-300 border-black rounded-md">
 						{replyText && !isMessageSendingPending && (
@@ -265,6 +333,8 @@ export default function Chat() {
 							placeholder="Type a message here..."
 							value={userMessage}
 							onChange={handleMessageChange}
+							onBlur={handleRemoveTypingIndicator}
+							onInput={handleAddTypingIndicator}
 						/>
 					</div>
 
