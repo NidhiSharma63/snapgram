@@ -80,10 +80,10 @@ export default function UserMsg({
 			{isImage ? (
 				<ImageComponent src={message.message} />
 			) : (
-				<div className="flex gap-2 align-center items-center">
+				<div className="flex gap-2 items-center justify-end max-w-[80%]">
 					{!isSender && (
 						<img
-							className="rounded-full w-8 h-8 object-cover"
+							className="rounded-full w-8 h-8 object-cover shrink-0"
 							alt="creator"
 							src={recipient?.avatar || "/assets/icons/profile-placeholder.svg"}
 						/>
