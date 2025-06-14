@@ -1,3 +1,4 @@
+import Profile from "@/components/shared/Profile";
 import { Button } from "@/components/ui/button";
 import { AppConstants } from "@/constant/keys";
 import { sidebarLinks } from "@/constant/links";
@@ -16,15 +17,15 @@ export default function LeftBar() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-	// console.log("userDetails", userDetails);
-		const handleClick = () => {
-			if (!userDetails) return;
-			mutate({
-				userId: userDetails._id,
-				token: userDetails.tokens[0].token,
-			});
-			setUserDetail(null);
-		};
+  // console.log("userDetails", userDetails);
+  const handleClick = () => {
+    if (!userDetails) return;
+    mutate({
+      userId: userDetails._id,
+      token: userDetails.tokens[0].token,
+    });
+    setUserDetail(null);
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -33,77 +34,72 @@ export default function LeftBar() {
     }
   }, [navigate, isSuccess]);
 
-
-		return (
-			<nav className="leftsidebar">
-				<div className="flex flex-col gap-11">
-					<Link to="/" className="flex gap-3 items-center">
-						<img
-							src={
-								theme === "dark"
-									? "/assets/icons/logo.svg"
-									: "/assets/icons/logo-light.svg"
-							}
-							alt="logo"
-							width={170}
-							height={36}
-						/>
-					</Link>
-					<Link
-						to={`/profile/${userDetails?._id}`}
-						className="flex gap-3 items-center"
-					>
-						<img
-							alt="profile"
-							src={
-								userDetails?.avatar || "/assets/icons/profile-placeholder.svg"
-							}
-							className="h-8 w-8 rounded-full object-cover"
-						/>
-						<div className="flex flex-col">
-							<p className="body-bold">@{userDetails?.username}</p>
-							<p className="small-regular text-light-3">
-								@{userDetails?.email}
-							</p>
-						</div>
-					</Link>
-					<ul className="flex flex-col gap-3">
-						{sidebarLinks.map((link) => {
-							const isActive = pathname === link.route;
-							return (
-								<li
-									key={link.label}
-									className={`leftsidebar-link group ${isActive && "bg-primary-500"}`}
-								>
-									<NavLink
-										to={link.route}
-										className="flex gap-4 items-center p-4"
-									>
-										<img
-											width={25}
-											height={25}
-											src={link.imgURL}
-											alt={link.label}
-											className={`group-hover:invert-white ${isActive && "invert-white"}`}
-										/>
-										{link.label}
-									</NavLink>
-								</li>
-							);
-						})}
-					</ul>
-				</div>
-				<div className="flex justify-center mt-2 items-center relative">
-					<ThemeComponent isDisplayedOnTopBar={false} />
-					<Button
-						variant="ghost"
-						className="shad-button_ghost"
-						onClick={handleClick}
-					>
-						<img className="" src="/assets/icons/logout.svg" alt="logout" />
-						<p className="small-medium lg:base-medium">Logout</p>
-					</Button>
-				</div>
-			</nav>
-		);
+  return (
+    <nav className="leftsidebar">
+      <div className="flex flex-col gap-11">
+        <Link to="/" className="flex gap-3 items-center">
+          <img
+            src={
+              theme === "dark"
+                ? "/assets/icons/logo.svg"
+                : "/assets/icons/logo-light.svg"
+            }
+            alt="logo"
+            width={170}
+            height={36}
+          />
+        </Link>
+        <Link
+          to={`/profile/${userDetails?._id}`}
+          className="flex gap-3 items-center"
+        >
+          <Profile url={userDetails?.avatar || ""} />
+          <div className="flex flex-col">
+            <p className="body-bold">@{userDetails?.username}</p>
+            <p className="small-regular text-light-3">@{userDetails?.email}</p>
+          </div>
+        </Link>
+        <ul className="flex flex-col gap-3">
+          {sidebarLinks.map((link) => {
+            const isActive = pathname === link.route;
+            return (
+              <li
+                key={link.label}
+                className={`leftsidebar-link group ${
+                  isActive && "bg-primary-500"
+                }`}
+              >
+                <NavLink
+                  to={link.route}
+                  className="flex gap-4 items-center p-4"
+                >
+                  <img
+                    width={25}
+                    height={25}
+                    src={link.imgURL}
+                    alt={link.label}
+                    className={`group-hover:invert-white ${
+                      isActive && "invert-white"
+                    }`}
+                  />
+                  {link.label}
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div className="flex justify-center mt-2 items-center relative">
+        <ThemeComponent isDisplayedOnTopBar={false} />
+        <Button
+          variant="ghost"
+          className="shad-button_ghost"
+          onClick={handleClick}
+        >
+          <img className="" src="/assets/icons/logout.svg" alt="logout" />
+          <p className="small-medium lg:base-medium">Logout</p>
+        </Button>
+      </div>
+    </nav>
+  );
 }
