@@ -2,8 +2,8 @@ import { useToast } from "@/components/ui/use-toast";
 import type { ErrorResponse, IPost } from "@/constant/interfaces";
 import { QueryKeys } from "@/constant/keys";
 import {
-	customAxiosRequestForGet,
-	customAxiosRequestForPost,
+  customAxiosRequestForGet,
+  customAxiosRequestForPost,
 } from "@/lib/axiosRequest";
 import { queryClient } from "@/main";
 import {
@@ -132,7 +132,7 @@ function usePost() {
   function useGetAllPost(pageParam?: number) {
     return useInfiniteQuery<PostsPage, AxiosError<ErrorResponse>>({
       queryKey: [QueryKeys.GET_ALL_POSTS],
-      queryFn: async () => {
+      queryFn: async ({ pageParam = 1 }) => {
         return await customAxiosRequestForGet("/posts", {
           page: pageParam as number,
           limit: 3,
