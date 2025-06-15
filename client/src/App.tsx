@@ -1,5 +1,6 @@
 import AuthLayout from "@/components/auth/AuthLayout";
 // import { SocketProvider } from "@/context/socketProviders";
+import { PostProvider } from "@/context/postsProvider";
 import { UserDetailsProvider } from "@/context/userContext";
 import { UserPostIdSaveAndLikeProvider } from "@/context/userPostIdForSaveAndLike";
 import {
@@ -93,7 +94,9 @@ function wrapProviders(Component: ComponentType) {
       <UserDetailsProvider>
         {/* <SocketProvider> */}
         <UserPostIdSaveAndLikeProvider>
-          <Component />
+          <PostProvider>
+            <Component />
+          </PostProvider>
         </UserPostIdSaveAndLikeProvider>
         {/* </SocketProvider> */}
       </UserDetailsProvider>
