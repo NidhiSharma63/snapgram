@@ -13,4 +13,5 @@ export enum QueryKeys {
   GET_USER_ALL_POSTS = "get_user_all_post",
   GET_USER_MESSAGES = "get_user_messages",
   GET_ALL_UNSEEN_MESSAGES = "get_all_unseen_messages",
+  GET_ALL_STATIC_POSTS = "get_all_static_posts",
 }

@@ -115,12 +115,13 @@ function usePost() {
     });
   }
 
-  // function useGetAllPost() {
-  // 	return useQuery({
-  // 		queryKey: [QueryKeys.GET_ALL_POSTS],
-  // 		queryFn: () => customAxiosRequestForGet("/posts", {}),
-  // 	});
-  // }
+  /// for pages where wre are not showing caption
+  function useGetAllPostStatic() {
+    return useQuery({
+      queryKey: [QueryKeys.GET_ALL_STATIC_POSTS],
+      queryFn: () => customAxiosRequestForGet("/posts/static", {}),
+    });
+  }
 
   interface PostsPage {
     data: IPost[];
@@ -202,6 +203,7 @@ function usePost() {
     useDeletePost,
     useGetPostByIds,
     useGetUserAllPost,
+    useGetAllPostStatic,
   };
 }
 
