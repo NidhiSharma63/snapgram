@@ -6,6 +6,9 @@ interface PostContextType {
   finalPostsArr: IPost[];
   isFetchingNextPage: boolean;
   isPostLoading: boolean;
+  hasFetched: boolean;
+  setHasFetched: (val: boolean) => void;
+  fetchNextPage: () => void;
 }
 
 const PostContext = createContext<PostContextType | null>(null);
@@ -13,6 +16,7 @@ const PostContext = createContext<PostContextType | null>(null);
 export const PostProvider = ({ children }: { children: React.ReactNode }) => {
   const { useGetAllPost } = usePost();
   const [pageParams, setPagesParams] = useState(1);
+  const [hasFetched, setHasFetched] = useState(false);
   const {
     data,
     isPending: isPostLoading,
@@ -38,56 +42,18 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
           return elem.data;
         })
         .flat(1) ?? [];
-    const getAllUpcomingPosts =
-      data?.pages?.filter((elem) => {
-        return elem.currentPage === pageParams - 1;
-      })?.[0]?.data ?? [];
-
-    if (!getAllUpcomingPosts.length) {
-      return;
-    }
     setFinalPostsArr(output);
+    setHasFetched(false);
   }, [pageParams, data]);
-
-  // check if last post title is in index or not
-  useEffect(() => {
-    // Select all .post-caption elements
-    const allCaptions = document.querySelectorAll(".post-caption");
-
-    // Select the last caption
-    const lastPostTitle = finalPostsArr[finalPostsArr.length - 1]?.caption?.[0];
-
-    // Create an IntersectionObserver
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const el = entry.target as HTMLElement;
-
-          // ✅ Check if this specific caption has lastPostTitle
-          if (
-            entry.isIntersecting &&
-            el.textContent?.trim() === lastPostTitle
-          ) {
-            fetchNextPage();
-          }
-        });
-      },
-      {
-        root: null, // viewport
-        threshold: 0.1, // thoda sa dikhna bhi chalega
-      }
-    );
-
-    allCaptions.forEach((el) => {
-      observer.observe(el);
-    });
-  }, [finalPostsArr, fetchNextPage]);
   return (
     <PostContext.Provider
       value={{
         finalPostsArr,
         isFetchingNextPage,
         isPostLoading,
+        fetchNextPage,
+        hasFetched,
+        setHasFetched,
       }}
     >
       {children}

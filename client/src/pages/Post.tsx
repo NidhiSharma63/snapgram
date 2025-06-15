@@ -50,7 +50,6 @@ const PostDetails = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log(allPosts, "allposrs");
     setRelatedPost(() => {
       return allPosts?.filter((item: IPost) => item._id !== id);
     });

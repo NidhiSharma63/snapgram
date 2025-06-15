@@ -3,6 +3,7 @@ import Loader from "@/components/shared/Loader";
 import SearchResult from "@/components/shared/SearchResult";
 import { Input } from "@/components/ui/input";
 import { IPost } from "@/constant/interfaces";
+import { usePostContext } from "@/context/postsProvider";
 import useAuth from "@/hooks/query/useAuth";
 import usePost from "@/hooks/query/usePost";
 import { useEffect, useState } from "react";
