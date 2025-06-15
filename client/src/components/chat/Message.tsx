@@ -38,31 +38,34 @@ export default function Message() {
 	// only run when data is available
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		const pages = data?.pages;
-		let newMessages: IMessage[] = [];
-		if (pages?.length === 1) {
-			// If only one page is present then get all msgs
-			newMessages = pages?.at(0) ?? [];
-		} else if (pages && pages?.length > 1) {
-			// But if more then one page is present the get the
-			// data from last one cause its the latest and other have already been fetched and added in the state
-			newMessages = pages?.slice(-1).flat() ?? [];
-		}
-		if (!newMessages.length) return;
+    const pages = data?.pages;
+    let newMessages: IMessage[] = [];
+    if (pages?.length === 1) {
+      // If only one page is present then get all msgs
+      newMessages = pages?.at(0) ?? [];
+    } else if (pages && pages?.length > 1) {
+      // But if more then one page is present the get the
+      // data from last one cause its the latest and other have already been fetched and added in the state
+      newMessages = pages?.slice(-1).flat() ?? [];
+    }
+    if (!newMessages.length) return;
 
-		// Filter out messages that are already present
-		// @ts-ignore
-		setMessages((prev) => {
-			// Make sure prev is handled as IMessage[] or undefined
-			const existingIds = new Set(prev?.map((msg: IMessage) => msg._id) || []); // Handle prev being possibly undefined
-			const filteredNewMessages = newMessages.filter(
-				(msg) => !existingIds.has(msg._id),
-			);
+    // Filter out messages that are already present
+    // @ts-ignore
+    setMessages((prev) => {
+      // Make sure prev is handled as IMessage[] or undefined
+      const existingIds = new Set(prev?.map((msg: IMessage) => msg._id) || []); // Handle prev being possibly undefined
+      const filteredNewMessages = newMessages.filter(
+        (msg) => !existingIds.has(msg._id)
+      );
 
-			// Return the updated array with new messages at the top and previous ones below
-			return [...filteredNewMessages.reverse(), ...(prev || [])];
-		});
-	}, [data?.pages, isMessagesPending]);
+      // Return the updated array with new messages at the top and previous ones below
+      return [...filteredNewMessages.reverse(), ...(prev || [])];
+    });
+    return () => {
+      setMessages([]);
+    };
+  }, [data?.pages, isMessagesPending, setMessages]);
 	/**
 	 * on Error reset state
 	 */

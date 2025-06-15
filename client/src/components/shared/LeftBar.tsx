@@ -17,7 +17,7 @@ export default function LeftBar() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-  // console.log("userDetails", userDetails);
+
   const handleClick = () => {
     if (!userDetails) return;
     mutate({
@@ -71,7 +71,7 @@ export default function LeftBar() {
               >
                 <NavLink
                   to={link.route}
-                  className="flex gap-4 items-center p-4"
+                  className="flex gap-4 items-center p-4 relative"
                 >
                   <img
                     width={25}

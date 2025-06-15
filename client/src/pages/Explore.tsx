@@ -3,6 +3,7 @@ import Loader from "@/components/shared/Loader";
 import SearchResult from "@/components/shared/SearchResult";
 import { Input } from "@/components/ui/input";
 import { IPost } from "@/constant/interfaces";
+import { usePostContext } from "@/context/postsProvider";
 import useAuth from "@/hooks/query/useAuth";
 import usePost from "@/hooks/query/usePost";
 import { useEffect, useState } from "react";
@@ -11,9 +12,9 @@ import { v4 } from "uuid";
 function Explore() {
   //   const { ref, inView } = useInView();
   const [search, setSearch] = useState("");
-  const { useGetAllPost } = usePost();
+  const { useGetAllPostStatic } = usePost();
   const { useGetAllUser } = useAuth();
-  const { data: posts } = useGetAllPost();
+  const { data: posts } = useGetAllPostStatic();
   const [searchedPost, setSearchedPost] = useState<IPost[]>([]);
   const { data: usersData } = useGetAllUser();
 
