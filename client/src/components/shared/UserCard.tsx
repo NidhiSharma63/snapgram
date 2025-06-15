@@ -56,15 +56,14 @@ const UserCard = ({
 	 * Handle click on unfollow
 	 */
 	const handleClickOnUnFollow = useCallback(
-		async (e: React.MouseEvent<HTMLButtonElement>) => {
-			e.preventDefault();
-			await unfollowToUser({
-				followerId: user._id,
-			});
-		},
-		[unfollowToUser, user],
-	);
-	console.log(userDetails);
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      await unfollowToUser({
+        followerId: user._id,
+      });
+    },
+    [unfollowToUser, user]
+  );
 
 	return (
 		<Link to={`/profile/${user._id}`} className="user-card">

@@ -2,11 +2,12 @@ import Profile from "@/components/shared/Profile";
 import { Button } from "@/components/ui/button";
 import { AppConstants } from "@/constant/keys";
 import { sidebarLinks } from "@/constant/links";
+import { useSocket } from "@/context/socketProviders";
 import { useTheme } from "@/context/themeProviders";
 import { useUserDetail } from "@/context/userContext";
 import useAuth from "@/hooks/query/useAuth";
-import { setValueToLS } from "@/lib/utils";
-import { useEffect } from "react";
+import { getUnreadCountBasesOnUserId, setValueToLS } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import ThemeComponent from "./ThemeComponent";
 
@@ -17,7 +18,13 @@ export default function LeftBar() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { pathname } = useLocation();
-  // console.log("userDetails", userDetails);
+  const { unSeenMsgs } = useSocket();
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
+  useEffect(() => {
+    setUnreadMsgCount(getUnreadCountBasesOnUserId(unSeenMsgs));
+  }, [unSeenMsgs]);
+
   const handleClick = () => {
     if (!userDetails) return;
     mutate({
@@ -71,7 +78,7 @@ export default function LeftBar() {
               >
                 <NavLink
                   to={link.route}
-                  className="flex gap-4 items-center p-4"
+                  className="flex gap-4 items-center p-4 relative"
                 >
                   <img
                     width={25}
@@ -82,6 +89,11 @@ export default function LeftBar() {
                       isActive && "invert-white"
                     }`}
                   />
+                  {link.label === "Inbox" && unreadMsgCount > 0 && (
+                    <span className="absolute right-[11.25rem] top-[13px] w-4 h-4 bg-red rounded-full flex items-center justify-center">
+                      <p className="text-white text-xs">{unreadMsgCount}</p>
+                    </span>
+                  )}
                   {link.label}
                 </NavLink>
               </li>
