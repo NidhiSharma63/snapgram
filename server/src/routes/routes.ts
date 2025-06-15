@@ -11,7 +11,15 @@ import {
   markMessageRead,
   removeTypingIndicator,
 } from "../controllers/messages";
-import { createPost, deletePost, getAllPost, getOnePost, getUsersAllPost, updatePost } from "../controllers/post";
+import {
+  createPost,
+  deletePost,
+  getAllPost,
+  getAllPostStatic,
+  getOnePost,
+  getUsersAllPost,
+  updatePost,
+} from "../controllers/post";
 import { addSaves, getAllSavePost, removeSaves } from "../controllers/save";
 import checkAuthorization from "../middleware/authMiddleWare";
 
@@ -36,6 +44,7 @@ router.route("/post").delete(checkAuthorization, deletePost);
 router.route("/posts").get(checkAuthorization, getAllPost);
 router.route("/post").get(checkAuthorization, getOnePost);
 router.route("/user/posts").get(checkAuthorization, getUsersAllPost);
+router.route("/posts/static").get(getAllPostStatic);
 
 /**
  * likes route
