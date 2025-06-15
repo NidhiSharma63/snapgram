@@ -11,5 +11,6 @@ export enum QueryKeys {
   GET_USER_SAVE_POST = "get_user_save_post",
   GET_USER_Like_POST = "get_user_like_post",
   GET_USER_ALL_POSTS = "get_user_all_post",
-  GET_USER_MESSAGES = "get_user_messages"
+  GET_USER_MESSAGES = "get_user_messages",
+  GET_ALL_UNSEEN_MESSAGES = "get_all_unseen_messages",
 }

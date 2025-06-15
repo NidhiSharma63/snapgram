@@ -111,8 +111,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       .join("-"); // Join them with a separator
   }, [currentUser?._id, recipient?._id]);
 
-  const { useMarkMessageAsRead } = useMessage();
+  const { useMarkMessageAsRead, useGetAllUnseenMessages } = useMessage();
   const { mutateAsync: markMessageAsRead } = useMarkMessageAsRead();
+  const { data: allUnseenMsgs } = useGetAllUnseenMessages(
+    currentUser?._id ?? ""
+  );
 
   // notify
   const notify = useCallback(
@@ -152,6 +155,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   );
   // Initialize Pusher
   useEffect(() => {
+    // enable logs
+    // Pusher.logToConsole = true;
     const pusher = new Pusher(import.meta.env.VITE_APP_PUSHER_APP_ID, {
       cluster: import.meta.env.VITE_APP_PUSHER_CLUSTER,
     });
@@ -180,14 +185,27 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     };
   }, [toast]);
 
+  // initially set all unseen messages
   useEffect(() => {
-    if (!pusherInstance) return;
+    if (!allUnseenMsgs) return;
+    setUnSeenMsgs(allUnseenMsgs);
+  }, [allUnseenMsgs]);
+
+  useEffect(() => {
+    if (!pusherInstance || !roomId) return;
     /**
      * access all channels
      */
 
+    const parts = roomId.split("-");
+    const hasValidSuffix = parts.length > 1 && parts[1].trim() !== "";
+
+    if (!hasValidSuffix) {
+      return;
+    }
     // Subscribe to the channel
     const channel = pusherInstance.subscribe(`public-${roomId}`);
+    console.log("channel subscribed", roomId);
     const notificationChannel = pusherInstance.subscribe(
       `notification-${currentUser?._id}`
     );
