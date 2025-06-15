@@ -2,7 +2,15 @@ import express from "express";
 import { getAllUser, getUser, loginUser, logout, registerUser, updateUser } from "../controllers/auth";
 import { addFollower, removeFollower } from "../controllers/follower_following";
 import { addLike, getAllLikePost, removeLike } from "../controllers/likes";
-import { addMessage, addTypingIndicator, deleteMessage, getAllMessages, markMessageRead, removeTypingIndicator } from "../controllers/messages";
+import {
+  addMessage,
+  addTypingIndicator,
+  deleteMessage,
+  getAllMessages,
+  getAllUnseenMessages,
+  markMessageRead,
+  removeTypingIndicator,
+} from "../controllers/messages";
 import { createPost, deletePost, getAllPost, getOnePost, getUsersAllPost, updatePost } from "../controllers/post";
 import { addSaves, getAllSavePost, removeSaves } from "../controllers/save";
 import checkAuthorization from "../middleware/authMiddleWare";
@@ -42,10 +50,15 @@ router.route("/likes").get(checkAuthorization, getAllLikePost);
 router.route("/save/add").put(checkAuthorization, addSaves);
 router.route("/save/remove").delete(checkAuthorization, removeSaves);
 router.route("/saves").get(checkAuthorization, getAllSavePost);
+
+/*
+ * message routes
+ */
 router.route("/messages").get(checkAuthorization, getAllMessages);
 router.route("/message").post(checkAuthorization, addMessage);
 router.route("/message/delete").delete(checkAuthorization,deleteMessage);
 router.route("/message/mark-as-read").post(checkAuthorization,markMessageRead);
+router.route("/messages/unseen").get(checkAuthorization, getAllUnseenMessages);
 
 /**
  * follower followings

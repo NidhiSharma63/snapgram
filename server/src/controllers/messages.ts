@@ -5,59 +5,79 @@ import pusher from "../utils/pusher";
 
 /** get All messages */
 const getAllMessages = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	const { roomId, lastMessageId, userId } = req.query;
-	// console.log(req.query)
-	if (!userId) throw new Error("User id is Missing");
-	if (!roomId) throw new Error("Room id is Missing");
-	try {
-		if (!lastMessageId) {
-			const messages = await Chat.find({ roomId })
-				.sort({ createdAt: -1 }) // Sort by timestamp in descending order, latest first
-				.limit(20) // Fetch the previous 20 messages, for example
-				.lean(); // Convert Mongoose documents to plain JavaScript objects
-			res.status(200).json(messages);
-			return;
-		}
+  const { roomId, lastMessageId, userId } = req.query;
+  // console.log(req.query)
+  try {
+    if (!userId) throw new Error("User id is Missing");
+    if (!roomId) throw new Error("Room id is Missing");
+    if (!lastMessageId) {
+      const messages = await Chat.find({ roomId })
+        .sort({ createdAt: -1 }) // Sort by timestamp in descending order, latest first
+        .limit(20) // Fetch the previous 20 messages, for example
+        .lean(); // Convert Mongoose documents to plain JavaScript objects
+      res.status(200).json(messages);
+      return;
+    }
 
-		const messages = await Chat.find({ roomId, _id: { $lt: lastMessageId } })
-			.sort({ createdAt: -1 }) // Sort by timestamp in descending order, latest first
-			.limit(20)
-			.lean();
-		res.status(200).json(messages);
-	} catch (error) {
-		next(error);
-	}
+    const messages = await Chat.find({ roomId, _id: { $lt: lastMessageId } })
+      .sort({ createdAt: -1 }) // Sort by timestamp in descending order, latest first
+      .limit(20)
+      .lean();
+    res.status(200).json(messages);
+  } catch (error) {
+    next(error);
+  }
 };
 
+/**
+ *
+ * get all unseen messages
+ */
+
+const getAllUnseenMessages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.query;
+    if (!userId) throw new Error("Room id is Missing");
+    const messages = await Chat.find({
+      receiverId: userId,
+      isSeen: false,
+    });
+    res.status(200).json(messages);
+  } catch (error) {
+    next(error);
+  }
+};
 /**
  * delete message
  */
 const deleteMessage = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-	const { messageId, userId, roomId } = req.body;
-	if (!userId) throw new Error("User id is Missing");
-	if (!roomId) throw new Error("Room id is Missing");
-	if (!messageId) throw new Error("Message id is Missing");
-	try {
-		// delete the message
-		const message = await Chat.findOneAndDelete({ _id: messageId });
-		await pusher.trigger(`public-${roomId}`, "message-deleted",
-			{
-				messageId,
-				senderId: userId
-			}
-		);
-		res.status(201).json(message);
-	} catch (error) {
-		next(error);
-	}
+  const { messageId, userId, roomId } = req.body;
+  try {
+    if (!userId) throw new Error("User id is Missing");
+    if (!roomId) throw new Error("Room id is Missing");
+    if (!messageId) throw new Error("Message id is Missing");
+    // delete the message
+    const message = await Chat.findOneAndDelete({ _id: messageId });
+    await pusher.trigger(`public-${roomId}`, "message-deleted", {
+      messageId,
+      senderId: userId,
+    });
+    res.status(201).json(message);
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -150,5 +170,13 @@ const removeTypingIndicator = async (req: Request, res: Response, next: NextFunc
 		next(error)
 	}
 }
-export { addMessage, addTypingIndicator, deleteMessage, getAllMessages, markMessageRead, removeTypingIndicator };
+export {
+  addMessage,
+  addTypingIndicator,
+  deleteMessage,
+  getAllMessages,
+  getAllUnseenMessages,
+  markMessageRead,
+  removeTypingIndicator,
+};
 
