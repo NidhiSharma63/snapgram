@@ -65,16 +65,42 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
 /**
  * get All post
  */
+// const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
+// 	try {
+// 		const getAllPost = await Post.find()
+// 			.sort({ createdAt: -1 })
+// 			.setOptions({ lean: true });
+// 		res.status(200).json(getAllPost);
+// 	} catch (error) {
+// 		next(error);
+// 	}
+// };
 const getAllPost = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const getAllPost = await Post.find()
-			.sort({ createdAt: -1 })
-			.setOptions({ lean: true });
-		res.status(200).json(getAllPost);
-	} catch (error) {
-		next(error);
-	}
+  try {
+    console.log(req.query.page);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 3;
+
+    const skip = (page - 1) * limit;
+
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .setOptions({ lean: true });
+
+    const totalPosts = await Post.countDocuments();
+    console.log(skip, limit, totalPosts);
+    res.status(200).json({
+      data: posts,
+      hasMore: skip + limit < totalPosts,
+      currentPage: page,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
 
 /**
  * get one post using id
@@ -113,6 +139,6 @@ export {
   getAllPost,
   getOnePost,
   getUsersAllPost,
-  updatePost
+  updatePost,
 };
 
