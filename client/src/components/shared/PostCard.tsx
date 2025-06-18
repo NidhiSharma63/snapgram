@@ -45,7 +45,7 @@ export default function PostCard({ post, user }: { post: IPost; user: IUser }) {
       </div>
       <Link to={`/posts/${post._id}`}>
         <div className="small-medium lg:base-meduim py-5">
-          <p>{post.caption}</p>
+          <p className="post-caption">{post.caption}</p>
           <ul className="flex gap-1 mt-2">
             {post.tags?.[0].split(",").map((tag: string) => {
               return (

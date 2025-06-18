@@ -11,9 +11,9 @@ import { v4 } from "uuid";
 function Explore() {
   //   const { ref, inView } = useInView();
   const [search, setSearch] = useState("");
-  const { useGetAllPost } = usePost();
+  const { useGetAllPostStatic } = usePost();
   const { useGetAllUser } = useAuth();
-  const { data: posts } = useGetAllPost();
+  const { data: posts } = useGetAllPostStatic();
   const [searchedPost, setSearchedPost] = useState<IPost[]>([]);
   const { data: usersData } = useGetAllUser();
 
