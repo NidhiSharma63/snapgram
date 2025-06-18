@@ -127,16 +127,15 @@ function usePost() {
     data: IPost[];
     hasMore: boolean;
     currentPage: number;
-    [key: string]: any;
   }
 
-  function useGetAllPost(pageParam?: number) {
+  function useGetAllPost() {
     return useInfiniteQuery<PostsPage, AxiosError<ErrorResponse>>({
       queryKey: [QueryKeys.GET_ALL_POSTS],
       queryFn: async ({ pageParam = 1 }) => {
         return await customAxiosRequestForGet("/posts", {
-          page: pageParam as number,
-          limit: 3,
+          page: String(pageParam),
+          limit: "3",
         });
       },
       initialPageParam: 1,

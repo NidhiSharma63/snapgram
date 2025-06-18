@@ -69,17 +69,17 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
   }
 };
 
-export const getUnreadCountBasesOnUserId = (messages) => {
-  let unreadMessages = 0;
-  const tempArr = [];
-  // if current roomId is present in the tempArr then don't increase the unreadmessages
-  // else increase it by 1
-  messages.forEach((message) => {
-    if (!tempArr.includes(message.roomId)) {
-      tempArr.push(message.roomId);
-      unreadMessages++;
-    }
-  });
+// export const getUnreadCountBasesOnUserId = (messages) => {
+//   let unreadMessages = 0;
+//   const tempArr = [];
+//   // if current roomId is present in the tempArr then don't increase the unreadmessages
+//   // else increase it by 1
+//   messages.forEach((message) => {
+//     if (!tempArr.includes(message.roomId)) {
+//       tempArr.push(message.roomId);
+//       unreadMessages++;
+//     }
+//   });
 
-  return unreadMessages;
-};
+//   return unreadMessages;
+// };

@@ -17,7 +17,7 @@ function Home() {
   } = usePostContext();
   const { useGetAllUser } = useAuth();
   const { data: usersData } = useGetAllUser();
-  const homeRef = useRef(null);
+  const homeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkIfTargetIsInView = () => {

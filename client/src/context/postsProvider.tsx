@@ -22,14 +22,14 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
     isPending: isPostLoading,
     isFetchingNextPage,
     fetchNextPage,
-  } = useGetAllPost(pageParams);
+  } = useGetAllPost();
   const [finalPostsArr, setFinalPostsArr] = useState<IPost[]>([]);
 
   // initially pageParams (default) will be 1 and then it will be updated
   // when data is available show that for fetching next page we have to update pageParams by 1
   // to pass the BE
   useEffect(() => {
-    const pagesParams = data?.pageParams;
+    const pagesParams: number[] = data?.pageParams as number[];
     setPagesParams(pagesParams?.[pagesParams?.length - 1] + 1);
   }, [data]);
 
